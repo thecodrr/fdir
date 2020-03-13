@@ -40,7 +40,7 @@ fdir.async("path/to/dir").then(/*blah blah blah*/);
 
 And that's it.
 
-## Benchmarks:
+## 📊 Benchmarks:
 
 > I recently discovered a quirky side in how NodeJS works. It gives different performance when the machine is on AC power and when purely on battery. (If someone knows anything about that, do tell me.) So for the sake of completeness and so that no one disputes my claims, I included benchmarks for both cases.
 
@@ -124,7 +124,7 @@ fdir.sync("node_modules", { excludedDirs });
 
 And that's it.
 
-## FAQs:
+## ⁉️ FAQs:
 
 **1. I looked at the code and there's nothing special. How is it so damn fast then?**
 
@@ -150,10 +150,10 @@ Am I? Well, are you offering a job? If yes, I am interested. :D
 
 You shouldn't. But here's my email in case you do: **thecodrr[at]protonmail.com**. Don't worry, I don't bite.
 
-## Support
+## ℹ️ Support
 
 Would love if you throw a coffee [over here](https://paypal.me/cupertino). Or just be, you know, polite and give me a star? Maybe even follow me?
 
-## LICENSE
+## 🦮 LICENSE
 
 Copyright (c) 2020 Abdullah Atta under MIT. [Read full text here.](./LICENSE)
