@@ -58,6 +58,12 @@ And that's it.
 
 <img src="./assets/battery.png"/>
 
+### Run them Yourself:
+
+```sh
+$ yarn benchmark
+```
+
 ## 🚒 API:
 
 `fdir` is very small so there's not much to the API.
