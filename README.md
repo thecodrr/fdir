@@ -1,5 +1,5 @@
 <p align="center">
-<img src="./assets/logo.png" width="350"/>
+<img src="https://github.com/thecodrr/fdir/raw/master/assets/logo.png" width="350"/>
 
 <h1 align="center">The Fastest Directory Crawler for NodeJS</h1>
 </p>
@@ -52,11 +52,11 @@ And that's it.
 
 ### On Power:
 
-<img src="./assets/power.png"/>
+<img src="https://github.com/thecodrr/fdir/raw/master/assets/power.png"/>
 
 ### On Battery:
 
-<img src="./assets/battery.png"/>
+<img src="https://github.com/thecodrr/fdir/raw/master/assets/battery.png"/>
 
 ### Run them Yourself:
 
@@ -164,4 +164,4 @@ Would love if you throw a coffee [over here](https://paypal.me/cupertino). Or ju
 
 ## 🦮 LICENSE
 
-Copyright (c) 2020 Abdullah Atta under MIT. [Read full text here.](./LICENSE)
+Copyright (c) 2020 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
