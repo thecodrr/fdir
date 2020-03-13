@@ -58,7 +58,7 @@ function fdir(options) {
     maxDepth: undefined,
     searchFn: undefined,
     resolvePaths: false,
-    excludedDirectories: undefined
+    excludedDirs: undefined
   };
   options = !options ? defaultOptions : { ...defaultOptions, ...options };
   return {
