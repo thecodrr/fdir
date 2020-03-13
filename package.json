@@ -1,0 +1,47 @@
+{
+  "name": "fdir",
+  "version": "1.0.0",
+  "description": "The fastest directory walker written in NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "benchmark": "node benchmark.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thecodrr/fdir.git"
+  },
+  "keywords": [
+    "util",
+    "os",
+    "sys",
+    "fs",
+    "walk",
+    "crawler",
+    "directory",
+    "files",
+    "io",
+    "speed",
+    "javascript",
+    "nodejs"
+  ],
+  "author": "thecodrr <thecodrr@protonmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thecodrr/fdir/issues"
+  },
+  "homepage": "https://github.com/thecodrr/fdir#readme",
+  "devDependencies": {
+    "@folder/readdir": "^2.1.0",
+    "all-files-in-tree": "^1.1.2",
+    "benny": "^3.6.14",
+    "fs-readdir-recursive": "^1.1.0",
+    "get-all-files": "^1.0.7",
+    "klaw-sync": "^6.0.0",
+    "recur-readdir": "0.0.1",
+    "recursive-files": "^1.0.2",
+    "recursive-readdir": "^2.2.2",
+    "rrdir": "^5.0.0",
+    "walk-sync": "^2.0.2"
+  }
+}
