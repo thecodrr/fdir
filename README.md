@@ -70,7 +70,7 @@ This is often the fastest way to get files. However, it will block the main "thr
 
 Not always the fastest but works without blocking the street, so that's a plus.
 
-### Options:
+### `Options`
 
 Ah, the options. Not many of them. At least not as many as I'd hoped for.
 
@@ -78,13 +78,13 @@ Ah, the options. Not many of them. At least not as many as I'd hoped for.
 
 Whether to include directories in the array returned.
 
-**Default: false**
+`default: false`
 
 #### `includeBasePath: boolean`
 
 Whether to include the base path for each file.
 
-**Default: true**
+`default: true`
 
 #### `searchFn: Function`
 
@@ -98,13 +98,13 @@ fdir.sync("node_modules", {
 });
 ```
 
-**Default: undefined**
+`default: undefined`
 
 #### `maxDepth: number`
 
 The max number of levels `fdir` should crawl before stopping. **The lower the faster.**
 
-**Default: undefined (i.e. infinity)**
+`default: undefined (i.e. infinity)`
 
 #### `excludedDirs: Object`
 
@@ -121,6 +121,8 @@ const excludedDirs = {
 
 fdir.sync("node_modules", { excludedDirs });
 ```
+
+`default: undefined`
 
 And that's it.
 
