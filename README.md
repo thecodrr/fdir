@@ -42,7 +42,7 @@ And that's it.
 
 ## 📊 Benchmarks:
 
-> I recently discovered a quirky side in how NodeJS works. It gives different performance when the machine is on AC power and when purely on battery. (If someone knows anything about that, do tell me.) So for the sake of completeness and so that no one disputes my claims, I included benchmarks for both cases.
+> I recently discovered a quirky side in how NodeJS works. It gives different performance when the machine is on direct power and when purely on battery. (If someone knows anything about that, do tell me.) So for the sake of completeness and so that no one disputes my claims, I included benchmarks for both cases.
 
 **Specs:**
 
