@@ -2,11 +2,6 @@ const util = require("util");
 const fs = require("fs");
 const path = require("path");
 const readdir = util.promisify(fs.readdir);
-const lstat = util.promisify(fs.lstat);
-
-function push(item) {
-  this.push(item);
-}
 
 function sync(dir, options) {
   const dirents = fs.readdirSync(dir, { withFileTypes: true });
@@ -15,17 +10,12 @@ function sync(dir, options) {
   if (options.includeDirs) paths.push(dir);
   if (--options.maxDepth < 0) return paths;
 
-  dirents.forEach(dirent => {
-    let res = `${dir}${path.sep}${dirent.name}`;
-    if (
-      (dirent.isDirectory && dirent.isDirectory()) ||
-      fs.lstatSync(res).isDirectory()
-    ) {
-      if (options.excludedDirs && options.excludedDirs[dirent.name]) return;
-      sync(res, options).forEach(push.bind(paths));
-    } else {
-      if (!options.includeBasePath) res = dirent.name;
-      if (!options.searchFn || options.searchFn(res)) paths.push(res);
+  dirents.forEach(function(dirent) {
+    const dirPath = recurse(dirent, dir, paths, options);
+    if (dirPath) {
+      sync(dirPath, options).forEach(function(item) {
+        paths.push(item);
+      });
     }
   });
   return paths;
@@ -39,21 +29,37 @@ async function async(dir, options) {
   if (--options.maxDepth < 0) return paths;
 
   await Promise.all(
-    dirents.map(async dirent => {
-      let res = `${dir}${path.sep}${dirent.name}`;
-      if (
-        (dirent.isDirectory && dirent.isDirectory()) ||
-        (await lstat(res)).isDirectory()
-      ) {
-        if (options.excludedDirs && options.excludedDirs[dirent.name]) return;
-        (await async(res, options)).forEach(push.bind(paths));
-      } else {
-        if (!options.includeBasePath) res = dirent.name;
-        if (!options.searchFn || options.searchFn(res)) paths.push(res);
+    dirents.map(async function(dirent) {
+      const dirPath = recurse(dirent, dir, paths, options);
+      if (dirPath) {
+        (await async(dirPath, options)).forEach(function(item) {
+          paths.push(item);
+        });
       }
     })
   );
   return paths;
+}
+
+function isDirectory(dirent, path) {
+  // In node < 10, Dirent is not present. So we need to manually do fs.lstat.
+  return dirent.isDirectory
+    ? dirent.isDirectory()
+    : fs.lstatSync(path).isDirectory();
+}
+
+function recurse(dirent, dir, paths, options) {
+  // In node < 10, Dirent is not present. Instead we get string paths
+  const dirName = dirent.name || dirent;
+  let fullPath = `${dir}${path.sep}${dirName}`;
+
+  if (isDirectory(dirent, fullPath)) {
+    if (options.isExcludedDir && options.isExcludedDir(dirName)) return;
+    return fullPath;
+  } else {
+    if (!options.includeBasePath) fullPath = dirName;
+    if (!options.searchFn || options.searchFn(fullPath)) paths.push(fullPath);
+  }
 }
 
 function getOptions(options) {
@@ -65,18 +71,16 @@ function getOptions(options) {
     resolvePaths: false,
     excludedDirs: undefined
   };
-  return !options ? defaultOptions : { ...defaultOptions, ...options };
+  return !options ? defaultOptions : Object.assign(defaultOptions, options);
+}
+
+function getFunction(type, dir, options) {
+  options = getOptions(options);
+  if (options.resolvePaths) dir = path.resolve(dir);
+  return type(dir, options);
 }
 
 module.exports = {
-  sync: (dir, options) => {
-    options = getOptions(options);
-    if (options.resolvePaths) dir = path.resolve(dir);
-    return sync(dir, options);
-  },
-  async: (dir, options) => {
-    options = getOptions(options);
-    if (options.resolvePaths) dir = path.resolve(dir);
-    return async(dir, options);
-  }
+  sync: getFunction.bind(this, sync),
+  async: getFunction.bind(this, async)
 };

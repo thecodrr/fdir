@@ -119,7 +119,7 @@ The max number of levels `fdir` should crawl before stopping. **The lower the fa
 
 `default: undefined (i.e. infinity)`
 
-#### `excludedDirs: Object`
+#### `isExcludedDir: Function`
 
 A list of directories to exclude.
 
@@ -128,11 +128,8 @@ A list of directories to exclude.
 **Example:**
 
 ```js
-const excludedDirs = {
-  node_modules: true
-};
-
-fdir.sync("node_modules", { excludedDirs });
+const isExcludedDir = path => path.includes(".bin");
+fdir.sync("node_modules", { isExcludedDir });
 ```
 
 `default: undefined`
