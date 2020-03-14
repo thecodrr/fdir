@@ -5,13 +5,11 @@ declare module "fdir" {
     maxDepth?: number;
     searchFn?: (filePath: string) => boolean;
     resolvePaths?: boolean;
-    excludedDirs?: { [dirName: string]: boolean };
+    isExcludedDir?: (dirPath: string) => boolean;
   };
 
-  type FDir = {
-    sync: (dir: String) => Array<String>;
-    async: (dir: String) => Promise<Array<String>>;
-  };
-  function fdir(options: Options): FDir;
-  export = fdir;
+  function sync(dir: String, options: Options): Array<String>;
+  function async(dir: String, options: Options): Promise<Array<String>>;
+  export = sync;
+  export = async;
 }
