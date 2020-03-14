@@ -2,6 +2,7 @@ const util = require("util");
 const fs = require("fs");
 const path = require("path");
 const readdir = util.promisify(fs.readdir);
+const lstat = util.promisify(fs.lstat);
 
 function push(item) {
   this.push(item);
@@ -16,7 +17,10 @@ function sync(dir, options) {
 
   dirents.forEach(dirent => {
     let res = `${dir}${path.sep}${dirent.name}`;
-    if (dirent.isDirectory()) {
+    if (
+      (dirent.isDirectory && dirent.isDirectory()) ||
+      fs.lstatSync(res).isDirectory()
+    ) {
       if (options.excludedDirs && options.excludedDirs[dirent.name]) return;
       sync(res, options).forEach(push.bind(paths));
     } else {
@@ -37,7 +41,10 @@ async function async(dir, options) {
   await Promise.all(
     dirents.map(async dirent => {
       let res = `${dir}${path.sep}${dirent.name}`;
-      if (dirent.isDirectory()) {
+      if (
+        (dirent.isDirectory && dirent.isDirectory()) ||
+        (await lstat(res)).isDirectory()
+      ) {
         if (options.excludedDirs && options.excludedDirs[dirent.name]) return;
         (await async(res, options)).forEach(push.bind(paths));
       } else {
