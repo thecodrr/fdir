@@ -12,22 +12,9 @@ const recursiveFs = require("recursive-fs");
 const b = require("benny");
 
 b.suite(
-  "The Fastest Directory Crawler",
-  b.add("recursive-fs async", async () => {
-    await new Promise(resolve => {
-      recursiveFs.readdirr("node_modules", () => {
-        resolve();
-      });
-    });
-  }),
-  b.add("fdir async", async () => {
-    await fdir.async("node_modules");
-  }),
+  "Synchronous (7386 files)",
   b.add("fdir sync", () => {
     fdir.sync("node_modules");
-  }),
-  b.add("all-files-in-tree async", async () => {
-    await allFilesInTree.async("node_modules");
   }),
   b.add("all-files-in-tree sync", () => {
     allFilesInTree.sync("node_modules");
@@ -35,17 +22,40 @@ b.suite(
   b.add("fs-readdir-recursive sync", () => {
     fsReadDirRecursive("node_modules");
   }),
-  b.add("get-all-files async", async () => {
-    await getAllFiles("node_modules");
-  }),
   b.add("klaw-sync", () => {
     klawSync("node_modules", {});
   }),
-  b.add("recur-readdir async", async () => {
-    await recurReadDir.crawl("node_modules");
-  }),
   b.add("recur-readdir sync", () => {
     recurReadDir.crawlSync("node_modules");
+  }),
+  b.add("walk-sync", () => {
+    walkSync("node_modules");
+  }),
+  b.add("rrdir sync", () => {
+    rrdir.sync("node_modules");
+  }),
+  b.cycle(),
+  b.complete(),
+  b.save({ file: "node-8-3-0-sync", format: "chart.html" })
+);
+
+b.suite(
+  "Asynchronous (7386 files)",
+  b.add("fdir async", async () => {
+    await fdir.async("node_modules");
+  }),
+  b.add("recursive-fs async", async () => {
+    await new Promise(resolve => {
+      recursiveFs.readdirr("node_modules", () => {
+        resolve();
+      });
+    });
+  }),
+  b.add("get-all-files async", async () => {
+    await getAllFiles("node_modules");
+  }),
+  b.add("recur-readdir async", async () => {
+    await recurReadDir.crawl("node_modules");
   }),
   b.add("recursive-files async", async () => {
     let timeout;
@@ -61,16 +71,10 @@ b.suite(
   b.add("recursive-readdir async", async () => {
     await recursiveReadDir("node_modules");
   }),
-  b.add("walk-sync", () => {
-    walkSync("node_modules");
-  }),
   b.add("rrdir async", async () => {
     await rrdir("node_modules");
   }),
-  b.add("rrdir sync", () => {
-    rrdir.sync("node_modules");
-  }),
   b.cycle(),
-  b.complete()
-  //b.save({ file: "fdir-benchmark-ac", format: "chart.html" })
+  b.complete(),
+  b.save({ file: "node-8-3-0-async", format: "chart.html" })
 );
