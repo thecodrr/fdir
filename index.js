@@ -41,19 +41,15 @@ async function async(dir, options) {
   return paths;
 }
 
-function isDirectory(dirent, path) {
-  // In node < 10, Dirent is not present. So we need to manually do fs.lstat.
-  return dirent.isDirectory
-    ? dirent.isDirectory()
-    : fs.lstatSync(path).isDirectory();
-}
-
 function recurse(dirent, dir, paths, options) {
   // In node < 10, Dirent is not present. Instead we get string paths
   const dirName = dirent.name || dirent;
   let fullPath = `${dir}${path.sep}${dirName}`;
 
-  if (isDirectory(dirent, fullPath)) {
+  const isDirectory = dirent.isDirectory
+    ? dirent.isDirectory()
+    : fs.lstatSync(fullPath).isDirectory();
+  if (isDirectory) {
     if (options.isExcludedDir && options.isExcludedDir(dirName)) return;
     return fullPath;
   } else {
