@@ -48,28 +48,34 @@ And that's it.
 
 ## 📊 Benchmarks:
 
-> I recently discovered a quirky side in how NodeJS works. It gives different performance when the machine is on direct power and when purely on battery. (If someone knows anything about that, do tell me.) So for the sake of completeness and so that no one disputes my claims, I included benchmarks for both cases.
-
-**Specs:**
-
-- Intel i7 7th Generation
-- 16 GB of RAM
-- 256 GB SSD
-- Directory Size: 14.1 MB / 2400 files
-
-### On Power:
-
-<img src="https://github.com/thecodrr/fdir/raw/master/assets/power.png"/>
-
-### On Battery:
-
-<img src="https://github.com/thecodrr/fdir/raw/master/assets/battery.png"/>
-
-### Run them Yourself:
-
 ```sh
 $ yarn benchmark
 ```
+
+**Specs:**
+
+- Intel i7 7th Generation (7700HQ)
+- 16 GB of RAM
+- 256 GB SSD
+- Directory Size: 7386 files
+
+**Notes:**
+
+- Some people asked that I benchmark `no-op` (without options) version of `fdir`. I did and found no performance difference. The results were identical. (I didn't include it here as it wasn't anything special.)
+
+### Node v13.11.0:
+
+|   Synchronous (7386 files)    |   Asynchronous (7386 files)    |
+| :---------------------------: | :----------------------------: |
+| ![](./assets/node13-sync.png) | ![](./assets/node13-async.png) |
+
+### Node v8.3.0:
+
+**Note: As latest version of `rrdir` doesn't support Node < 8, I had to use version 2.0.0. Everything else is fully updated.**
+
+|   Synchronous (7386 files)   |   Asynchronous (7386 files)   |
+| :--------------------------: | :---------------------------: |
+| ![](./assets/node8-sync.png) | ![](./assets/node8-async.png) |
 
 ## 🚒 API:
 
