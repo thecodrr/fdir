@@ -42,7 +42,7 @@
     "recur-readdir": "0.0.1",
     "recursive-files": "^1.0.2",
     "recursive-readdir": "^2.2.2",
-    "rrdir": "^5.0.0",
+    "rrdir": "^6.1.1",
     "walk-sync": "^2.0.2"
   }
 }

@@ -1,4 +1,4 @@
-const fdir = require("./index")();
+const fdir = require("./index");
 const readdir = require("@folder/readdir");
 const allFilesInTree = require("all-files-in-tree");
 const fsReadDirRecursive = require("fs-readdir-recursive");
@@ -65,6 +65,9 @@ b.suite(
   }),
   b.add("rrdir sync", () => {
     rrdir.sync("node_modules");
+  }),
+  b.add("rrdir stream", async () => {
+    for await (const _ of rrdir.stream("node_modules"));
   }),
   b.add("walk-sync", () => {
     walkSync("node_modules");
