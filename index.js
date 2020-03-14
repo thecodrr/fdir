@@ -1,5 +1,7 @@
+const util = require("util");
 const fs = require("fs");
 const path = require("path");
+const readdir = util.promisify(fs.readdir);
 
 function push(item) {
   this.push(item);
@@ -25,30 +27,25 @@ function sync(dir, options) {
   return paths;
 }
 
-function async(dir, options) {
-  return new Promise(resolve => {
-    fs.readdir(dir, { withFileTypes: true }, (err, dirents) => {
-      if (err) return resolve([]);
-      const paths = [];
-      var i = 0;
-      var n = dirents.length;
+async function async(dir, options) {
+  const dirents = await readdir(dir, { withFileTypes: true });
+  const paths = [];
 
-      if (options.includeDirs) paths.push(dir);
-      if (--options.maxDepth < 0) resolve(paths);
+  if (options.includeDirs) paths.push(dir);
+  if (--options.maxDepth < 0) resolve(paths);
 
-      dirents.forEach(async dirent => {
-        const res = `${dir}${path.sep}${dirent.name}`;
-        if (dirent.isDirectory()) {
-          if (options.excludedDirs && options.excludedDirs[dirent.name]) return;
-          (await async(res, options)).forEach(push.bind(paths));
-        } else {
-          if (!options.includeBasePath) res = dirent.name;
-          if (!options.searchFn || options.searchFn(res)) paths.push(res);
-        }
-        if (++i >= n) resolve(paths);
-      });
-    });
-  });
+  await Promise.all(
+    dirents.map(async dirent => {
+      const res = `${dir}${path.sep}${dirent.name}`;
+      if (dirent.isDirectory()) {
+        (await async(res, options)).forEach(push.bind(paths));
+      } else {
+        if (!options.includeBasePath) res = dirent.name;
+        if (!options.searchFn || options.searchFn(res)) paths.push(res);
+      }
+    })
+  );
+  return paths;
 }
 
 function fdir(options) {
