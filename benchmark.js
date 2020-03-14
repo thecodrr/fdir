@@ -1,5 +1,4 @@
-const fdir = require("./index")();
-const readdir = require("@folder/readdir");
+const fdir = require("./index");
 const allFilesInTree = require("all-files-in-tree");
 const fsReadDirRecursive = require("fs-readdir-recursive");
 const getAllFiles = require("get-all-files");
@@ -18,12 +17,6 @@ b.suite(
   }),
   b.add("fdir sync", () => {
     fdir.sync("node_modules");
-  }),
-  b.add("@folder/readdir async", async () => {
-    await readdir("node_modules", { dot: true, recursive: true });
-  }),
-  b.add("@folder/readdir sync", () => {
-    readdir.sync("node_modules", { dot: true, recursive: true });
   }),
   b.add("all-files-in-tree async", async () => {
     await allFilesInTree.async("node_modules");
@@ -60,16 +53,16 @@ b.suite(
   b.add("recursive-readdir async", async () => {
     await recursiveReadDir("node_modules");
   }),
+  b.add("walk-sync", () => {
+    walkSync("node_modules");
+  }),
   b.add("rrdir async", async () => {
     await rrdir("node_modules");
   }),
   b.add("rrdir sync", () => {
     rrdir.sync("node_modules");
   }),
-  b.add("walk-sync", () => {
-    walkSync("node_modules");
-  }),
   b.cycle(),
-  b.complete(),
-  b.save({ file: "fdir-benchmark-ac", format: "chart.html" })
+  b.complete()
+  //b.save({ file: "fdir-benchmark-ac", format: "chart.html" })
 );
