@@ -17,9 +17,9 @@ test("get all files and directories", () => {
   expect(files[0].endsWith("node_modules")).toBe(true);
 });
 
-test("get all files (max depth 2)", () => {
-  const files = fdir.sync("node_modules", { maxDepth: 2 });
-  expect(files.every(file => file.split("/").length <= 3)).toBe(true);
+test("get all files (max depth 1)", () => {
+  const files = fdir.sync("node_modules", { maxDepth: 1 });
+  expect(files.every(file => file.split("/").length <= 2)).toBe(true);
 });
 
 test("exclude a directory", () => {
