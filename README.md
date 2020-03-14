@@ -2,6 +2,11 @@
 <img src="https://github.com/thecodrr/fdir/raw/master/assets/logo.png" width="350"/>
 
 <h1 align="center">The Fastest Directory Crawler for NodeJS</h1>
+<p align="center">
+  <a href="https://www.npmjs.com/package/fdir"><img src="https://img.shields.io/npm/v/fdir?style=for-the-badge"/></a>
+  <a href="https://www.npmjs.com/package/fdir"><img src="https://img.shields.io/npm/dt/fdir?style=for-the-badge"/></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/thecodrr/fdir?style=for-the-badge"/></a>
+</p>
 </p>
 
 ⚡ **Extremely Fast:** Nothing beats `fdir` in speed. It can easily crawl a directory containing **10k files in about 13ms.**
