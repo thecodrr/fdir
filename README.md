@@ -66,17 +66,17 @@ $ yarn benchmark
 
 ### Node v13.11.0:
 
-|   Synchronous (7386 files)    |   Asynchronous (7386 files)    |
-| :---------------------------: | :----------------------------: |
-| ![](./assets/node13-sync.png) | ![](./assets/node13-async.png) |
+|                        Synchronous (7386 files)                         |                        Asynchronous (7386 files)                         |
+| :---------------------------------------------------------------------: | :----------------------------------------------------------------------: |
+| ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-async.png) |
 
 ### Node v8.3.0:
 
 **Note: As latest version of `rrdir` doesn't support Node < 8, I had to use version 2.0.0. Everything else is fully updated.**
 
-|   Synchronous (7386 files)   |   Asynchronous (7386 files)   |
-| :--------------------------: | :---------------------------: |
-| ![](./assets/node8-sync.png) | ![](./assets/node8-async.png) |
+|                        Synchronous (7386 files)                        |                        Asynchronous (7386 files)                        |
+| :--------------------------------------------------------------------: | :---------------------------------------------------------------------: |
+| ![](https://github.com/thecodrr/fdir/raw/master/assets/node8-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node8-async.png) |
 
 ## 🚒 API:
 
