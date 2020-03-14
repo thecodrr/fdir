@@ -8,10 +8,18 @@ const recursiveFiles = require("recursive-files");
 const recursiveReadDir = require("recursive-readdir");
 const rrdir = require("rrdir");
 const walkSync = require("walk-sync");
+const recursiveFs = require("recursive-fs");
 const b = require("benny");
 
 b.suite(
   "The Fastest Directory Crawler",
+  b.add("recursive-fs async", async () => {
+    await new Promise(resolve => {
+      recursiveFs.readdirr("node_modules", () => {
+        resolve();
+      });
+    });
+  }),
   b.add("fdir async", async () => {
     await fdir.async("node_modules");
   }),
