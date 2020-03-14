@@ -1,6 +1,6 @@
 {
   "name": "fdir",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The fastest directory crawler written for NodeJS. Zero dependencies. Grabs 10k files in 13ms.",
   "main": "index.js",
   "scripts": {
