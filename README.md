@@ -54,7 +54,7 @@ And that's it.
 - Intel i7 7th Generation
 - 16 GB of RAM
 - 256 GB SSD
-- Directory Size: 5 MB / 2400 files
+- Directory Size: 14.1 MB / 2400 files
 
 ### On Power:
 
