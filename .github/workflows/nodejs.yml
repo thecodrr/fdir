@@ -22,7 +22,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm ci
-      - run: npm test:coverage
+      - run: npm run test:coverage
         env:
           CI: true
       - name: Send Report to Coveralls
