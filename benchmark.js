@@ -8,6 +8,7 @@ const recursiveFiles = require("recursive-files");
 const recursiveReadDir = require("recursive-readdir");
 const rrdir = require("rrdir");
 const walkSync = require("walk-sync");
+const recursiveFs = require("recursive-fs");
 const b = require("benny");
 
 b.suite(
@@ -42,6 +43,13 @@ b.suite(
   "Asynchronous (7386 files)",
   b.add("fdir async", async () => {
     await fdir.async("node_modules");
+  }),
+  b.add("recursive-fs async", async () => {
+    await new Promise(resolve => {
+      recursiveFs.readdirr("node_modules", () => {
+        resolve();
+      });
+    });
   }),
   b.add("get-all-files async", async () => {
     await getAllFiles("node_modules");
