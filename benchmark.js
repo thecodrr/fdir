@@ -71,5 +71,5 @@ b.suite(
   }),
   b.cycle(),
   b.complete(),
-  b.save({ file: "fdir-benchmark-battery", format: "chart.html" })
+  b.save({ file: "fdir-benchmark-ac", format: "chart.html" })
 );
