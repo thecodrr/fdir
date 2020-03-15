@@ -1,4 +1,4 @@
-const fdir = require("./index");
+const fdir = require("../index");
 const allFilesInTree = require("all-files-in-tree");
 const fsReadDirRecursive = require("fs-readdir-recursive");
 const getAllFiles = require("get-all-files");
