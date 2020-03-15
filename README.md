@@ -58,6 +58,7 @@ $ yarn benchmark
 - Intel i7 7th Generation (7700HQ)
 - 16 GB of RAM
 - 256 GB SSD
+- OS: Manjaro Linux
 - Directory Size: 7386 files
 
 **Notes:**
@@ -149,23 +150,31 @@ And that's it.
 
 Well, that's the whole point. `fdir` exists to prove to the "young" generation that you don't need to use special constructs or special methods to gain speed. Just a bit of patience and brains.
 
-**2. Why create this? What's the point?**
+**2. I found X library. I ran its benchmarks. It is faster than `fdir`!**
+
+Um. Well thank you for embarassing me (just joking). Do tell me the name of this library though. I will try to optimize `fdir` and reclaim the first spot :smile: 
+
+**3. You are doing X and Y wrong! Do Z and it will improve performance!**
+
+Yes. And I should probably do A, B & C too. The point is, did you run benchmarks with these suggestions? If you did and saw significant improvements, thank you. Now go open a PR :laugh:
+
+**4. Why create this? What's the point?**
 
 I know you don't give a shit. Fine. There's no point behind this. It's "just for fun". No, wait. Actually, I created this, first of all, for me. I needed fast directory access in another app of mine, so `fdir` came into being.
 
-**3. Why are all the other libraries so slow?**
+**5. Why are all the other libraries so slow?**
 
 Because they did not spend enough time optimizing it. Most developers give readability and cool code more importance than actual performance and usability. I have seen a library claiming to be the fastest by inverting the benchmarks. Literally. Gave me quite the scare until I went and fixed the benchmark. It was actually one of the slowest. :O
 
-**4. How long did it take you to create this?**
+**6. How long did it take you to create this?**
 
 Ummm. Maybe 18 hours? Make it a day.
 
-**5. Are you looking for a job?**
+**7. Are you looking for a job?**
 
 Am I? Well, are you offering a job? If yes, I am interested. :D
 
-**6. Why should I give a shit?**
+**8. Why should I give a shit?**
 
 You shouldn't. But here's my email in case you do: **thecodrr[at]protonmail.com**. Don't worry, I don't bite.
 
