@@ -1,0 +1,23 @@
+name: Am I still the fastest?
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  benchmark:
+    runs-on: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 13.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 13.x
+      - run: npm install --only=dev
+      - run: npm ci
+      - run: npm run checkFastest
+        env:
+          CI: true
