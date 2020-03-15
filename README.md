@@ -19,6 +19,8 @@
 
 🕺 **Astonishingly Small:** Only 2KB in size. Can be used virtually anywhere.
 
+🔥 **All Node Versions Supported:** `fdir` runs everywhere on all Node versions (within reason). And it is unsurprisingly fastest there too.
+
 ## 🚄 Quickstart
 
 You can install using `npm`:
