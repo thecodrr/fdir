@@ -20,7 +20,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
+      - run: npm install --only=prod
+      - run: npm -g install jest@^24.0.0
       - run: npm ci
       - run: npm run test:coverage
         env:
