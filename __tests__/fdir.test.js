@@ -1,13 +1,8 @@
 const fdir = require("../index");
 
 describe.each(["sync", "async"])("fdir.%s", type => {
-  test("reading from a non-existent directory should throw", async () => {
-    if (type === "sync") expect(() => fdir.sync("node_modules2")).toThrow();
-    else expect(fdir.async("node_modules2")).rejects.toThrow();
-  });
-
   test("read a directory", async () => {
-    const files = await fdir[type]("node_modules");
+    const files = await fdir[type]("__tests__");
     expect(files.length).toBeGreaterThan(0);
     expect(files[0]).toBeTruthy();
     expect(files.every(t => t)).toBeTruthy();

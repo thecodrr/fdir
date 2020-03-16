@@ -1,28 +1,30 @@
 const fs = require("fs");
-const { sep } = require("path");
+const { sep, resolve } = require("path");
 
 const readdirOpts = { withFileTypes: true };
 
 function sync(dir, options = {}) {
+  if (options.resolvePaths) dir = resolve(dir);
   const paths = [];
   const dirs = [dir];
   var i = 0;
   var currentDir;
   for (; i < dirs.length; ++i) {
+    if (--options.maxDepth < 0) return paths;
     currentDir = dirs[i];
     if (options.includeDirs) paths[paths.length] = currentDir;
     const dirents = fs.readdirSync(currentDir, readdirOpts);
     dirents.forEach(function(dirent) {
       recurse(dirent, currentDir, paths, options, dirs);
     });
-    if (--options.currentDepth < 0) return paths;
   }
   return paths;
 }
 
 function async(dir, options = {}) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(pResolve) {
     const paths = [];
+    if (options.resolvePaths) dir = resolve(dir);
     const dirs = [dir];
     let cursor = 0;
     let readCount = 0;
@@ -31,18 +33,18 @@ function async(dir, options = {}) {
       let total = dirs.length;
       for (; cursor < total; ++cursor) {
         if (--currentDepth < 0) {
-          resolve(paths);
+          pResolve(paths);
           break;
         }
         const dir = dirs[cursor];
-        if (options.includeDirs) paths.push(dir);
+        if (options.includeDirs) paths[paths.length] = dir;
         fs.readdir(dir, readdirOpts, function(_, dirents) {
-          dirents.forEach(function(dirent) {
-            recurse(dirent, dir, paths, options, dirs);
-          });
+          for (var j = 0; j < dirents.length; ++j) {
+            recurse(dirents[j], dir, paths, options, dirs);
+          }
           if (++readCount === total) {
             if (dirs.length === cursor) {
-              resolve(paths);
+              pResolve(paths);
             } else {
               walk();
             }
@@ -56,12 +58,16 @@ function async(dir, options = {}) {
 
 function recurse(dirent, dir, paths, options, dirs) {
   // In node < 10, Dirent is not present. Instead we get string paths
+
+  /* istanbul ignore next */
   const dirName = dirent.name || dirent;
   let fullPath = `${dir}${sep}${dirName}`;
 
+  /* istanbul ignore next */
   const isDirectory = dirent.isDirectory
     ? dirent.isDirectory()
     : fs.lstatSync(fullPath).isDirectory();
+
   if (isDirectory) {
     if (options.isExcludedDir && options.isExcludedDir(dirName)) return;
     dirs[dirs.length] = fullPath;
