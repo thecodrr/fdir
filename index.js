@@ -69,7 +69,7 @@ function recurse(dirent, dir, paths, options, dirs) {
     : fs.lstatSync(fullPath).isDirectory();
 
   if (isDirectory) {
-    if (options.isExcludedDir && options.isExcludedDir(dirName)) return;
+    if (options.isExcludedDir && options.isExcludedDir(fullPath)) return;
     dirs[dirs.length] = fullPath;
     return;
   }
