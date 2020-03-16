@@ -1,26 +1,26 @@
 const fs = require("fs");
-const path = require("path");
+const { sep } = require("path");
 
 const readdirOpts = { withFileTypes: true };
 
-function sync(dir, options) {
+function sync(dir, options = {}) {
   const paths = [];
   const dirs = [dir];
-  let currentDepth = options.maxDepth;
   var i = 0;
-  while (i < dirs.length && !(--currentDepth < 0)) {
-    const dir = dirs[i];
-    if (options.includeDirs) paths.push(dir);
-    const dirents = fs.readdirSync(dir, readdirOpts);
+  var currentDir;
+  for (; i < dirs.length; ++i) {
+    currentDir = dirs[i];
+    if (options.includeDirs) paths[paths.length] = currentDir;
+    const dirents = fs.readdirSync(currentDir, readdirOpts);
     dirents.forEach(function(dirent) {
-      recurse(dirent, dir, paths, options, dirs);
+      recurse(dirent, currentDir, paths, options, dirs);
     });
-    ++i;
+    if (--options.currentDepth < 0) return paths;
   }
   return paths;
 }
 
-function async(dir, options) {
+function async(dir, options = {}) {
   return new Promise(function(resolve, reject) {
     const paths = [];
     const dirs = [dir];
@@ -36,8 +36,7 @@ function async(dir, options) {
         }
         const dir = dirs[cursor];
         if (options.includeDirs) paths.push(dir);
-        fs.readdir(dir, readdirOpts, function(err, dirents = []) {
-          if (err) reject(err);
+        fs.readdir(dir, readdirOpts, function(_, dirents) {
           dirents.forEach(function(dirent) {
             recurse(dirent, dir, paths, options, dirs);
           });
@@ -58,39 +57,22 @@ function async(dir, options) {
 function recurse(dirent, dir, paths, options, dirs) {
   // In node < 10, Dirent is not present. Instead we get string paths
   const dirName = dirent.name || dirent;
-  let fullPath = `${dir}${path.sep}${dirName}`;
+  let fullPath = `${dir}${sep}${dirName}`;
 
   const isDirectory = dirent.isDirectory
     ? dirent.isDirectory()
     : fs.lstatSync(fullPath).isDirectory();
   if (isDirectory) {
     if (options.isExcludedDir && options.isExcludedDir(dirName)) return;
-    dirs.push(fullPath);
-  } else {
-    if (!options.includeBasePath) fullPath = dirName;
-    if (!options.searchFn || options.searchFn(fullPath)) paths.push(fullPath);
+    dirs[dirs.length] = fullPath;
+    return;
   }
-}
-
-function getOptions(options) {
-  const defaultOptions = {
-    includeDirs: false,
-    includeBasePath: true,
-    maxDepth: undefined,
-    searchFn: undefined,
-    resolvePaths: false,
-    excludedDirs: undefined
-  };
-  return !options ? defaultOptions : Object.assign(defaultOptions, options);
-}
-
-function getFunction(type, dir, options) {
-  options = getOptions(options);
-  if (options.resolvePaths) dir = path.resolve(dir);
-  return type(dir, options);
+  if (options.excludeBasePath) fullPath = dirName;
+  if (!options.searchFn || options.searchFn(fullPath))
+    paths[paths.length] = fullPath;
 }
 
 module.exports = {
-  sync: getFunction.bind(this, sync),
-  async: getFunction.bind(this, async)
+  sync,
+  async
 };
