@@ -7,11 +7,9 @@ function sync(dir, options = {}) {
   if (options.resolvePaths) dir = resolve(dir);
   const paths = [];
   const dirs = [dir];
-  var i = 0;
-  var currentDir;
-  for (; i < dirs.length; ++i) {
+  for (var i = 0; i < dirs.length; ++i) {
     if (--options.maxDepth < 0) return paths;
-    currentDir = dirs[i];
+    var currentDir = dirs[i];
     if (options.includeDirs) paths[paths.length] = currentDir;
     const dirents = fs.readdirSync(currentDir, readdirOpts);
     dirents.forEach(function(dirent) {
