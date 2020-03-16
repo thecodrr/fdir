@@ -6,8 +6,7 @@
   "scripts": {
     "test": "jest __tests__/fdir.test.js",
     "test:coverage": "jest __tests__/fdir.test.js --coverage",
-    "benchmark": "node benchmark.js",
-    "checkFastest": "node __tests__/fastest.test.js"
+    "benchmark": "node benchmark.js"
   },
   "repository": {
     "type": "git",
