@@ -40,7 +40,7 @@ describe.each(["sync", "async"])("fdir.%s", type => {
 
   test("get all files in a directory (without base path)", async () => {
     const files = await fdir[type]("node_modules", {
-      includeBasePath: false
+      excludeBasePath: true
     });
     expect(files.every(file => !file.includes("/"))).toBe(true);
   });
