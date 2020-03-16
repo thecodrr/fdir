@@ -37,7 +37,6 @@ function async(dir, options) {
         const dir = dirs[cursor];
         if (options.includeDirs) paths.push(dir);
         fs.readdir(dir, readdirOpts, function(err, dirents) {
-          if (!dirents) return;
           dirents.forEach(function(dirent) {
             recurse(dirent, dir, paths, options, dirs);
           });
