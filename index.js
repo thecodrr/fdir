@@ -21,7 +21,7 @@ function sync(dir, options) {
 }
 
 function async(dir, options) {
-  return new Promise(function(resolve) {
+  return new Promise(function(resolve, reject) {
     const paths = [];
     const dirs = [dir];
     let cursor = 0;
@@ -36,7 +36,8 @@ function async(dir, options) {
         }
         const dir = dirs[cursor];
         if (options.includeDirs) paths.push(dir);
-        fs.readdir(dir, readdirOpts, function(err, dirents) {
+        fs.readdir(dir, readdirOpts, function(err, dirents = []) {
+          if (err) reject(err);
           dirents.forEach(function(dirent) {
             recurse(dirent, dir, paths, options, dirs);
           });
