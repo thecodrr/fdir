@@ -1,28 +1,27 @@
 const fs = require("fs");
-const path = require("path");
+const { sep, resolve } = require("path");
 
 const readdirOpts = { withFileTypes: true };
 
-function sync(dir, options) {
+function sync(dir, options = {}) {
+  if (options.resolvePaths) dir = resolve(dir);
   const paths = [];
   const dirs = [dir];
-  let currentDepth = options.maxDepth;
-  var i = 0;
-  while (i < dirs.length && !(--currentDepth < 0)) {
-    const dir = dirs[i];
-    if (options.includeDirs) paths.push(dir);
-    const dirents = fs.readdirSync(dir, readdirOpts);
+  for (var i = 0; i < dirs.length && !(--options.maxDepth < 0); ++i) {
+    var currentDir = dirs[i];
+    if (options.includeDirs) paths[paths.length] = currentDir;
+    const dirents = fs.readdirSync(currentDir, readdirOpts);
     dirents.forEach(function(dirent) {
-      recurse(dirent, dir, paths, options, dirs);
+      recurse(dirent, currentDir, paths, options, dirs);
     });
-    ++i;
   }
   return paths;
 }
 
-function async(dir, options) {
-  return new Promise(function(resolve) {
+function async(dir, options = {}) {
+  return new Promise(function(pResolve) {
     const paths = [];
+    if (options.resolvePaths) dir = resolve(dir);
     const dirs = [dir];
     let cursor = 0;
     let readCount = 0;
@@ -31,19 +30,18 @@ function async(dir, options) {
       let total = dirs.length;
       for (; cursor < total; ++cursor) {
         if (--currentDepth < 0) {
-          resolve(paths);
+          pResolve(paths);
           break;
         }
         const dir = dirs[cursor];
-        if (options.includeDirs) paths.push(dir);
-        fs.readdir(dir, readdirOpts, function(err, dirents) {
-          if (!dirents) return;
-          dirents.forEach(function(dirent) {
-            recurse(dirent, dir, paths, options, dirs);
-          });
+        if (options.includeDirs) paths[paths.length] = dir;
+        fs.readdir(dir, readdirOpts, function(_, dirents) {
+          for (var j = 0; j < dirents.length; ++j) {
+            recurse(dirents[j], dir, paths, options, dirs);
+          }
           if (++readCount === total) {
             if (dirs.length === cursor) {
-              resolve(paths);
+              pResolve(paths);
             } else {
               walk();
             }
@@ -57,40 +55,27 @@ function async(dir, options) {
 
 function recurse(dirent, dir, paths, options, dirs) {
   // In node < 10, Dirent is not present. Instead we get string paths
-  const dirName = dirent.name || dirent;
-  let fullPath = `${dir}${path.sep}${dirName}`;
 
+  /* istanbul ignore next */
+  const dirName = dirent.name || dirent;
+  let fullPath = `${dir}${sep}${dirName}`;
+
+  /* istanbul ignore next */
   const isDirectory = dirent.isDirectory
     ? dirent.isDirectory()
     : fs.lstatSync(fullPath).isDirectory();
+
   if (isDirectory) {
-    if (options.isExcludedDir && options.isExcludedDir(dirName)) return;
-    dirs.push(fullPath);
-  } else {
-    if (!options.includeBasePath) fullPath = dirName;
-    if (!options.searchFn || options.searchFn(fullPath)) paths.push(fullPath);
+    if (options.isExcludedDir && options.isExcludedDir(fullPath)) return;
+    dirs[dirs.length] = fullPath;
+    return;
   }
-}
-
-function getOptions(options) {
-  const defaultOptions = {
-    includeDirs: false,
-    includeBasePath: true,
-    maxDepth: undefined,
-    searchFn: undefined,
-    resolvePaths: false,
-    excludedDirs: undefined
-  };
-  return !options ? defaultOptions : Object.assign(defaultOptions, options);
-}
-
-function getFunction(type, dir, options) {
-  options = getOptions(options);
-  if (options.resolvePaths) dir = path.resolve(dir);
-  return type(dir, options);
+  if (options.excludeBasePath) fullPath = dirName;
+  if (!options.searchFn || options.searchFn(fullPath))
+    paths[paths.length] = fullPath;
 }
 
 module.exports = {
-  sync: getFunction.bind(this, sync),
-  async: getFunction.bind(this, async)
+  sync,
+  async
 };

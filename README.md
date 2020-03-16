@@ -103,11 +103,11 @@ Whether to include directories in the array returned.
 
 `default: false`
 
-#### `includeBasePath: boolean`
+#### `excludeBasePath: boolean`
 
-Whether to include the base path for each file.
+Whether to exclude the base path for each file.
 
-`default: true`
+`default: false`
 
 #### `searchFn: Function`
 
@@ -131,9 +131,7 @@ The max number of levels `fdir` should crawl before stopping. **The lower the fa
 
 #### `isExcludedDir: Function`
 
-A list of directories to exclude.
-
-> **Note: `fdir` expects an **Object** not an array.**
+Use this to exclude particular directories from being crawled.
 
 **Example:**
 
@@ -154,7 +152,7 @@ Well, that's the whole point. `fdir` exists to prove to the "young" generation t
 
 **2. I found X library. I ran its benchmarks. It is faster than `fdir`!**
 
-Um. Well thank you for embarassing me (just joking). Do tell me the name of this library though. I will try to optimize `fdir` and reclaim the first spot :smile: 
+Um. Well thank you for embarassing me (just joking). Do tell me the name of this library though. I will try to optimize `fdir` and reclaim the first spot :smile:
 
 **3. You are doing X and Y wrong! Do Z and it will improve performance!**
 

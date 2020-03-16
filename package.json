@@ -4,8 +4,8 @@
   "description": "The fastest directory crawler for NodeJS. Crawls 10k files in 13ms.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test": "jest __tests__/fdir.test.js",
+    "test:coverage": "jest __tests__/fdir.test.js --coverage",
     "benchmark": "node benchmark.js"
   },
   "repository": {
