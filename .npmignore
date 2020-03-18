@@ -4,3 +4,4 @@ assets
 __tests__
 coverage
 cli
+.github
