@@ -163,7 +163,7 @@ Yes. And I should probably do A, B & C too. The point is, did you run benchmarks
 
 **4. Why create this? What's the point?**
 
-I know you don't give a shit. Fine. There's no point behind this. It's "just for fun". No, wait. Actually, I created this, first of all, for me. I needed fast directory access in another app of mine, so `fdir` came into being.
+I know you don't care. Fine. There's no point behind this. It's "just for fun". No, wait. Actually, I created this, first of all, for me. I needed fast directory access in another app of mine, so `fdir` came into being.
 
 **5. Why are all the other libraries so slow?**
 
@@ -177,13 +177,13 @@ Ummm. Maybe 18 hours? Make it a day.
 
 Am I? Well, are you offering a job? If yes, I am interested. :D
 
-**8. Why should I give a shit?**
+**8. Why should I care?**
 
 You shouldn't. But here's my email in case you do: **thecodrr[at]protonmail.com**. Don't worry, I don't bite.
 
 ## ℹ️ Support
 
-Would love if you throw a coffee [over here](https://paypal.me/cupertino). Or just be, you know, polite and give me a star? Maybe even follow me?
+Would love if you buy me a cup of coffee [right over here](https://ko-fi.com/thecodrr). Or just be, you know, polite and give me a star? Maybe even follow me?
 
 ## 🦮 LICENSE
 
