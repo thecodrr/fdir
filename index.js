@@ -1,9 +1,10 @@
 const fs = require("fs");
-const { sep, resolve } = require("path");
+const { sep, resolve, normalize } = require("path");
 
 const readdirOpts = { withFileTypes: true };
 
 function sync(dir, options = {}) {
+  dir = cleanPath(dir);
   if (options.resolvePaths) dir = resolve(dir);
   const paths = [];
   const dirs = [dir];
@@ -20,6 +21,7 @@ function sync(dir, options = {}) {
 
 function async(dir, options = {}) {
   return new Promise(function(pResolve, pReject) {
+    dir = cleanPath(dir);
     const paths = [];
     if (options.resolvePaths) dir = resolve(dir);
     const dirs = [dir];
@@ -36,7 +38,7 @@ function async(dir, options = {}) {
         const dir = dirs[cursor];
         if (options.includeDirs) paths[paths.length] = dir;
         fs.readdir(dir, readdirOpts, function(err, dirents) {
-          if (err) return pReject(getError(err, dir));
+          if (err) return pReject(err);
           for (var j = 0; j < dirents.length; ++j) {
             recurse(dirents[j], dir, paths, options, dirs);
           }
@@ -76,11 +78,13 @@ function recurse(dirent, dir, paths, options, dirs) {
     paths[paths.length] = fullPath;
 }
 
-function getError(error, path) {
-  return {
-    ...error,
-    message: error.message + `\nProvided path: ${path}`
-  };
+function cleanPath(dirPath) {
+  let normalized = normalize(dirPath);
+
+  // to account for / path
+  if (normalized.length > 1 && normalized[normalized.length - 1] === sep)
+    normalized = normalized.substring(0, normalized.length - 1);
+  return normalized;
 }
 
 module.exports = {
