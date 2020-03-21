@@ -7,22 +7,22 @@ function sync(dir, options = {}) {
   if (options.resolvePaths) dir = resolve(dir);
   dir = cleanPath(dir);
   const paths = [],
-    dirs = [dir],
-    errors = [];
+    dirs = [dir];
   for (var i = 0; i < dirs.length && !(--options.maxDepth < 0); ++i) {
     let currentDir = dirs[i];
     if (options.includeDirs) paths[paths.length] = currentDir;
     try {
       const dirents = fs.readdirSync(currentDir, readdirOpts);
+      // in cases where we have / as path
+      if (currentDir === sep) currentDir = "";
       dirents.forEach(function(dirent) {
         recurse(dirent, currentDir, paths, options, dirs);
       });
     } catch (error) {
-      if (!options.ignoreErrors) errors.push(error);
+      if (!options.ignoreErrors) throw error;
       continue;
     }
   }
-  if (!options.ignoreErrors && errors.length) return { errors, paths };
   return paths;
 }
 
@@ -31,51 +31,46 @@ function async(dir, options = {}) {
     if (options.resolvePaths) dir = resolve(dir);
     dir = cleanPath(dir);
     const dirs = [dir],
-      errors = [],
       paths = [];
     let cursor = 0,
       readCount = 0,
       currentDepth = options.maxDepth;
     function walk() {
       let total = dirs.length;
-      if (total === cursor) return resolveOrReject();
+      if (total === cursor) return pResolve(paths);
       for (; cursor < total; ++cursor) {
-        if (--currentDepth < 0) return resolveOrReject();
+        if (--currentDepth < 0) return pResolve(paths);
 
-        let dir = dirs[cursor];
-        if (options.includeDirs) paths[paths.length] = dir;
+        let currentDir = dirs[cursor];
+        if (options.includeDirs) paths[paths.length] = currentDir;
 
-        fs.readdir(dir, readdirOpts, function(err, dirents) {
+        fs.readdir(currentDir, readdirOpts, function(error, dirents) {
           ++readCount;
-          if (err) {
-            if (!options.ignoreErrors) errors.push({ path: dir, error: err });
-            return walk();
+          if (error) {
+            if (!options.ignoreErrors) return pReject(error);
+            /* istanbul ignore next */
+            if (readCount === total) walk();
+            return;
           }
           // in cases where we have / as path
-          if (dir === sep) dir = "";
+          if (currentDir === sep) currentDir = "";
           for (var j = 0; j < dirents.length; ++j) {
-            recurse(dirents[j], dir, paths, options, dirs);
+            recurse(dirents[j], currentDir, paths, options, dirs);
           }
           if (readCount === total) walk();
         });
       }
     }
     walk();
-
-    function resolveOrReject() {
-      if (!options.ignoreErrors && errors.length)
-        return pReject({ paths, errors });
-      pResolve(paths);
-    }
   });
 }
 
-function recurse(dirent, dir, paths, options, dirs) {
+function recurse(dirent, currentDir, paths, options, dirs) {
   // In node < 10, Dirent is not present. Instead we get string paths
 
   /* istanbul ignore next */
   const dirName = dirent.name || dirent;
-  let fullPath = `${dir}${sep}${dirName}`;
+  let fullPath = `${currentDir}${sep}${dirName}`;
 
   /* istanbul ignore next */
   const isDirectory = dirent.isDirectory

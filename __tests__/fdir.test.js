@@ -1,4 +1,5 @@
 const fdir = require("../index");
+const mock = require("mock-fs");
 
 describe.each(["sync", "async"])("fdir.%s", type => {
   test("read a directory", async () => {
@@ -46,18 +47,41 @@ describe.each(["sync", "async"])("fdir.%s", type => {
     });
     expect(files.every(file => file.startsWith("/"))).toBe(true);
   });
-});
 
-test("get all files in a directory (path with trailing slash)", async () => {
-  const files = await fdir.async("node_modules/");
-  expect(files.every(file => !file.includes("//"))).toBe(true);
-});
+  test("getting files from restricted directory should throw", async () => {
+    try {
+      await fdir[type]("/etc");
+    } catch (e) {
+      expect(e).toBeDefined();
+    }
+  });
 
-test("getting files from non-existent directory should return empty array", async () => {
-  expect((await fdir.async("node_/")).length).toBe(0);
-});
+  test("getting files from restricted directory (ignore errors)", async () => {
+    const files = await fdir[type]("/etc", { ignoreErrors: true });
+    expect(files.length).toBeGreaterThan(0);
+  });
 
-test("recurse root (files should not contain multiple /)", async () => {
-  const files = await fdir.async("/");
-  expect(files.every(file => !file.includes("//"))).toBe(true);
+  test("recurse root (files should not contain multiple /)", async () => {
+    mock({
+      "/": {
+        etc: {
+          hosts: "dooone"
+        }
+      }
+    });
+    const files = await fdir[type]("/", { ignoreErrors: true });
+    expect(files.every(file => !file.includes("//"))).toBe(true);
+    mock.restore();
+  });
+
+  test("get all files in a directory (path with trailing slash)", () => {
+    const files = fdir[type]("node_modules/", {
+      ignoreErrors: true
+    });
+    if (files instanceof Promise)
+      return files.then(files => {
+        const res = files.every(file => !file.includes("//"));
+        expect(res).toBe(true);
+      });
+  }, 10000);
 });
