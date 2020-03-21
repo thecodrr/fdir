@@ -145,6 +145,12 @@ fdir.sync("node_modules", { isExcludedDir });
 
 `default: undefined`
 
+#### `ignoreErrors: boolean`
+
+Ignore errors while traversing the directory.
+
+`default: false`
+
 And that's it.
 
 ## ⁉️ FAQs:
