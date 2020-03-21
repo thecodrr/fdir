@@ -13,7 +13,7 @@ declare module "fdir" {
    * @param directoryPath Path to the directory
    * @param options Options
    */
-  function sync(directoryPath: String, options: Options): Array<String>;
+  function sync(directoryPath: String, options?: Options): Array<String>;
 
   /**
    * Asynchronously walks the directory recursively
@@ -22,7 +22,7 @@ declare module "fdir" {
    */
   function async(
     directoryPath: String,
-    options: Options
+    options?: Options
   ): Promise<Array<String>>;
 
   export { sync, async };
