@@ -4,18 +4,25 @@ const { sep, resolve, normalize } = require("path");
 const readdirOpts = { withFileTypes: true };
 
 function sync(dir, options = {}) {
-  dir = cleanPath(dir);
   if (options.resolvePaths) dir = resolve(dir);
-  const paths = [];
-  const dirs = [dir];
+  dir = cleanPath(dir);
+  const paths = [],
+    dirs = [dir],
+    errors = [];
   for (var i = 0; i < dirs.length && !(--options.maxDepth < 0); ++i) {
-    var currentDir = dirs[i];
+    let currentDir = dirs[i];
     if (options.includeDirs) paths[paths.length] = currentDir;
-    const dirents = fs.readdirSync(currentDir, readdirOpts);
-    dirents.forEach(function(dirent) {
-      recurse(dirent, currentDir, paths, options, dirs);
-    });
+    try {
+      const dirents = fs.readdirSync(currentDir, readdirOpts);
+      dirents.forEach(function(dirent) {
+        recurse(dirent, currentDir, paths, options, dirs);
+      });
+    } catch (error) {
+      if (!options.ignoreErrors) errors.push(error);
+      continue;
+    }
   }
+  if (!options.ignoreErrors && errors.length) return { errors, paths };
   return paths;
 }
 
@@ -44,14 +51,11 @@ function async(dir, options = {}) {
             if (!options.ignoreErrors) errors.push({ path: dir, error: err });
             return walk();
           }
-
           // in cases where we have / as path
           if (dir === sep) dir = "";
-
           for (var j = 0; j < dirents.length; ++j) {
             recurse(dirents[j], dir, paths, options, dirs);
           }
-
           if (readCount === total) walk();
         });
       }
@@ -59,7 +63,7 @@ function async(dir, options = {}) {
     walk();
 
     function resolveOrReject() {
-      if (errors.length && !options.ignoreErrors)
+      if (!options.ignoreErrors && errors.length)
         return pReject({ paths, errors });
       pResolve(paths);
     }
