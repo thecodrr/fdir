@@ -29,25 +29,25 @@ function async(dir, options = {}) {
     let readCount = 0;
     let currentDepth = options.maxDepth;
     function walk() {
+      if (dirs.length === cursor) {
+        return pResolve(paths);
+      }
       let total = dirs.length;
       for (; cursor < total; ++cursor) {
         if (--currentDepth < 0) {
           pResolve(paths);
           break;
         }
-        const dir = dirs[cursor];
+        let dir = dirs[cursor];
         if (options.includeDirs) paths[paths.length] = dir;
         fs.readdir(dir, readdirOpts, function(err, dirents) {
-          if (err) return pReject(err);
+          if (err) return walk();
+          if (dir === sep) dir = "";
           for (var j = 0; j < dirents.length; ++j) {
             recurse(dirents[j], dir, paths, options, dirs);
           }
           if (++readCount === total) {
-            if (dirs.length === cursor) {
-              pResolve(paths);
-            } else {
-              walk();
-            }
+            walk();
           }
         });
       }
