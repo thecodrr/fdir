@@ -41,12 +41,14 @@ function async(dir, options = {}) {
         let dir = dirs[cursor];
         if (options.includeDirs) paths[paths.length] = dir;
         fs.readdir(dir, readdirOpts, function(err, dirents) {
+          ++readCount;
           if (err) return walk();
+          // in cases where we have / as path
           if (dir === sep) dir = "";
           for (var j = 0; j < dirents.length; ++j) {
             recurse(dirents[j], dir, paths, options, dirs);
           }
-          if (++readCount === total) {
+          if (readCount === total) {
             walk();
           }
         });
