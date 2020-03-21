@@ -6,6 +6,7 @@ declare module "fdir" {
     searchFn?: (filePath: string) => boolean;
     resolvePaths?: boolean;
     isExcludedDir?: (dirPath: string) => boolean;
+    ignoreErrors?: boolean;
   };
 
   /**

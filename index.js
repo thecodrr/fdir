@@ -21,40 +21,48 @@ function sync(dir, options = {}) {
 
 function async(dir, options = {}) {
   return new Promise(function(pResolve, pReject) {
-    dir = cleanPath(dir);
-    const paths = [];
     if (options.resolvePaths) dir = resolve(dir);
-    const dirs = [dir];
-    let cursor = 0;
-    let readCount = 0;
-    let currentDepth = options.maxDepth;
+    dir = cleanPath(dir);
+    const dirs = [dir],
+      errors = [],
+      paths = [];
+    let cursor = 0,
+      readCount = 0,
+      currentDepth = options.maxDepth;
     function walk() {
-      if (dirs.length === cursor) {
-        return pResolve(paths);
-      }
       let total = dirs.length;
+      if (total === cursor) return resolveOrReject();
       for (; cursor < total; ++cursor) {
-        if (--currentDepth < 0) {
-          pResolve(paths);
-          break;
-        }
+        if (--currentDepth < 0) return resolveOrReject();
+
         let dir = dirs[cursor];
         if (options.includeDirs) paths[paths.length] = dir;
+
         fs.readdir(dir, readdirOpts, function(err, dirents) {
           ++readCount;
-          if (err) return walk();
+          if (err) {
+            if (!options.ignoreErrors) errors.push({ path: dir, error: err });
+            return walk();
+          }
+
           // in cases where we have / as path
           if (dir === sep) dir = "";
+
           for (var j = 0; j < dirents.length; ++j) {
             recurse(dirents[j], dir, paths, options, dirs);
           }
-          if (readCount === total) {
-            walk();
-          }
+
+          if (readCount === total) walk();
         });
       }
     }
     walk();
+
+    function resolveOrReject() {
+      if (errors.length && !options.ignoreErrors)
+        return pReject({ paths, errors });
+      pResolve(paths);
+    }
   });
 }
 
