@@ -77,21 +77,9 @@ function recurse(dirent, dir, paths, options, dirs) {
 }
 
 function getError(error, path) {
-  let message = "";
-  switch (error.code) {
-    case "EACCES":
-      message = `You do not have permission to access "${path}".`;
-      break;
-    case "ENOENT":
-      message = `"${path}" does not exist or an invalid path was provided. Are you sure this is a valid directory?`;
-      break;
-    case "ENOTDIR":
-      message = `"${path}" is not a directory as expected. fdir only works with directories.`;
-      break;
-  }
   return {
     ...error,
-    message: `${message}\nIf you think this is a bug, please open an issue at: https://github.com/thecodrr/fdir`
+    message: error.message + `\nProvided path: ${path}`
   };
 }
 
