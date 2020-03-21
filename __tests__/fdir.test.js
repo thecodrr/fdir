@@ -53,8 +53,11 @@ test("get all files in a directory (path with trailing slash)", async () => {
   expect(files.every(file => !file.includes("//"))).toBe(true);
 });
 
-test("getting files from non-existent directory should throw", () => {
-  return fdir.async("node_/").catch(err => {
-    expect(err).toBeTruthy();
-  });
+test("getting files from non-existent directory should return empty array", async () => {
+  expect((await fdir.async("node_/")).length).toBe(0);
+});
+
+test("recurse root (files should not contain multiple /)", async () => {
+  const files = await fdir.async("/");
+  expect(files.every(file => !file.includes("//"))).toBe(true);
 });
