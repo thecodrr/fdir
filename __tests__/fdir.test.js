@@ -47,3 +47,14 @@ describe.each(["sync", "async"])("fdir.%s", type => {
     expect(files.every(file => file.startsWith("/"))).toBe(true);
   });
 });
+
+test("get all files in a directory (path with trailing slash)", async () => {
+  const files = await fdir.async("node_modules/");
+  expect(files.every(file => !file.includes("//"))).toBe(true);
+});
+
+test("getting files from non-existent directory should throw", () => {
+  return fdir.async("node_/").catch(err => {
+    expect(err).toBeTruthy();
+  });
+});
