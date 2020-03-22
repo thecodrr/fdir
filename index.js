@@ -85,11 +85,10 @@ function recurse(params) {
     ? dirent.isDirectory()
     : fs.lstatSync(fullPath).isDirectory();
 
-  if (
-    isDirectory &&
-    (!options.isExcludedDir || !options.isExcludedDir(fullPath))
-  ) {
-    return (dirs[dirs.length] = fullPath);
+  if (isDirectory) {
+    if (!options.isExcludedDir || !options.isExcludedDir(fullPath))
+      dirs[dirs.length] = fullPath;
+    return;
   }
 
   if (options.excludeBasePath) fullPath = dirName;
