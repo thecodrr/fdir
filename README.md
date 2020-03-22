@@ -14,7 +14,7 @@
 </p>
 </p>
 
-⚡ **Extremely Fast:** Nothing beats `fdir` in speed. It can easily crawl a directory containing **10k files in about 13ms.**
+⚡ **Extremely Fast:** Nothing beats `fdir` in speed. It can easily crawl a directory containing **1 million files in < 1 second.**
 
 💡 **Stupidly Easy:** `fdir` only has 2 functions; `sync` and `async` for crawling the file system synchronously or asynchronously.
 
