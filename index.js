@@ -15,8 +15,11 @@ function sync(dir, options = {}) {
       const dirents = fs.readdirSync(currentDir, readdirOpts);
       // in cases where we have / as path
       if (currentDir === sep) currentDir = "";
+
+      const params = { currentDir, paths, options, dirs };
       dirents.forEach(function(dirent) {
-        recurse(dirent, currentDir, paths, options, dirs);
+        params.dirent = dirent;
+        recurse(params);
       });
     } catch (error) {
       if (!options.ignoreErrors) throw error;
@@ -54,9 +57,13 @@ function async(dir, options = {}) {
           }
           // in cases where we have / as path
           if (currentDir === sep) currentDir = "";
+
+          const params = { currentDir, paths, options, dirs };
           for (var j = 0; j < dirents.length; ++j) {
-            recurse(dirents[j], currentDir, paths, options, dirs);
+            params.dirent = dirents[j];
+            recurse(params);
           }
+
           if (readCount === total) walk();
         });
       }
@@ -65,7 +72,8 @@ function async(dir, options = {}) {
   });
 }
 
-function recurse(dirent, currentDir, paths, options, dirs) {
+function recurse(params) {
+  const { dirent, currentDir, paths, options, dirs } = params;
   // In node < 10, Dirent is not present. Instead we get string paths
 
   /* istanbul ignore next */
