@@ -20,7 +20,7 @@
 
 🤖 **Zero Dependencies:** `fdir` uses pure NodeJS `fs` & `path` namespaces. Nothing else is ever touched.
 
-🕺 **Astonishingly Small:** Only 2KB in size. Can be used virtually anywhere.
+🕺 **Astonishingly Small:** < 1KB in size
 
 🔥 **All Node Versions Supported:** `fdir` runs everywhere on all Node versions (within reason). And it is unsurprisingly fastest there too.
 
