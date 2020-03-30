@@ -24,6 +24,10 @@
 
 🔥 **All Node Versions Supported:** `fdir` runs everywhere on all Node versions (within reason). And it is unsurprisingly fastest there too.
 
+## Support
+
+> Do you like this project? [Support me by donating](https://ko-fi.com/thecodrr), creating an issue, becoming a stargazer or opening a pull request. Thanks.
+
 ## 🚄 Quickstart
 
 You can install using `npm`:
@@ -178,18 +182,6 @@ Because they did not spend enough time optimizing it. Most developers give reada
 **6. How long did it take you to create this?**
 
 Ummm. Maybe 18 hours? Make it a day.
-
-**7. Are you looking for a job?**
-
-Am I? Well, are you offering a job? If yes, I am interested. :D
-
-**8. Why should I care?**
-
-You shouldn't. But here's my email in case you do: **thecodrr[at]protonmail.com**. Don't worry, I don't bite.
-
-## ℹ️ Support
-
-Would love if you buy me a cup of coffee [right over here](https://ko-fi.com/thecodrr). Or just be, you know, polite and give me a star? Maybe even follow me?
 
 ## 🦮 LICENSE
 
