@@ -81,6 +81,8 @@ $ yarn benchmark
 
 ### Node v13.11.0:
 
+_Last updated: March 30, 2020 (fdir v2.1.0)_
+
 |                        Synchronous (7386 files)                         |                        Asynchronous (7386 files)                         |
 | :---------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-async.png) |
