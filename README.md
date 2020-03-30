@@ -26,7 +26,7 @@
 
 ## Support
 
-> Do you like this project? [Support me by donating](https://ko-fi.com/thecodrr), creating an issue, becoming a stargazer or opening a pull request. Thanks.
+> Do you like this project? **[Support me by donating](https://ko-fi.com/thecodrr)**, creating an issue, becoming a stargazer or opening a pull request. Thanks.
 
 ## 🚄 Quickstart
 
