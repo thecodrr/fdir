@@ -68,7 +68,7 @@ $ yarn benchmark
 - 16 GB of RAM
 - 256 GB SSD
 - OS: Manjaro Linux
-- Directory Size: 7386 files
+- Directory Size: 9847 files, 1620 folders
 
 **Notes:**
 
@@ -83,7 +83,7 @@ $ yarn benchmark
 
 _Last updated: March 30, 2020 (fdir v2.1.0)_
 
-|                        Synchronous (7386 files)                         |                        Asynchronous (7386 files)                         |
+|                               Synchronous                               |                               Asynchronous                               |
 | :---------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-async.png) |
 

@@ -12,7 +12,7 @@ const recursiveFs = require("recursive-fs");
 const b = require("benny");
 
 b.suite(
-  "Synchronous (7387 files)",
+  "Synchronous (9847 files, 1620 folders)",
   b.add("fdir sync", () => {
     fdir.sync("node_modules");
   }),
@@ -40,7 +40,7 @@ b.suite(
 );
 
 b.suite(
-  "Asynchronous (7387 files)",
+  "Asynchronous (9847 files, 1620 folders)",
   b.add("fdir async", async () => {
     await fdir.async("node_modules");
   }),
