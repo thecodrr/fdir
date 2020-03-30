@@ -131,15 +131,15 @@ const files = fdir.sync("node_modules", { ignoreErrors: true });
 
 #### `directoryPath`:
 
-- Required: `true`
-- Type: `string`
+- **Required:** `true`
+- **Type:** `string`
 
 The path of the directory from where fdir should start.
 
 #### `options`:
 
-- Required: `false`
-- Type: [`Options`](#options-1)
+- **Required:** `false`
+- **Type:** [`Options`](#options-1)
 
 See [Options](#options-1) section.
 
