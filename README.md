@@ -143,7 +143,7 @@ The path of the directory from where fdir should start.
 
 See [Options](#options-1) section.
 
-### `Options`
+### Options
 
 #### `includeDirs`
 
