@@ -97,35 +97,66 @@ _Last updated: March 30, 2020 (fdir v2.1.0)_
 
 ## 🚒 API:
 
-`fdir` is very small so there's not much to the API.
+### Asynchronous
 
-### `fdir.sync(string, Options): String[]`
+```ts
+fdir.async(directoryPath: string, options?: Options): Promise<String[]>
+```
 
-This is often the fastest way to get files. However, it will block the main "thread" so use it with caution with large directories.
+- **Returns:** A `Promise` containing an array of file paths
 
-### `fdir.async(string, Options): Promise<String[]>`
+```js
+const fdir = require("fdir");
 
-Not always the fastest but works without blocking the street, so that's a plus.
+const files = await fdir.async("node_modules");
+
+// ["file1", "file2" ,...., "fileN"]
+```
+
+### Synchronous
+
+```ts
+fdir.sync(directoryPath: string, options?: Options): String[]
+```
+
+- **Returns:** An array of all the files in `directoryPath`.
+
+#### `directoryPath`:
+
+- Required: `true`
+- Type: `string`
+
+The path of the directory from where fdir should start.
+
+#### `options`:
+
+- Required: `false`
+- Type: [`Options`](#options)
+
+See [Options](#options) section.
 
 ### `Options`
 
-Ah, the options. Not many of them. At least not as many as I'd hoped for.
+#### `includeDirs`
 
-#### `includeDirs: boolean`
+- **Type:** `boolean`
+- **Default:** `false`
 
 Whether to include directories in the array returned.
 
-`default: false`
+#### `excludeBasePath`
 
-#### `excludeBasePath: boolean`
+- **Type:** `boolean`
+- **Default:** `false`
 
 Whether to exclude the base path for each file.
 
-`default: false`
+#### `searchFn`
 
-#### `searchFn: Function`
+- **Type:** `Function`
+- **Default:** `undefined`
 
-Use this to filter out files.
+Use this to filter out specific files, apply a glob pattern etc.
 
 **Example:**
 
@@ -133,17 +164,21 @@ Use this to filter out files.
 fdir.sync("node_modules", {
   searchFn: path => path.includes(".git")
 });
+
+// [".git/.config"]
 ```
 
-`default: undefined`
+#### `maxDepth`
 
-#### `maxDepth: number`
+- **Type:** `number`
+- **Default:** `Infinity`
 
 The max number of levels `fdir` should crawl before stopping. **The lower the faster.**
 
-`default: undefined (i.e. infinity)`
+#### `isExcludedDir`
 
-#### `isExcludedDir: Function`
+- **Type:** `boolean`
+- **Default:** `Function`
 
 Use this to exclude particular directories from being crawled.
 
@@ -154,15 +189,12 @@ const isExcludedDir = path => path.includes(".bin");
 fdir.sync("node_modules", { isExcludedDir });
 ```
 
-`default: undefined`
+#### `ignoreErrors`
 
-#### `ignoreErrors: boolean`
+- **Type:** `boolean`
+- **Default:** `false`
 
-Ignore errors while traversing the directory.
-
-`default: false`
-
-And that's it.
+Ignore/suppress all errors while traversing the file system. This will ignore every single error without exception, skipping the errored directories.
 
 ## ⁉️ FAQs:
 
