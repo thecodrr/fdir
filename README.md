@@ -73,6 +73,11 @@ $ yarn benchmark
 **Notes:**
 
 - Some people asked that I benchmark `no-op` (without options) version of `fdir`. I did and found no performance difference. The results were identical. (I didn't include it here as it wasn't anything special.)
+- Some other people were doubtful about the authenticity of these results due to _frequency scaling_, _process overload_, _disk warmup_ etc. So I have updated the benchmark with new results that should resolve all those doubts. Here's the process I followed:
+  - Hard shutdown the laptop (a couple of times just to be sure) to clear disk, ram cache etc.
+  - Login directly to a TTY (avoiding any unnecessary process from starting).
+  - Run the benchmark
+- Alright, I will say it as it is. I am not an expert at benchmarking so feel free to advise me as to the correct way of doing this.
 
 ### Node v13.11.0:
 
