@@ -108,7 +108,7 @@ fdir.async(directoryPath: string, options?: Options): Promise<String[]>
 ```js
 const fdir = require("fdir");
 
-const files = await fdir.async("node_modules");
+const files = await fdir.async("node_modules", { ignoreErrors: true });
 
 // ["file1", "file2" ,...., "fileN"]
 ```
@@ -121,6 +121,14 @@ fdir.sync(directoryPath: string, options?: Options): String[]
 
 - **Returns:** An array of all the files in `directoryPath`.
 
+```js
+const fdir = require("fdir");
+
+const files = fdir.sync("node_modules", { ignoreErrors: true });
+
+// ["file1", "file2" ,...., "fileN"]
+```
+
 #### `directoryPath`:
 
 - Required: `true`
@@ -131,9 +139,9 @@ The path of the directory from where fdir should start.
 #### `options`:
 
 - Required: `false`
-- Type: [`Options`](#options)
+- Type: [`Options`](#options-1)
 
-See [Options](#options) section.
+See [Options](#options-1) section.
 
 ### `Options`
 
