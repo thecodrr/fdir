@@ -28,6 +28,19 @@
 
 > Do you like this project? **[Support me by donating](https://ko-fi.com/thecodrr)**, creating an issue, becoming a stargazer or opening a pull request. Thanks.
 
+## Status
+
+I am currently polishing up the new **3.0** release. I have improved performance by 30%, optimized memory allocations, added new options and a bunch of other stuff you'll love! Here's a question: Should I add a Builder API? Something like this:
+
+```js
+fdir.withDirs()
+    .withCounts()
+    .withSearch()
+    .withBasePath()
+    .crawl("node_modules");
+```
+[Leave your thoughts at this issue.](https://github.com/thecodrr/fdir/issues/13)
+
 ## 🚄 Quickstart
 
 You can install using `npm`:
