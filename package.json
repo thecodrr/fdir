@@ -8,6 +8,7 @@
     "test:coverage": "jest __tests__/fdir.test.js --coverage",
     "benchmark": "node benchmark.js"
   },
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thecodrr/fdir.git"
