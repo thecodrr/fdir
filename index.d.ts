@@ -14,14 +14,14 @@ declare module "fdir" {
    * @param directoryPath Path to the directory
    * @param options Options
    */
-  function sync(directoryPath: String, options?: Options): string[];
+  function sync(directoryPath: string, options?: Options): string[];
 
   /**
    * Asynchronously walks the directory recursively
    * @param directoryPath Path to the directory
    * @param options Options
    */
-  function async(directoryPath: String, options?: Options): Promise<string[]>;
+  function async(directoryPath: string, options?: Options): Promise<string[]>;
 
   export { sync, async };
 }
