@@ -45,16 +45,28 @@ $ yarn add fdir
 It makes no difference to me.
 
 ```js
-const fdir = require("fdir");
+const fdir = require("fdir").default;
+
+// create the builder
+const api = fdir
+  .new()
+  .withFullPaths()
+  .crawl("path/to/dir");
 
 // get all files in a directory synchronously
-const files = fdir.sync("path/to/dir");
+const files = api.sync();
 
 // or asynchronously
-fdir.async("path/to/dir").then(/*blah blah blah*/);
+api.withPromise().then((files) => {
+  // do something with the result here.
+});
 ```
 
 And that's it.
+
+## Documentation:
+
+I have written an [in-depth documentation here](./docs.md).
 
 ## 📊 Benchmarks:
 
@@ -74,10 +86,16 @@ $ yarn benchmark
 
 - Some people asked that I benchmark `no-op` (without options) version of `fdir`. I did and found no performance difference. The results were identical. (I didn't include it here as it wasn't anything special.)
 - Some other people were doubtful about the authenticity of these results due to _frequency scaling_, _process overload_, _disk warmup_ etc. So I have updated the benchmark with new results that should resolve all those doubts. Here's the process I followed:
+
   - Hard shutdown the laptop (a couple of times just to be sure) to clear disk, ram cache etc.
   - Login directly to a TTY (avoiding any unnecessary process from starting).
+  - Disable CPU Scaling using
+
+  ```sh
+  $ sudo cpupower frequency-set --governor performance
+  ```
+
   - Run the benchmark
-- Alright, I will say it as it is. I am not an expert at benchmarking so feel free to advise me as to the correct way of doing this.
 
 ### Node v13.11.0:
 
@@ -94,141 +112,6 @@ _Last updated: March 30, 2020 (fdir v2.1.0)_
 |                        Synchronous (7386 files)                        |                        Asynchronous (7386 files)                        |
 | :--------------------------------------------------------------------: | :---------------------------------------------------------------------: |
 | ![](https://github.com/thecodrr/fdir/raw/master/assets/node8-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node8-async.png) |
-
-## 🚒 API:
-
-### Asynchronous
-
-```ts
-fdir.async(directoryPath: string, options?: Options): Promise<String[]>
-```
-
-- **Returns:** A `Promise` containing an array of file paths
-
-```js
-const fdir = require("fdir");
-
-const files = await fdir.async("node_modules", { ignoreErrors: true });
-
-// ["file1", "file2" ,...., "fileN"]
-```
-
-### Synchronous
-
-```ts
-fdir.sync(directoryPath: string, options?: Options): String[]
-```
-
-- **Returns:** An array of all the files in `directoryPath`.
-
-```js
-const fdir = require("fdir");
-
-const files = fdir.sync("node_modules", { ignoreErrors: true });
-
-// ["file1", "file2" ,...., "fileN"]
-```
-
-#### `directoryPath`:
-
-- **Required:** `true`
-- **Type:** `string`
-
-The path of the directory from where fdir should start.
-
-#### `options`:
-
-- **Required:** `false`
-- **Type:** [`Options`](#options-1)
-
-See [Options](#options-1) section.
-
-### Options
-
-#### `includeDirs`
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-Whether to include directories in the array returned.
-
-#### `excludeBasePath`
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-Whether to exclude the base path for each file.
-
-#### `searchFn`
-
-- **Type:** `Function`
-- **Default:** `undefined`
-
-Use this to filter out specific files, apply a glob pattern etc.
-
-**Example:**
-
-```js
-fdir.sync("node_modules", {
-  searchFn: path => path.includes(".git")
-});
-
-// [".git/.config"]
-```
-
-#### `maxDepth`
-
-- **Type:** `number`
-- **Default:** `Infinity`
-
-The max number of levels `fdir` should crawl before stopping. **The lower the faster.**
-
-#### `isExcludedDir`
-
-- **Type:** `boolean`
-- **Default:** `Function`
-
-Use this to exclude particular directories from being crawled.
-
-**Example:**
-
-```js
-const isExcludedDir = path => path.includes(".bin");
-fdir.sync("node_modules", { isExcludedDir });
-```
-
-#### `ignoreErrors`
-
-- **Type:** `boolean`
-- **Default:** `false`
-
-Ignore/suppress all errors while traversing the file system. This will ignore every single error without exception, skipping the errored directories.
-
-## ⁉️ FAQs:
-
-**1. I looked at the code and there's nothing special. How is it so damn fast then?**
-
-Well, that's the whole point. `fdir` exists to prove to the "young" generation that you don't need to use special constructs or special methods to gain speed. Just a bit of patience and brains.
-
-**2. I found X library. I ran its benchmarks. It is faster than `fdir`!**
-
-Um. Well thank you for embarassing me (just joking). Do tell me the name of this library though. I will try to optimize `fdir` and reclaim the first spot :smile:
-
-**3. You are doing X and Y wrong! Do Z and it will improve performance!**
-
-Yes. And I should probably do A, B & C too. The point is, did you run benchmarks with these suggestions? If you did and saw significant improvements, thank you. Now go open a PR :laugh:
-
-**4. Why create this? What's the point?**
-
-I know you don't care. Fine. There's no point behind this. It's "just for fun". No, wait. Actually, I created this, first of all, for me. I needed fast directory access in another app of mine, so `fdir` came into being.
-
-**5. Why are all the other libraries so slow?**
-
-Because they did not spend enough time optimizing it. Most developers give readability and cool code more importance than actual performance and usability. I have seen a library claiming to be the fastest by inverting the benchmarks. Literally. Gave me quite the scare until I went and fixed the benchmark. It was actually one of the slowest. :O
-
-**6. How long did it take you to create this?**
-
-Ummm. Maybe 18 hours? Make it a day.
 
 ## 🦮 LICENSE
 
