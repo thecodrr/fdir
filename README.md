@@ -30,6 +30,8 @@
 
 ## 🚄 Quickstart
 
+### Installation
+
 You can install using `npm`:
 
 ```sh
@@ -42,7 +44,7 @@ or Yarn:
 $ yarn add fdir
 ```
 
-It makes no difference to me.
+### Usage
 
 ```js
 const fdir = require("fdir").default;
@@ -61,8 +63,6 @@ api.withPromise().then((files) => {
   // do something with the result here.
 });
 ```
-
-And that's it.
 
 ## Documentation:
 
