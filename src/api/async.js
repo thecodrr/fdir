@@ -7,8 +7,6 @@ function promise(dir, options) {
 }
 
 function callback(dirPath, options, callback) {
-  if (!dirPath) return callback("No path provided.");
-
   const { state, callbackInvoker, dir } = init(dirPath, options, false);
   walk(state, dir, options.maxDepth, callbackInvoker, state, callback);
 }
