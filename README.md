@@ -66,7 +66,7 @@ api.withPromise().then((files) => {
 
 ## Documentation:
 
-I have written an [in-depth documentation here](./docs.md).
+I have written an [in-depth documentation here](https://github.com/thecodrr/fdir/blob/master/documentation.md).
 
 ## 📊 Benchmarks:
 
