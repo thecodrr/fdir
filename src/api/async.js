@@ -1,9 +1,13 @@
 const { readdir } = require("../compat/fs");
-const { promisify } = require("../utils");
 const { init, walkSingleDir, readdirOpts } = require("./shared");
 
 function promise(dir, options) {
-  return promisify(callback)(dir, options);
+  return new Promise((resolve, reject) => {
+    callback(dir, options, (err, output) => {
+      if (err) return reject(err);
+      resolve(output);
+    });
+  });
 }
 
 function callback(dirPath, options, callback) {

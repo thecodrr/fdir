@@ -100,7 +100,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
         },
       },
     });
-    const api = new fdir().crawl("/");
+    const api = new fdir().normalize().crawl("/");
     const files = await api[type]();
     expect(files.every((file) => !file.includes("/"))).toBe(true);
     mock.restore();
@@ -123,7 +123,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
   });
 
   test("crawl all files in a directory (path with trailing slash)", () => {
-    const api = new fdir().crawl("node_modules/");
+    const api = new fdir().normalize().crawl("node_modules/");
     const files = api[type]();
     if (files instanceof Promise)
       return files.then((files) => {
@@ -138,7 +138,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
       .group()
       .crawl("node_modules");
     const result = await api[type]();
-    expect(result.paths.length).toBeGreaterThan(0);
+    expect(result.length).toBeGreaterThan(0);
   });
 
   test("crawl and give undefined directory path should throw", async () => {

@@ -4,6 +4,7 @@ function Builder() {
   this.options = {
     includeBasePath: false,
     includeDirs: false,
+    normalizePath: false,
     maxDepth: Infinity,
     resolvePaths: false,
     supressErrors: true,
@@ -46,6 +47,11 @@ Builder.prototype.withErrors = function() {
 
 Builder.prototype.group = function() {
   this.options.group = true;
+  return this;
+};
+
+Builder.prototype.normalize = function() {
+  this.options.normalizePath = true;
   return this;
 };
 

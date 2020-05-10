@@ -9,15 +9,4 @@ function cleanPath(dirPath) {
   return normalized;
 }
 
-function promisify(fn) {
-  return function(dir, options) {
-    return new Promise((resolve, reject) => {
-      fn(dir, options, (err, files) => {
-        if (err) return reject(err);
-        resolve(files);
-      });
-    });
-  };
-}
-
-module.exports = { cleanPath, promisify };
+module.exports = { cleanPath };

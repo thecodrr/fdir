@@ -1,10 +1,11 @@
 const { sep, resolve: pathResolve } = require("path");
 const { cleanPath } = require("../utils");
+const fns = require("./fns");
 const readdirOpts = { withFileTypes: true };
 
 function init(dir, options, isSync) {
   if (options.resolvePaths) dir = pathResolve(dir);
-  dir = cleanPath(dir);
+  if (options.normalizePath) dir = cleanPath(dir);
 
   /* We use a local state object instead of direct global variables so that each function
    * execution is independent of each other.
@@ -56,20 +57,6 @@ function walkSingleDir(
   groupFiles(dir, files, state);
 }
 
-/* Dummies that will be filled later conditionally based on options */
-/* istanbul ignore next */
-function pushFile() {}
-/* istanbul ignore next */
-function pushDir() {}
-/* istanbul ignore next */
-function walkDir() {}
-/* istanbul ignore next */
-function joinPath() {}
-/* istanbul ignore next */
-function groupFiles() {}
-/* istanbul ignore next */
-function callbackInvoker() {}
-
 function buildFunctions(options, isSync) {
   const {
     filter,
@@ -78,114 +65,70 @@ function buildFunctions(options, isSync) {
     includeDirs,
     group,
     exclude,
-    supressErrors,
   } = options;
 
   // build function for adding paths to array
   if (filter && onlyCounts) {
-    pushFile = function(filename, files, dir, state) {
-      if (filter(dir, filename)) state.counts.files++;
-    };
+    pushFile = fns.pushFileFilterAndCount(filter);
   } else if (filter) {
-    pushFile = function(filename, files, dir) {
-      if (filter(dir, filename)) files.push(filename);
-    };
+    pushFile = fns.pushFileFilter(filter);
   } else if (onlyCounts) {
-    pushFile = function(filename, files, dir, state) {
-      state.counts.files++;
-    };
+    pushFile = fns.pushFileCount;
   } else {
-    pushFile = function(filename, files) {
-      files.push(filename);
-    };
+    pushFile = fns.pushFile;
   }
 
   if (includeDirs) {
-    pushDir = function(dirPath, paths) {
-      paths.push(dirPath);
-    };
+    pushDir = fns.pushDir;
   } else {
-    pushDir = function() {};
+    pushDir = fns.empty;
   }
 
   // build function for joining paths
   if (includeBasePath) {
-    joinPath = function(filename, dir) {
-      return `${dir}${sep}${filename}`;
-    };
+    joinPath = fns.joinPathWithBasePath;
   } else {
-    joinPath = function(filename) {
-      return filename;
-    };
+    joinPath = fns.joinPath;
   }
 
   // build recursive walk directory function
 
   if (exclude) {
-    walkDir = function(walk, state, path, currentDepth, callback, ...args) {
-      if (!exclude(path)) {
-        state.queue++;
-        state.counts.dirs++;
-        walk(state, path, currentDepth, callback, ...args);
-      }
-    };
+    walkDir = fns.walkDirExclude(exclude);
   } else {
-    walkDir = function(walk, state, path, currentDepth, callback, ...args) {
-      state.queue++;
-      state.counts.dirs++;
-      walk(state, path, currentDepth, callback, ...args);
-    };
+    walkDir = fns.walkDir;
   }
 
   // build groupFiles function for grouping files
   if (group) {
-    groupFiles = function(dir, files, state) {
-      state.counts.files += files.length;
-      state.paths.push({ dir, files });
-    };
+    groupFiles = fns.groupFiles;
   } else {
-    groupFiles = function() {};
+    groupFiles = fns.empty;
   }
 
   // build callback invoker
 
   if (isSync) {
-    if (group) {
-      callbackInvoker = function(state) {
-        return { paths: state.paths, ...state.counts };
-      };
-    } else if (onlyCounts) {
-      callbackInvoker = function(state) {
-        return state.counts;
-      };
+    if (onlyCounts) {
+      callbackInvoker = fns.callbackInvokerOnlyCountsSync;
     } else {
-      callbackInvoker = function(state) {
-        return state.paths;
-      };
+      callbackInvoker = fns.callbackInvokerDefaultSync;
     }
   } else {
-    if (group) {
-      callbackInvoker = function(err, state, callback) {
-        report(err, callback, state.paths, supressErrors);
-      };
-    } else if (onlyCounts) {
-      callbackInvoker = function(err, state, callback) {
-        report(err, callback, state.counts, supressErrors);
-      };
+    if (onlyCounts) {
+      callbackInvoker = fns.callbackInvokerOnlyCountsAsync;
     } else {
-      callbackInvoker = function(err, state, callback) {
-        report(err, callback, state.paths, supressErrors);
-      };
+      callbackInvoker = fns.callbackInvokerDefaultAsync;
     }
   }
-}
-
-function report(err, callback, output, supressErrors) {
-  if (err) {
-    if (!supressErrors) callback(err, null);
-    return;
-  }
-  callback(null, output);
 }
 
 module.exports = { buildFunctions, init, walkSingleDir, readdirOpts };
+
+/* Dummies that will be filled later conditionally based on options */
+var pushFile = fns.empty;
+var pushDir = fns.empty;
+var walkDir = fns.empty;
+var joinPath = fns.empty;
+var groupFiles = fns.empty;
+var callbackInvoker = fns.empty;
