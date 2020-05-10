@@ -14,15 +14,17 @@
 </p>
 </p>
 
-⚡ **Extremely Fast:** Nothing similar (in the NodeJS world) beats `fdir` in speed. It can easily crawl a directory containing **1 million files in < 1 second.**
+⚡ **The Fastest:** Nothing similar (in the NodeJS world) beats `fdir` in speed. It can easily crawl a directory containing **1 million files in < 1 second.**
 
-💡 **Stupidly Easy:** `fdir` only has 2 functions; `sync` and `async` for crawling the file system synchronously or asynchronously.
+💡 **Stupidly Easy:** `fdir` uses expressive Builder pattern to build the crawler increasing code readability.
 
-🤖 **Zero Dependencies:** `fdir` uses pure NodeJS `fs` & `path` namespaces. Nothing else is ever touched.
+🤖 **Zero Dependencies:** `fdir` only uses NodeJS `fs` & `path` modules.
 
-🕺 **Astonishingly Small:** < 1KB in size
+🕺 **Astonishingly Small:** < 1KB in size gzipped.
 
-🔥 **All Node Versions Supported:** `fdir` runs everywhere on all Node versions (within reason). And it is unsurprisingly fastest there too.
+🔥 **All Node Versions Supported:** Unlike other similar libraries that have dropped support for Node versions < 10, `fdir` supports all versions > 6.
+
+🖮 **Hackable:** Extending `fdir` is extremely simple now that the new Builder API is here. Feel free to experiment around.
 
 ## Support
 
