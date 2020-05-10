@@ -47,6 +47,15 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     expect(files.every((file) => file.split("/").length <= 3)).toBe(true);
   });
 
+  test("crawl and get files that match a glob pattern", async () => {
+    const api = new fdir()
+      .withBasePath()
+      .glob("./**/*.js")
+      .crawl("node_modules");
+    const files = await api[type]();
+    expect(files.every((file) => file.endsWith(".js"))).toBe(true);
+  });
+
   test("crawl but exclude node_modules dir", async () => {
     const api = new fdir()
       .withBasePath()
