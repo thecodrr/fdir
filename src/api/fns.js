@@ -1,5 +1,13 @@
 const { sep } = require("path");
 
+/* GET ARRAY */
+module.exports.getArray = function(state) {
+  return state.paths;
+};
+module.exports.getArrayGroup = function() {
+  return [];
+};
+
 /** PUSH FILE */
 module.exports.pushFileFilterAndCount = function(filter) {
   return function(filename, _files, dir, state) {

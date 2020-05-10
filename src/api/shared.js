@@ -40,7 +40,7 @@ function walkSingleDir(
   // in cases where we have / as path
   if (dir === sep) dir = "";
 
-  const files = state.options.group ? [] : state.paths;
+  const files = getArray();
 
   for (var i = 0; i < dirents.length; ++i) {
     const dirent = dirents[i];
@@ -102,8 +102,10 @@ function buildFunctions(options, isSync) {
   // build groupFiles function for grouping files
   if (group) {
     groupFiles = fns.groupFiles;
+    getArray = fns.getArrayGroup;
   } else {
     groupFiles = fns.empty;
+    getArray = fns.getArray;
   }
 
   // build callback invoker
@@ -132,3 +134,4 @@ var walkDir = fns.empty;
 var joinPath = fns.empty;
 var groupFiles = fns.empty;
 var callbackInvoker = fns.empty;
+var getArray = fns.empty;
