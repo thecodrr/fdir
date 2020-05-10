@@ -75,12 +75,13 @@ $ yarn benchmark
 ```
 
 **Specs:**
+_Last updated: May 10, 2020 (fdir v3.0.0)_
 
 - Intel i7 7th Generation (7700HQ)
 - 16 GB of RAM
 - 256 GB SSD
 - OS: Manjaro Linux
-- Directory Size: 9847 files, 1620 folders
+- Directory Size: < 2k files
 
 **Notes:**
 
@@ -97,19 +98,17 @@ $ yarn benchmark
 
   - Run the benchmark
 
-### Node v13.11.0:
-
-_Last updated: March 30, 2020 (fdir v2.1.0)_
+### Node v14.2.0:
 
 |                               Synchronous                               |                               Asynchronous                               |
 | :---------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-async.png) |
 
-### Node v8.3.0:
+### Node v8.7.0:
 
-**Note: As latest version of `rrdir` doesn't support Node < 8, I had to use version 2.0.0. Everything else is fully updated.**
+_Older versions of fdir (1.x & 2.x) used synchronous `lstat` call (`lstatSync`) in the asynchronous API to acheive speed on Node < 10. This has been fixed in fdir 3.0.0._
 
-|                        Synchronous (7386 files)                        |                        Asynchronous (7386 files)                        |
+|                              Synchronous                               |                                                                         |
 | :--------------------------------------------------------------------: | :---------------------------------------------------------------------: |
 | ![](https://github.com/thecodrr/fdir/raw/master/assets/node8-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node8-async.png) |
 
