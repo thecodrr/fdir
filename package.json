@@ -1,6 +1,6 @@
 {
   "name": "fdir",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "The fastest directory crawler for NodeJS. Crawls 10k files in 13ms.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,6 @@
     "test:coverage": "jest __tests__/fdir.test.js --coverage",
     "benchmark": "node benchmark.js"
   },
-  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thecodrr/fdir.git"
@@ -28,6 +27,7 @@
     "nodejs"
   ],
   "author": "thecodrr <thecodrr@protonmail.com>",
+  "types": "index.d.ts",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/thecodrr/fdir/issues"
@@ -36,6 +36,8 @@
   "devDependencies": {
     "all-files-in-tree": "^1.1.2",
     "benny": "^3.6.14",
+    "fdir1": "npm:fdir@1.2.0",
+    "fdir2": "npm:fdir@2.1.0",
     "fs-readdir-recursive": "^1.1.0",
     "get-all-files": "^1.0.7",
     "klaw-sync": "^6.0.0",
