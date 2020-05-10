@@ -35,7 +35,7 @@
 You can install using `npm`:
 
 ```sh
-$ npm i --save fdir
+$ npm i fdir
 ```
 
 or Yarn:
