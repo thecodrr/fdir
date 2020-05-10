@@ -26,7 +26,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
   });
 
   test("crawl multi depth directory", async () => {
-    await crawl("node_modules");
+    await crawl(type, "node_modules");
   });
 
   test("crawl and get both files and directories (withDirs)", async () => {

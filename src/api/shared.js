@@ -40,7 +40,7 @@ function walkSingleDir(
   // in cases where we have / as path
   if (dir === sep) dir = "";
 
-  const files = getArray();
+  const files = getArray(state);
 
   for (var i = 0; i < dirents.length; ++i) {
     const dirent = dirents[i];

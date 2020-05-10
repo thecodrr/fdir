@@ -83,12 +83,10 @@ module.exports.callbackInvokerDefaultSync = function(state) {
   return state.paths;
 };
 
-module.exports.callbackInvokerOnlyCountsAsync = function(err, state, callback) {
-  report(err, callback, state.counts, state.options.supressErrors);
-};
-module.exports.callbackInvokerDefaultAsync = function(err, state, callback) {
-  report(err, callback, state.paths, state.options.supressErrors);
-};
+module.exports.callbackInvokerOnlyCountsAsync = callbackInvokerBuilder(
+  "counts"
+);
+module.exports.callbackInvokerDefaultAsync = callbackInvokerBuilder("paths");
 
 function report(err, callback, output, supressErrors) {
   if (err) {
@@ -96,4 +94,10 @@ function report(err, callback, output, supressErrors) {
     return;
   }
   callback(null, output);
+}
+
+function callbackInvokerBuilder(output) {
+  return function(err, state, callback) {
+    report(err, callback, state[output], state.options.supressErrors);
+  };
 }
