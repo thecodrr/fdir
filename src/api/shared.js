@@ -55,6 +55,8 @@ function walkSingleDir(
   }
 
   groupFiles(dir, files, state);
+
+  if (--state.queue < 0) callback(null, ...args);
 }
 
 function buildFunctions(options, isSync) {

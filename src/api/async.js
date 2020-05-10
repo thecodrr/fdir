@@ -28,7 +28,6 @@ function walk(state, dir, currentDepth, callback, ...args) {
     }
 
     walkSingleDir(walk, state, dir, dirents, currentDepth, callback, ...args);
-    if (--state.queue <= 0) callback(null, ...args);
   });
 }
 
