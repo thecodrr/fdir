@@ -160,6 +160,18 @@ const { files, dirs } = new fdir().onlyCounts().sync();
 
 ### `group`
 
+Normalize the given directory path using `path.normalize`.
+
+> _Since `path.normalize` is not always needed and is quite resource intensive (relatively), fdir includes a flag for it._
+
+**Usage**
+
+```js
+const crawler = new fdir().normalize();
+```
+
+### `group`
+
 Group all files by directory.
 
 > _This does not give a tree-like output._

@@ -62,6 +62,11 @@ declare module "fdir" {
     group(): Builder;
 
     /**
+     * Normalize the given path using `path.normalize()`
+     */
+    normalize(): Builder;
+
+    /**
      * Filter files based on the `filterFn`
      * @param filterFn The filter function
      */
