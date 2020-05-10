@@ -10,13 +10,13 @@ module.exports.getArrayGroup = function() {
 
 /** PUSH FILE */
 module.exports.pushFileFilterAndCount = function(filter) {
-  return function(filename, _files, dir, state) {
-    if (filter(dir, filename)) state.counts.files++;
+  return function(filename, _files, _dir, state) {
+    if (filter(filename)) state.counts.files++;
   };
 };
 module.exports.pushFileFilter = function(filter) {
-  return function(filename, files, dir) {
-    if (filter(dir, filename)) files.push(filename);
+  return function(filename, files) {
+    if (filter(filename)) files.push(filename);
   };
 };
 module.exports.pushFileCount = function(_filename, _files, _dir, state) {
