@@ -78,50 +78,27 @@ function buildFunctions(options, isSync) {
     pushFile = fns.pushFile;
   }
 
-  if (includeDirs) {
-    pushDir = fns.pushDir;
-  } else {
-    pushDir = fns.empty;
-  }
+  pushDir = includeDirs ? fns.pushDir : fns.empty;
 
   // build function for joining paths
-  if (includeBasePath) {
-    joinPath = fns.joinPathWithBasePath;
-  } else {
-    joinPath = fns.joinPath;
-  }
+  joinPath = includeBasePath ? fns.joinPathWithBasePath : fns.joinPath;
 
   // build recursive walk directory function
-
-  if (exclude) {
-    walkDir = fns.walkDirExclude(exclude);
-  } else {
-    walkDir = fns.walkDir;
-  }
+  walkDir = exclude ? fns.walkDirExclude(exclude) : fns.walkDir;
 
   // build groupFiles function for grouping files
-  if (group) {
-    groupFiles = fns.groupFiles;
-    getArray = fns.getArrayGroup;
-  } else {
-    groupFiles = fns.empty;
-    getArray = fns.getArray;
-  }
+  groupFiles = group ? fns.groupFiles : fns.empty;
+  getArray = group ? fns.getArrayGroup : fns.getArray;
 
   // build callback invoker
-
-  if (isSync) {
-    if (onlyCounts) {
-      callbackInvoker = fns.callbackInvokerOnlyCountsSync;
-    } else {
-      callbackInvoker = fns.callbackInvokerDefaultSync;
-    }
+  if (onlyCounts) {
+    callbackInvoker = isSync
+      ? fns.callbackInvokerOnlyCountsSync
+      : fns.callbackInvokerOnlyCountsAsync;
   } else {
-    if (onlyCounts) {
-      callbackInvoker = fns.callbackInvokerOnlyCountsAsync;
-    } else {
-      callbackInvoker = fns.callbackInvokerDefaultAsync;
-    }
+    callbackInvoker = isSync
+      ? fns.callbackInvokerDefaultSync
+      : fns.callbackInvokerDefaultAsync;
   }
 }
 
