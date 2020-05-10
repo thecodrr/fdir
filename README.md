@@ -71,6 +71,8 @@ And that's it.
 
 ## 📊 Benchmarks:
 
+_Last updated: May 10, 2020 (fdir v3.0.0)_
+
 ```sh
 $ yarn benchmark
 ```
