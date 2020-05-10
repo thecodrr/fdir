@@ -48,5 +48,8 @@
     "recursive-readdir": "^2.2.2",
     "rrdir": "^6.1.2",
     "walk-sync": "^2.0.2"
+  },
+  "dependencies": {
+    "picomatch": "^2.2.2"
   }
 }

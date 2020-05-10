@@ -1,4 +1,5 @@
 const APIBuilder = require("./apiBuilder");
+const pm = require("picomatch");
 
 function Builder() {
   this.options = {
@@ -57,6 +58,13 @@ Builder.prototype.normalize = function() {
 
 Builder.prototype.filter = function(filterFn) {
   this.options.filter = filterFn;
+  return this;
+};
+
+Builder.prototype.glob = function(...patterns) {
+  this.options.filter = (path) => {
+    return pm.isMatch(path, patterns);
+  };
   return this;
 };
 
