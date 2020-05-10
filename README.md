@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/thecodrr/fdir/raw/master/assets/logo.png" width="350"/>
+<img src="https://github.com/thecodrr/fdir/raw/master/assets/fdir.gif" width="75%"/>
 
 <h1 align="center">The Fastest Directory Crawler for NodeJS</h1>
 <p align="center">
