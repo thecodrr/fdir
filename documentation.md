@@ -192,6 +192,19 @@ type Group = { dir: string; files: string[] };
 
 ### `filter(Function)`
 
+Applies a `glob` filter to all files and only adds those that satisfy it.
+
+> _Uses [picomatch](https://github.com/micromatch/picomatch) underneath._
+
+**Usage**
+
+```js
+// only get hidden files
+const crawler = new fdir().glob("./**/*.js");
+```
+
+### `filter(Function)`
+
 Applies a filter to all files and only adds those that satisfy it.
 
 > _Currently, you can apply only one filter per crawler. This might change._

@@ -73,6 +73,12 @@ declare module "fdir" {
     filter(filterFn: FilterFn): Builder;
 
     /**
+     * Filter files using glob patterns.
+     * @param patterns The glob patterns
+     */
+    glob(...patterns: string[]): Builder;
+
+    /**
      * Exclude the directories that satisfy a condition
      * @param excludeFn The exclusion function
      */
