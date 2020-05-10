@@ -12,21 +12,21 @@ test("crawl single depth directory with callback", (done) => {
   });
 });
 
+async function crawl(type, path) {
+  const api = new fdir().crawl(path);
+  const files = await api[type]();
+  expect(files[0]).toBeTruthy();
+  expect(files.every((t) => t)).toBeTruthy();
+  expect(files[0].length).toBeGreaterThan(0);
+}
+
 describe.each(["withPromise", "sync"])("fdir %s", (type) => {
   test("crawl single depth directory", async () => {
-    const api = new fdir().crawl("__tests__");
-    const files = await api[type]();
-    expect(files[0]).toBeTruthy();
-    expect(files.every((t) => t)).toBeTruthy();
-    expect(files[0].length).toBeGreaterThan(0);
+    await crawl(type, "__tests__");
   });
 
   test("crawl multi depth directory", async () => {
-    const api = new fdir().crawl("node_modules");
-    const files = await api[type]();
-    expect(files[0]).toBeTruthy();
-    expect(files.every((t) => t)).toBeTruthy();
-    expect(files[0].length).toBeGreaterThan(0);
+    await crawl("node_modules");
   });
 
   test("crawl and get both files and directories (withDirs)", async () => {
