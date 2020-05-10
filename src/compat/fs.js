@@ -5,8 +5,8 @@ const { sep } = require("path");
 if (!Dirent) {
   module.exports.readdir = function(dir, _, callback) {
     readdir(dir, (err, files) => {
-      if (err) return setImmediate(callback, err, null);
-      if (!files.length) return setImmediate(callback, null, []);
+      if (err) return process.nextTick(callback, err, null);
+      if (!files.length) return process.nextTick(callback, null, []);
 
       let dirents = [];
 
@@ -14,14 +14,14 @@ if (!Dirent) {
         let name = files[i];
         let path = `${dir}${sep}${name}`;
         lstat(path, (err, stat) => {
-          if (err) return setImmediate(callback, err, null);
+          if (err) return process.nextTick(callback, err, null);
           dirents[dirents.length] = {
             name,
             isFile: () => stat.isFile(),
             isDirectory: () => stat.isDirectory(),
           };
           if (dirents.length === files.length) {
-            setImmediate(callback, null, dirents);
+            process.nextTick(callback, null, dirents);
           }
         });
       }
