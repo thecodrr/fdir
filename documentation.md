@@ -194,7 +194,7 @@ type Group = { dir: string; files: string[] };
 
 Applies a `glob` filter to all files and only adds those that satisfy it.
 
-> _Uses [picomatch](https://github.com/micromatch/picomatch) underneath._
+> _Uses [picomatch](https://github.com/micromatch/picomatch) underneath. To keep fdir dependency free, it is up to the user to install `picomatch` manually._
 
 **Usage**
 

@@ -1,5 +1,7 @@
 const APIBuilder = require("./apiBuilder");
-const pm = require("picomatch");
+var pm = null;
+/* istanbul ignore next */
+if (require.resolve("picomatch")) pm = require("picomatch");
 
 function Builder() {
   this.options = {
@@ -62,6 +64,12 @@ Builder.prototype.filter = function(filterFn) {
 };
 
 Builder.prototype.glob = function(...patterns) {
+  /* istanbul ignore next */
+  if (!pm) {
+    throw new Error(
+      `Please install picomatch: "npm i picomatch" to use glob matching.`
+    );
+  }
   this.options.filter = (path) => {
     return pm.isMatch(path, patterns);
   };

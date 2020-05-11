@@ -75,6 +75,7 @@ declare module "fdir" {
     /**
      * Filter files using glob patterns.
      * @param patterns The glob patterns
+     * @remarks You will need to install `picomatch` to use this.
      */
     glob(...patterns: string[]): Builder;
 
