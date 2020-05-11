@@ -79,7 +79,6 @@ $ yarn benchmark
 ```
 
 **Specs:**
-_Last updated: May 10, 2020 (fdir v3.0.0)_
 
 - Intel i7 7th Generation (7700HQ)
 - 16 GB of RAM
