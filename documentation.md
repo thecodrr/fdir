@@ -158,7 +158,7 @@ Using this will affect the output structure. In place of a simple array of file 
 const { files, dirs } = new fdir().onlyCounts().sync();
 ```
 
-### `group`
+### `normalize`
 
 Normalize the given directory path using `path.normalize`.
 
@@ -190,7 +190,7 @@ Using this will affect the output structure. In place of a simple array of `stri
 type Group = { dir: string; files: string[] };
 ```
 
-### `filter(Function)`
+### `glob(...string[])`
 
 Applies a `glob` filter to all files and only adds those that satisfy it.
 
@@ -199,8 +199,8 @@ Applies a `glob` filter to all files and only adds those that satisfy it.
 **Usage**
 
 ```js
-// only get hidden files
-const crawler = new fdir().glob("./**/*.js");
+// only get js and md files
+const crawler = new fdir().glob("./**/*.js", "./**/*.md");
 ```
 
 ### `filter(Function)`
