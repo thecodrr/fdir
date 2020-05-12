@@ -71,8 +71,9 @@ Builder.prototype.glob = function(...patterns) {
       `Please install picomatch: "npm i picomatch" to use glob matching.`
     );
   }
+  const isMatch = pm(patterns);
   this.options.filter = (path) => {
-    return pm.isMatch(path, patterns);
+    return isMatch(path, patterns);
   };
   return this;
 };
