@@ -10,6 +10,19 @@ declare module "fdir" {
 
   type Output = GroupOutput | OnlyCountsOutput | PathsOutput;
 
+  type Options = {
+    includeBasePath: boolean;
+    includeDirs: boolean;
+    normalizePath: boolean;
+    maxDepth: number;
+    resolvePaths: boolean;
+    suppressErrors: boolean;
+    group: boolean;
+    onlyCounts: boolean;
+    filter: FilterFn;
+    exclude: ExcludeFn;
+  };
+
   class APIBuilder {
     /**
      * Crawl with promise (`async`/`await`)
@@ -29,6 +42,7 @@ declare module "fdir" {
   }
 
   class Builder {
+    constructor(options?: Options);
     /**
      * Prepend base path to all the paths
      */

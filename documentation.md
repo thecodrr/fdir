@@ -19,8 +19,6 @@ new fdir()
   .sync();
 ```
 
-How cool is that?
-
 ## Installation
 
 Make sure you have Node (any version) installed with npm/yarn.
@@ -69,7 +67,7 @@ Easy, peasy!
 
 ## Crawler Options
 
-The crawler options are in the form of methods. Each method returns the current instance of the crawler to enable fluency.
+The crawler options are in the form of methods. Each method returns the current instance of the crawler to enable fluency/method chaining.
 
 **Example:**
 
@@ -299,4 +297,35 @@ const files = new fdir()
   .withDirs()
   .crawl("/path/to/dir")
   .sync();
+```
+
+## Method Chaining Alternative
+
+_Some people have raised issues saying method chaining is not recommended and/or good, so I have added this as an alternative._
+
+It is now possible to pass an `Options` object directly in the constructor as an alternative to method chaining:
+
+```js
+new fdir({
+  includeBasePath: true,
+})
+  .crawl("path/to/dir")
+  .sync();
+```
+
+List of supported options:
+
+```js
+type Options = {
+  includeBasePath: boolean,
+  includeDirs: boolean,
+  normalizePath: boolean,
+  maxDepth: number,
+  resolvePaths: boolean,
+  suppressErrors: boolean,
+  group: boolean,
+  onlyCounts: boolean,
+  filter: FilterFn,
+  exclude: ExcludeFn,
+};
 ```
