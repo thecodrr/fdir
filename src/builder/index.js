@@ -3,8 +3,8 @@ var pm = null;
 /* istanbul ignore next */
 if (require.resolve("picomatch")) pm = require("picomatch");
 
-function Builder() {
-  this.options = {
+function Builder(options) {
+  this.options = options || {
     includeBasePath: false,
     includeDirs: false,
     normalizePath: false,
@@ -16,6 +16,7 @@ function Builder() {
     filter: undefined,
     exclude: undefined,
   };
+  this.options.maxDepth = options.maxDepth || Infinity;
 }
 
 Builder.prototype.crawl = function(path) {
