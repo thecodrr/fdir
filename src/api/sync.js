@@ -15,7 +15,7 @@ function walk(state, dir, currentDepth) {
     const dirents = readdirSync(dir, readdirOpts);
     walkSingleDir(walk, state, dir, dirents, currentDepth);
   } catch (e) {
-    if (!state.options.supressErrors) throw e;
+    if (!state.options.suppressErrors) throw e;
   }
 }
 

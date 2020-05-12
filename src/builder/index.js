@@ -10,7 +10,7 @@ function Builder() {
     normalizePath: false,
     maxDepth: Infinity,
     resolvePaths: false,
-    supressErrors: true,
+    suppressErrors: true,
     group: false,
     onlyCounts: false,
     filter: undefined,
@@ -44,7 +44,7 @@ Builder.prototype.withFullPaths = function() {
 };
 
 Builder.prototype.withErrors = function() {
-  this.options.supressErrors = false;
+  this.options.suppressErrors = false;
   return this;
 };
 

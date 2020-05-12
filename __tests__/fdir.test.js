@@ -95,7 +95,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     }
   });
 
-  test("getting files from restricted directory shouldn't throw (supressErrors)", async () => {
+  test("getting files from restricted directory shouldn't throw (suppressErrors)", async () => {
     const api = new fdir().crawl("/etc");
     const files = await api[type]();
     expect(files.length).toBeGreaterThan(0);
