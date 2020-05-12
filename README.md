@@ -20,7 +20,7 @@
 
 🤖 **Zero Dependencies:** `fdir` only uses NodeJS `fs` & `path` modules.
 
-🕺 **Astonishingly Small:** < 1KB in size gzipped.
+🕺 **Astonishingly Small:** < 2KB in size gzipped & minified.
 
 🔥 **All Node Versions Supported:** Unlike other similar libraries that have dropped support for Node versions < 10, `fdir` supports all versions >= 6.
 
