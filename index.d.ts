@@ -51,6 +51,11 @@ declare module "fdir" {
     withFullPaths(): Builder;
 
     /**
+     * Do not suppress errors
+     */
+    withErrors(): Builder;
+
+    /**
      * Group files by directories they are in
      */
     group(): Builder;
