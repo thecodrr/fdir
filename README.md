@@ -22,7 +22,7 @@
 
 🕺 **Astonishingly Small:** < 1KB in size gzipped.
 
-🔥 **All Node Versions Supported:** Unlike other similar libraries that have dropped support for Node versions < 10, `fdir` supports all versions > 6.
+🔥 **All Node Versions Supported:** Unlike other similar libraries that have dropped support for Node versions < 10, `fdir` supports all versions >= 6.
 
 🖮 **Hackable:** Extending `fdir` is extremely simple now that the new Builder API is here. Feel free to experiment around.
 
