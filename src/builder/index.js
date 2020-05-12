@@ -16,7 +16,7 @@ function Builder(options) {
     filter: undefined,
     exclude: undefined,
   };
-  this.options.maxDepth = options.maxDepth || Infinity;
+  this.options.maxDepth = (options && options.maxDepth) || Infinity;
 }
 
 Builder.prototype.crawl = function(path) {
