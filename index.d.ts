@@ -30,12 +30,6 @@ declare module "fdir" {
 
   class Builder {
     /**
-     * Create a new Builder fluently.
-     * Shorthand for: `new Builder()`
-     */
-    static new(): Builder;
-
-    /**
      * Prepend base path to all the paths
      */
     withBasePath(): Builder;
