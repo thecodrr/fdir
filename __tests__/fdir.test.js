@@ -12,8 +12,8 @@ test("crawl single depth directory with callback", (done) => {
   });
 });
 
-async function crawl(type, path) {
-  const api = new fdir().crawl(path);
+async function crawl(type, path, options) {
+  const api = new fdir(options).crawl(path);
   const files = await api[type]();
   expect(files[0]).toBeTruthy();
   expect(files.every((t) => t)).toBeTruthy();
@@ -23,6 +23,10 @@ async function crawl(type, path) {
 describe.each(["withPromise", "sync"])("fdir %s", (type) => {
   test("crawl single depth directory", async () => {
     await crawl(type, "__tests__");
+  });
+
+  test("crawl single depth directory with options", async () => {
+    await crawl(type, "__tests__", { includeBasePath: true });
   });
 
   test("crawl multi depth directory", async () => {

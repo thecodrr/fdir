@@ -3,7 +3,7 @@ var pm = null;
 /* istanbul ignore next */
 if (require.resolve("picomatch")) pm = require("picomatch");
 
-function Builder(options) {
+function Builder(options = null) {
   this.options = options || {
     includeBasePath: false,
     includeDirs: false,
