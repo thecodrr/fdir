@@ -93,7 +93,7 @@ declare module "fdir" {
     /**
      * Finalize settings and start crawling
      */
-    crawl(): APIBuilder;
+    crawl(dirPath: string): APIBuilder;
   }
 
   export default Builder;
