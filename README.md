@@ -52,10 +52,7 @@ $ yarn add fdir
 const fdir = require("fdir").default;
 
 // create the builder
-const api = fdir
-  .new()
-  .withFullPaths()
-  .crawl("path/to/dir");
+const api = new fdir().withFullPaths().crawl("path/to/dir");
 
 // get all files in a directory synchronously
 const files = api.sync();
