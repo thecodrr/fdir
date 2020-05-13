@@ -69,12 +69,6 @@ I have written an [in-depth documentation here](https://github.com/thecodrr/fdir
 
 ## 📊 Benchmarks:
 
-_Last updated: May 10, 2020 (fdir v3.0.0)_
-
-```sh
-$ yarn benchmark
-```
-
 **Specs:**
 
 - Intel i7 7th Generation (7700HQ)
@@ -98,13 +92,37 @@ $ yarn benchmark
 
   - Run the benchmark
 
-### Node v14.2.0:
+### The Fastest Globber
+
+_Last updated: May 13, 2020 (fdir v3.3.0)_
+
+```sh
+$ yarn bench:glob
+```
+
+> glob pattern used: `**.js` & `**/**.js`
+
+#### Node v13.13.0
+
+|                              Synchronous                              |                              Asynchronous                              |
+| :-------------------------------------------------------------------: | :--------------------------------------------------------------------: |
+| ![](https://github.com/thecodrr/fdir/raw/master/assets/glob-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/glob-async.png) |
+
+### The Fastest Directory Crawler
+
+_Last updated: May 10, 2020 (fdir v3.0.0)_
+
+```sh
+$ yarn bench
+```
+
+#### Node v14.2.0:
 
 |                               Synchronous                               |                               Asynchronous                               |
 | :---------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-sync.png) | ![](https://github.com/thecodrr/fdir/raw/master/assets/node13-async.png) |
 
-### Node v8.7.0:
+#### Node v8.7.0:
 
 _Older versions of fdir (1.x & 2.x) used synchronous `lstat` call (`lstatSync`) in the asynchronous API to acheive speed on Node < 10. This has been fixed in fdir 3.0.0._
 
