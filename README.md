@@ -1,7 +1,7 @@
 <p align="center">
 <img src="https://github.com/thecodrr/fdir/raw/master/assets/fdir.gif" width="75%"/>
 
-<h1 align="center">The Fastest Directory Crawler for NodeJS</h1>
+<h1 align="center">The Fastest Directory Crawler & Globber for NodeJS</h1>
 <p align="center">
   <a href="https://www.npmjs.com/package/fdir"><img src="https://img.shields.io/npm/v/fdir?style=for-the-badge"/></a>
   <a href="https://www.npmjs.com/package/fdir"><img src="https://img.shields.io/npm/dt/fdir?style=for-the-badge"/></a>
