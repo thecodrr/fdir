@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest __tests__/fdir.test.js",
     "test:coverage": "jest __tests__/fdir.test.js --coverage",
-    "benchmark": "node benchmark.js"
+    "bench": "node benchmarks/benchmark.js",
+    "bench:glob": "node benchmarks/glob-benchmark.js"
   },
   "repository": {
     "type": "git",
@@ -36,18 +37,20 @@
   "devDependencies": {
     "all-files-in-tree": "^1.1.2",
     "benny": "^3.6.14",
+    "fast-glob": "^3.2.2",
     "fdir1": "npm:fdir@1.2.0",
     "fdir2": "npm:fdir@2.1.0",
     "fs-readdir-recursive": "^1.1.0",
-    "get-all-files": "^1.0.7",
+    "get-all-files": "^2.0.0",
+    "glob": "^7.1.6",
     "klaw-sync": "^6.0.0",
     "mock-fs": "^4.11.0",
+    "picomatch": "^2.2.2",
     "recur-readdir": "0.0.1",
     "recursive-files": "^1.0.2",
     "recursive-fs": "^2.0.0",
     "recursive-readdir": "^2.2.2",
     "rrdir": "^6.1.2",
-    "walk-sync": "^2.0.2",
-    "picomatch": "^2.2.2"
+    "walk-sync": "^2.0.2"
   }
 }

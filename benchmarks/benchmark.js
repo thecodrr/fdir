@@ -1,4 +1,4 @@
-const fdir = require("./index");
+const fdir = require("../index");
 const fdir1 = require("fdir1");
 const fdir2 = require("fdir2");
 const allFilesInTree = require("all-files-in-tree");
@@ -20,7 +20,7 @@ const counts = new fdir()
 
 b.suite(
   `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.0 sync", () => {
+  b.add("fdir 3.2.1 sync", () => {
     new fdir().crawl("node_modules").sync();
   }),
   b.add("fdir 1.2.0 sync", () => {
@@ -57,12 +57,9 @@ b.suite(
 
 b.suite(
   `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.0 async", async () => {
+  b.add("fdir 3.2.1 async", async () => {
     await new fdir().crawl("node_modules").withPromise();
   }),
-  /*  b.add(`get-all-files async`, async () => {
-    await getAllFiles.async.array("node_modules");
-  }), */
   b.add("recursive-fs async", async () => {
     await new Promise((resolve) => {
       recursiveFs.readdirr("node_modules", () => {
