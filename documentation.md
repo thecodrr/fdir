@@ -303,29 +303,29 @@ const files = new fdir()
 
 _Some people have raised issues saying method chaining is not recommended and/or good, so I have added this as an alternative._
 
-It is now possible to pass an `Options` object directly in the constructor as an alternative to method chaining:
+It is now possible to pass an `Options` object to `crawlWithOptions`:
 
 ```js
-new fdir({
-  includeBasePath: true,
-})
-  .crawl("path/to/dir")
+new fdir()
+  .crawlWithOptions("path/to/dir", {
+    includeBasePath: true,
+  })
   .sync();
 ```
 
 List of supported options:
 
-```js
+```ts
 type Options = {
-  includeBasePath: boolean,
-  includeDirs: boolean,
-  normalizePath: boolean,
-  maxDepth: number,
-  resolvePaths: boolean,
-  suppressErrors: boolean,
-  group: boolean,
-  onlyCounts: boolean,
-  filter: FilterFn,
-  exclude: ExcludeFn,
+  includeBasePath?: boolean;
+  includeDirs?: boolean;
+  normalizePath?: boolean;
+  maxDepth?: number;
+  resolvePaths?: boolean;
+  suppressErrors?: boolean;
+  group?: boolean;
+  onlyCounts?: boolean;
+  filter?: FilterFn;
+  exclude?: ExcludeFn;
 };
 ```

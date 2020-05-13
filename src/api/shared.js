@@ -59,20 +59,20 @@ function walkSingleDir(
 
 function buildFunctions(options, isSync) {
   const {
-    filter,
-    onlyCounts,
+    filterFn,
+    onlyCountsVar,
     includeBasePath,
     includeDirs,
-    group,
-    exclude,
+    groupVar,
+    excludeFn,
   } = options;
 
   // build function for adding paths to array
-  if (filter && onlyCounts) {
-    pushFile = fns.pushFileFilterAndCount(filter);
-  } else if (filter) {
-    pushFile = fns.pushFileFilter(filter);
-  } else if (onlyCounts) {
+  if (filterFn && onlyCountsVar) {
+    pushFile = fns.pushFileFilterAndCount(filterFn);
+  } else if (filterFn) {
+    pushFile = fns.pushFileFilter(filterFn);
+  } else if (onlyCountsVar) {
     pushFile = fns.pushFileCount;
   } else {
     pushFile = fns.pushFile;
@@ -84,14 +84,14 @@ function buildFunctions(options, isSync) {
   joinPath = includeBasePath ? fns.joinPathWithBasePath : fns.joinPath;
 
   // build recursive walk directory function
-  walkDir = exclude ? fns.walkDirExclude(exclude) : fns.walkDir;
+  walkDir = excludeFn ? fns.walkDirExclude(excludeFn) : fns.walkDir;
 
   // build groupFiles function for grouping files
-  groupFiles = group ? fns.groupFiles : fns.empty;
-  getArray = group ? fns.getArrayGroup : fns.getArray;
+  groupFiles = groupVar ? fns.groupFiles : fns.empty;
+  getArray = groupVar ? fns.getArrayGroup : fns.getArray;
 
   // build callback invoker
-  if (onlyCounts) {
+  if (onlyCountsVar) {
     callbackInvoker = isSync
       ? fns.callbackInvokerOnlyCountsSync
       : fns.callbackInvokerOnlyCountsAsync;

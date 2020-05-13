@@ -11,16 +11,16 @@ declare module "fdir" {
   type Output = GroupOutput | OnlyCountsOutput | PathsOutput;
 
   type Options = {
-    includeBasePath: boolean;
-    includeDirs: boolean;
-    normalizePath: boolean;
-    maxDepth: number;
-    resolvePaths: boolean;
-    suppressErrors: boolean;
-    group: boolean;
-    onlyCounts: boolean;
-    filter: FilterFn;
-    exclude: ExcludeFn;
+    includeBasePath?: boolean;
+    includeDirs?: boolean;
+    normalizePath?: boolean;
+    maxDepth?: number;
+    resolvePaths?: boolean;
+    suppressErrors?: boolean;
+    group?: boolean;
+    onlyCounts?: boolean;
+    filter?: FilterFn;
+    exclude?: ExcludeFn;
   };
 
   class APIBuilder {
@@ -42,7 +42,6 @@ declare module "fdir" {
   }
 
   class Builder {
-    constructor(options?: Options);
     /**
      * Prepend base path to all the paths
      */
@@ -105,8 +104,16 @@ declare module "fdir" {
 
     /**
      * Finalize settings and start crawling
+     * @param dirPath The path of the directory
      */
     crawl(dirPath: string): APIBuilder;
+
+    /**
+     * Start crawling with custom options
+     * @param dirPath The path of the directory
+     * @param options Custom options
+     */
+    crawlWithOptions(dirPath: string, options: Options): APIBuilder;
   }
 
   export default Builder;

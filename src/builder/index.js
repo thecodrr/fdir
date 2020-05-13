@@ -3,64 +3,62 @@ var pm = null;
 /* istanbul ignore next */
 if (require.resolve("picomatch")) pm = require("picomatch");
 
-function Builder(options = null) {
-  this.options = options || {
-    includeBasePath: false,
-    includeDirs: false,
-    normalizePath: false,
-    maxDepth: Infinity,
-    resolvePaths: false,
-    suppressErrors: true,
-    group: false,
-    onlyCounts: false,
-    filter: undefined,
-    exclude: undefined,
-  };
-  this.options.maxDepth = (options && options.maxDepth) || Infinity;
+function Builder() {
+  this.maxDepth = Infinity;
+  this.suppressErrors = true;
 }
 
 Builder.prototype.crawl = function(path) {
-  return new APIBuilder(path, this.options);
+  return new APIBuilder(path, this);
+};
+
+Builder.prototype.crawlWithOptions = function(path, options) {
+  if (!options.maxDepth) options.maxDepth = Infinity;
+  options.groupVar = options.group;
+  options.onlyCountsVar = options.onlyCounts;
+  options.excludeFn = options.exclude;
+  options.filterFn = options.filter;
+  return new APIBuilder(path, options);
 };
 
 Builder.prototype.withBasePath = function() {
-  this.options.includeBasePath = true;
+  this.includeBasePath = true;
   return this;
 };
 
 Builder.prototype.withDirs = function() {
-  this.options.includeDirs = true;
+  this.includeDirs = true;
   return this;
 };
 
 Builder.prototype.withMaxDepth = function(depth) {
-  this.options.maxDepth = depth;
+  this.maxDepth = depth;
   return this;
 };
 
 Builder.prototype.withFullPaths = function() {
-  this.options.resolvePaths = true;
-  this.options.includeBasePath = true;
+  this.resolvePaths = true;
+  this.includeBasePath = true;
   return this;
 };
 
 Builder.prototype.withErrors = function() {
-  this.options.suppressErrors = false;
+  this.suppressErrors = false;
   return this;
 };
 
 Builder.prototype.group = function() {
-  this.options.group = true;
+  this.groupVar = true;
   return this;
 };
 
 Builder.prototype.normalize = function() {
-  this.options.normalizePath = true;
+  this.normalizePath = true;
   return this;
 };
 
 Builder.prototype.filter = function(filterFn) {
-  this.options.filter = filterFn;
+  this.filterFn = filterFn;
   return this;
 };
 
@@ -72,19 +70,19 @@ Builder.prototype.glob = function(...patterns) {
     );
   }
   const isMatch = pm(patterns);
-  this.options.filter = (path) => {
+  this.filterFn = (path) => {
     return isMatch(path, patterns);
   };
   return this;
 };
 
 Builder.prototype.exclude = function(excludeFn) {
-  this.options.exclude = excludeFn;
+  this.excludeFn = excludeFn;
   return this;
 };
 
 Builder.prototype.onlyCounts = function() {
-  this.options.onlyCounts = true;
+  this.onlyCountsVar = true;
   return this;
 };
 

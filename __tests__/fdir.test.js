@@ -1,6 +1,10 @@
 const fdir = require("../index.js");
 const mock = require("mock-fs");
 
+beforeEach(() => {
+  mock.restore();
+});
+
 test("crawl single depth directory with callback", (done) => {
   const api = new fdir().crawl("__tests__");
   api.withCallback((err, files) => {
@@ -12,12 +16,13 @@ test("crawl single depth directory with callback", (done) => {
   });
 });
 
-async function crawl(type, path, options) {
-  const api = new fdir(options).crawl(path);
+async function crawl(type, path) {
+  const api = new fdir().crawl(path);
   const files = await api[type]();
   expect(files[0]).toBeTruthy();
   expect(files.every((t) => t)).toBeTruthy();
   expect(files[0].length).toBeGreaterThan(0);
+  return files;
 }
 
 describe.each(["withPromise", "sync"])("fdir %s", (type) => {
@@ -26,7 +31,19 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
   });
 
   test("crawl single depth directory with options", async () => {
-    await crawl(type, "__tests__", { includeBasePath: true });
+    const api = new fdir().crawlWithOptions("__tests__", {
+      includeBasePath: true,
+    });
+    const files = await api[type]();
+    expect(files.every((file) => file.startsWith("__tests__"))).toBe(true);
+  });
+
+  test("crawl multi depth directory with options", async () => {
+    const api = new fdir().crawlWithOptions("node_modules", {
+      maxDepth: 1,
+    });
+    const files = await api[type]();
+    expect(files.every((file) => file.split("/").length <= 3)).toBe(true);
   });
 
   test("crawl multi depth directory", async () => {
@@ -78,10 +95,10 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     expect(files.every((file) => file.includes(".git"))).toBe(true);
   });
 
-  test("crawl all files in a directory (without base path)", async () => {
-    const api = new fdir().crawl("./");
+  test("crawl all files in a directory (with base path)", async () => {
+    const api = new fdir().withBasePath().crawl("./");
     const files = await api[type]();
-    expect(files.every((file) => !file.includes("/"))).toBe(true);
+    expect(files.every((file) => file.includes("./"))).toBe(true);
   });
 
   test("get all files in a directory and output full paths (withFullPaths)", async () => {
