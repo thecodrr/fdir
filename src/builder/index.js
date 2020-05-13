@@ -1,7 +1,12 @@
 const APIBuilder = require("./apiBuilder");
 var pm = null;
 /* istanbul ignore next */
-if (require.resolve("picomatch")) pm = require("picomatch");
+try {
+  require.resolve("picomatch");
+  pm = require("picomatch");
+} catch (_e) {
+  // do nothing
+}
 
 function Builder() {
   this.maxDepth = Infinity;
