@@ -11,7 +11,7 @@ const counts = new fdir()
 
 b.suite(
   `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.2.1 async", async () => {
+  b.add("fdir 3.3.0 async", async () => {
     await new fdir()
       .glob("**.js")
       .crawl(".")
@@ -32,7 +32,7 @@ b.suite(
 
 b.suite(
   `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.2.1 sync", () => {
+  b.add("fdir 3.3.0 sync", () => {
     new fdir()
       .glob("**.js")
       .crawl(".")
