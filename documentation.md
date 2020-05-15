@@ -205,13 +205,15 @@ const crawler = new fdir().glob("./**/*.js", "./**/*.md");
 
 Applies a filter to all files and only adds those that satisfy it.
 
-> _Currently, you can apply only one filter per crawler. This might change._
+> _You can now apply multiple filters._
 
 **Usage**
 
 ```js
-// only get hidden files
-const crawler = new fdir().filter((path) => path.startsWith("."));
+// only get hidden & .js files
+const crawler = new fdir()
+  .filter((path) => path.startsWith("."))
+  .filter((path) => path.endsWith(".js"));
 ```
 
 ### `exclude(Function)`
@@ -325,7 +327,7 @@ type Options = {
   suppressErrors?: boolean;
   group?: boolean;
   onlyCounts?: boolean;
-  filter?: FilterFn;
+  filters?: FilterFn[];
   exclude?: ExcludeFn;
 };
 ```

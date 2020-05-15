@@ -59,7 +59,7 @@ function walkSingleDir(
 
 function buildFunctions(options, isSync) {
   const {
-    filterFn,
+    filters,
     onlyCountsVar,
     includeBasePath,
     includeDirs,
@@ -68,10 +68,10 @@ function buildFunctions(options, isSync) {
   } = options;
 
   // build function for adding paths to array
-  if (filterFn && onlyCountsVar) {
-    pushFile = fns.pushFileFilterAndCount(filterFn);
-  } else if (filterFn) {
-    pushFile = fns.pushFileFilter(filterFn);
+  if (filters.length && onlyCountsVar) {
+    pushFile = fns.pushFileFilterAndCount(filters);
+  } else if (filters.length) {
+    pushFile = fns.pushFileFilter(filters);
   } else if (onlyCountsVar) {
     pushFile = fns.pushFileCount;
   } else {

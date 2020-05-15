@@ -95,6 +95,18 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     expect(files.every((file) => file.includes(".git"))).toBe(true);
   });
 
+  test("crawl all files with multifilter", async () => {
+    const api = new fdir()
+      .withBasePath()
+      .filter((file) => file.includes(".git"))
+      .filter((file) => file.includes(".js"))
+      .crawl("./");
+    const files = await api[type]();
+    expect(
+      files.every((file) => file.includes(".git") || file.includes(".js"))
+    ).toBe(true);
+  });
+
   test("crawl all files in a directory (with base path)", async () => {
     const api = new fdir().withBasePath().crawl("./");
     const files = await api[type]();

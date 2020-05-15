@@ -19,7 +19,7 @@ declare module "fdir" {
     suppressErrors?: boolean;
     group?: boolean;
     onlyCounts?: boolean;
-    filter?: FilterFn;
+    filters?: FilterFn[];
     exclude?: ExcludeFn;
   };
 

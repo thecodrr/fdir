@@ -9,16 +9,18 @@ module.exports.getArrayGroup = function() {
 };
 
 /** PUSH FILE */
-module.exports.pushFileFilterAndCount = function(filter) {
+module.exports.pushFileFilterAndCount = function(filters) {
   return function(filename, _files, _dir, state) {
-    if (filter(filename)) state.counts.files++;
+    if (filters.some((f) => f(filename))) state.counts.files++;
   };
 };
-module.exports.pushFileFilter = function(filter) {
+
+module.exports.pushFileFilter = function(filters) {
   return function(filename, files) {
-    if (filter(filename)) files.push(filename);
+    if (filters.some((f) => f(filename))) files.push(filename);
   };
 };
+
 module.exports.pushFileCount = function(_filename, _files, _dir, state) {
   state.counts.files++;
 };

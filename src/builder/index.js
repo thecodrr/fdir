@@ -11,6 +11,7 @@ try {
 function Builder() {
   this.maxDepth = Infinity;
   this.suppressErrors = true;
+  this.filters = [];
 }
 
 Builder.prototype.crawl = function(path) {
@@ -22,7 +23,7 @@ Builder.prototype.crawlWithOptions = function(path, options) {
   options.groupVar = options.group;
   options.onlyCountsVar = options.onlyCounts;
   options.excludeFn = options.exclude;
-  options.filterFn = options.filter;
+  options.filters = options.filters || [];
   return new APIBuilder(path, options);
 };
 
@@ -63,7 +64,7 @@ Builder.prototype.normalize = function() {
 };
 
 Builder.prototype.filter = function(filterFn) {
-  this.filterFn = filterFn;
+  this.filters.push(filterFn);
   return this;
 };
 
@@ -75,9 +76,7 @@ Builder.prototype.glob = function(...patterns) {
     );
   }
   const isMatch = pm(patterns);
-  this.filterFn = (path) => {
-    return isMatch(path, patterns);
-  };
+  this.filters.push((path) => isMatch(path, patterns));
   return this;
 };
 
