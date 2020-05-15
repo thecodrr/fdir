@@ -1,9 +1,11 @@
 const APIBuilder = require("./apiBuilder");
 var pm = null;
+var globCache = null;
 /* istanbul ignore next */
 try {
   require.resolve("picomatch");
   pm = require("picomatch");
+  globCache = {};
 } catch (_e) {
   // do nothing
 }
@@ -75,8 +77,12 @@ Builder.prototype.glob = function(...patterns) {
       `Please install picomatch: "npm i picomatch" to use glob matching.`
     );
   }
-  const isMatch = pm(patterns);
-  this.filters.push((path) => isMatch(path, patterns));
+  var isMatch = globCache[patterns.join("||")];
+  if (!isMatch) {
+    isMatch = pm(patterns);
+    globCache[patterns.join("||")] = isMatch;
+  }
+  this.filters.push((path) => isMatch(path));
   return this;
 };
 
@@ -91,3 +97,11 @@ Builder.prototype.onlyCounts = function() {
 };
 
 module.exports = Builder;
+
+function arrEqual(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
