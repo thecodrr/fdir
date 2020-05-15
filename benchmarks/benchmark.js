@@ -20,7 +20,7 @@ const counts = new fdir()
 
 b.suite(
   `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.3.0 sync", () => {
+  b.add("fdir 3.4.0 sync", () => {
     new fdir().crawl("node_modules").sync();
   }),
   b.add("fdir 1.2.0 sync", () => {
@@ -57,7 +57,7 @@ b.suite(
 
 b.suite(
   `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.3.0 async", async () => {
+  b.add("fdir 3.4.0 async", async () => {
     await new fdir().crawl("node_modules").withPromise();
   }),
   b.add("recursive-fs async", async () => {

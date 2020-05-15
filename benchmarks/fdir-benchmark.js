@@ -1,7 +1,7 @@
 const b = require("benny");
 const child_process = require("child_process");
 
-const versions = ["3.0.0", "3.1.0", "3.2.0", "3.2.1", "3.3.0"];
+const versions = ["3.0.0", "3.1.0", "3.2.0", "3.2.1", "3.3.0", "3.4.0"];
 
 function versionNormalizer(version) {
   return version.replace(/\./g, "");
