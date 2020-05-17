@@ -1,5 +1,6 @@
 const fdir = require("../index");
 const glob = require("glob");
+const globby = require("globby");
 const fg = require("fast-glob");
 const b = require("benny");
 
@@ -25,6 +26,9 @@ b.suite(
   b.add("fast-glob async", async () => {
     await fg("**.js", { dot: true });
   }),
+  b.add("globby async", async () => {
+    await globby("**/**.js", { dot: true });
+  }),
   b.cycle(),
   b.complete(),
   b.save({ file: "glob-bench-async", format: "chart.html" })
@@ -43,6 +47,9 @@ b.suite(
   }),
   b.add("fast-glob sync", () => {
     fg.sync("**.js", { dot: true });
+  }),
+  b.add("globby sync", () => {
+    globby.sync("**.js", { dot: true });
   }),
   b.cycle(),
   b.complete(),

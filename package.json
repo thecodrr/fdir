@@ -39,6 +39,7 @@
     "all-files-in-tree": "^1.1.2",
     "benny": "^3.6.14",
     "fast-glob": "^3.2.2",
+    "globby": "11.0.0",
     "fdir1": "npm:fdir@1.2.0",
     "fdir2": "npm:fdir@2.1.0",
     "fs-readdir-recursive": "^1.1.0",
