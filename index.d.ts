@@ -1,12 +1,13 @@
 declare module "fdir" {
+  export type GroupOutput = Group[];
+  export type OnlyCountsOutput = { files: number; dirs: number };
+  export type PathsOutput = string[];
+
   type FilterFn = (filePath: string) => boolean;
   type ExcludeFn = (dirPath: string) => boolean;
   type Callback = (error: Error, output: Output) => void;
 
   type Group = { dir: string; files: string[] };
-  type GroupOutput = Group[];
-  type OnlyCountsOutput = { files: number; dirs: number };
-  type PathsOutput = string[];
 
   type Output = GroupOutput | OnlyCountsOutput | PathsOutput;
 
