@@ -2,20 +2,14 @@ const fdir = require("../index");
 const glob = require("glob");
 const fg = require("fast-glob");
 const b = require("benny");
+const packageJson = require("../package.json");
 
-const counts = new fdir()
-  .glob("**.js")
-  .onlyCounts()
-  .crawl(".")
-  .sync();
+const counts = new fdir().glob("**.js").onlyCounts().crawl(".").sync();
 
 b.suite(
   `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.4.0 async", async () => {
-    await new fdir()
-      .glob("**.js")
-      .crawl(".")
-      .withPromise();
+  b.add(`fdir ${packageJson.version} async`, async () => {
+    await new fdir().glob("**.js").crawl(".").withPromise();
   }),
   b.add("glob async", async () => {
     await new Promise((resolve) => {
@@ -32,11 +26,8 @@ b.suite(
 
 b.suite(
   `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.4.0 sync", () => {
-    new fdir()
-      .glob("**.js")
-      .crawl(".")
-      .sync();
+  b.add(`fdir ${packageJson.version} sync`, () => {
+    new fdir().glob("**.js").crawl(".").sync();
   }),
   b.add("glob sync", () => {
     glob.sync("**/**.js", { dot: true });

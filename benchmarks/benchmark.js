@@ -12,15 +12,13 @@ const walkSync = require("walk-sync");
 const recursiveFs = require("recursive-fs");
 const b = require("benny");
 const getAllFiles = require("get-all-files").default;
+const packageJson = require("../package.json");
 
-const counts = new fdir()
-  .onlyCounts()
-  .crawl("node_modules")
-  .sync();
+const counts = new fdir().onlyCounts().crawl("node_modules").sync();
 
 b.suite(
   `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.4.0 sync", () => {
+  b.add(`fdir ${packageJson.version} sync`, () => {
     new fdir().crawl("node_modules").sync();
   }),
   b.add("fdir 1.2.0 sync", () => {
@@ -52,12 +50,12 @@ b.suite(
   }),
   b.cycle(),
   b.complete(),
-  b.save({ file: "node-8-3-0-sync", format: "chart.html" })
+  b.save({ file: "crawlers-sync", format: "chart.html" })
 );
 
 b.suite(
   `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
-  b.add("fdir 3.4.0 async", async () => {
+  b.add(`fdir ${packageJson.version} async`, async () => {
     await new fdir().crawl("node_modules").withPromise();
   }),
   b.add("recursive-fs async", async () => {
@@ -89,5 +87,5 @@ b.suite(
   }),
   b.cycle(),
   b.complete(),
-  b.save({ file: "node-8-3-0-async", format: "chart.html" })
+  b.save({ file: "crawlers-async", format: "chart.html" })
 );
