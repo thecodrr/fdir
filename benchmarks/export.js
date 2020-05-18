@@ -53,6 +53,13 @@ module.exports = async function exportToHTML(title, path, summaries) {
         body > div {
           width: 100%;
         }
+        #code {
+          background-color: #ededed;
+          padding: 0.8rem;
+          overflow-x: auto;
+          max-width: 90%;
+          min-height: 15%;
+        }
       </style>
       <title>${title}</title>
       <script>
@@ -76,7 +83,7 @@ module.exports = async function exportToHTML(title, path, summaries) {
     <body>
     <h1>${title}</h1>
     <p>System Information:</p>
-    <pre>${info}</pre>
+    <pre id="code">${info}</pre>
     `;
   for (var summary of summaries) {
     const labels = summary.results.map((result) => result.name);
@@ -112,7 +119,7 @@ module.exports = async function exportToHTML(title, path, summaries) {
                   title: {
                     display: true,
                     text: '${summary.name}',
-                    fontSize: 16,
+                    fontSize: 12,
                     padding: 20,
                   },
                   tooltips: {
@@ -130,7 +137,7 @@ module.exports = async function exportToHTML(title, path, summaries) {
                         },
                         scaleLabel: {
                           display: true,
-                          labelString: 'Operations per second',
+                          labelString: 'ops/s',
                         },
                         ticks: {
                           beginAtZero: true,
