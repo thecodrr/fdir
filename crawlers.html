@@ -24,8 +24,15 @@
         body > div {
           width: 100%;
         }
+        #code {
+          background-color: #ededed;
+          padding: 0.8rem;
+          overflow-x: auto;
+          max-width: 90%;
+          min-height: 15%;
+        }
       </style>
-      <title>fdir vs crawlers - (2098 files, 185 folders)</title>
+      <title>fdir vs crawlers - (2111 files, 190 folders)</title>
       <script>
         const format = (num) => {
         const chunked = []
@@ -45,9 +52,9 @@
      </script>
     </head>
     <body>
-    <h1>fdir vs crawlers - (2098 files, 185 folders)</h1>
+    <h1>fdir vs crawlers - (2111 files, 190 folders)</h1>
     <p>System Information:</p>
-    <pre>CPU: Intel® Core™ i7-7700HQ 2.80GHz
+    <pre id="code">CPU: Intel® Core™ i7-7700HQ 2.80GHz
 Cores: 8 (4 Physical)
 RAM: 16GB
 Disk: Toshiba TOSHIBA_THNSNJ256G8NY 238GB SSD (SATA)
@@ -57,17 +64,17 @@ Node: v14.2.0
 V8: 8.1.307.31-node.33</pre>
     
             <div style="max-width: 800px;">
-              <canvas id="chart1589813217992" width="16" height="9"></canvas>
+              <canvas id="chart1589815042662" width="16" height="9"></canvas>
             </div>
             <script>
-              const ctx1589813217992 = document.getElementById('chart1589813217992').getContext('2d')
-              const chart1589813217992 = new Chart(ctx1589813217992, {
+              const ctx1589815042662 = document.getElementById('chart1589815042662').getContext('2d')
+              const chart1589815042662 = new Chart(ctx1589815042662, {
                 type: 'bar',
                 data: {
                   labels: ["fdir 3.4.2 async","recursive-fs async","recur-readdir async","recursive-files async","recursive-readdir async","rrdir async"],
                   datasets: [
                     {
-                      data: [697,563,9,62,68,321],
+                      data: [679,551,9,61,66,308],
                       backgroundColor: ["rgba(63, 142, 252, 0.8)","rgba(116, 165, 127, 0.8)","rgba(158, 206, 154, 0.8)","rgba(58, 175, 185, 0.8)","rgba(79, 124, 172, 0.8)","rgba(113, 128, 172, 0.8)"],
                       borderColor: ["rgba(63, 142, 252, 1)","rgba(116, 165, 127, 1)","rgba(158, 206, 154, 1)","rgba(58, 175, 185, 1)","rgba(79, 124, 172, 1)","rgba(113, 128, 172, 1)"],
                       borderWidth: 1,
@@ -80,8 +87,8 @@ V8: 8.1.307.31-node.33</pre>
                   },
                   title: {
                     display: true,
-                    text: 'Asynchronous (2098 files, 185 folders)',
-                    fontSize: 16,
+                    text: 'Asynchronous (2111 files, 190 folders)',
+                    fontSize: 12,
                     padding: 20,
                   },
                   tooltips: {
@@ -99,7 +106,7 @@ V8: 8.1.307.31-node.33</pre>
                         },
                         scaleLabel: {
                           display: true,
-                          labelString: 'Operations per second',
+                          labelString: 'ops/s',
                         },
                         ticks: {
                           beginAtZero: true,
@@ -121,17 +128,17 @@ V8: 8.1.307.31-node.33</pre>
             </script>
     
             <div style="max-width: 800px;">
-              <canvas id="chart1589813181954" width="16" height="9"></canvas>
+              <canvas id="chart1589815006566" width="16" height="9"></canvas>
             </div>
             <script>
-              const ctx1589813181954 = document.getElementById('chart1589813181954').getContext('2d')
-              const chart1589813181954 = new Chart(ctx1589813181954, {
+              const ctx1589815006566 = document.getElementById('chart1589815006566').getContext('2d')
+              const chart1589815006566 = new Chart(ctx1589815006566, {
                 type: 'bar',
                 data: {
                   labels: ["fdir 3.4.2 sync","fdir 1.2.0 sync","fdir 2.1.1 sync","get-all-files sync","all-files-in-tree sync","fs-readdir-recursive sync","klaw-sync","recur-readdir sync","walk-sync","rrdir sync"],
                   datasets: [
                     {
-                      data: [440,449,440,392,127,82,142,15,89,434],
+                      data: [426,441,440,383,127,83,140,15,91,423],
                       backgroundColor: ["rgba(63, 142, 252, 0.8)","rgba(116, 165, 127, 0.8)","rgba(158, 206, 154, 0.8)","rgba(58, 175, 185, 0.8)","rgba(79, 124, 172, 0.8)","rgba(113, 128, 172, 0.8)","rgba(182, 140, 184, 0.8)","rgba(219, 108, 121, 0.8)","rgba(189, 79, 108, 0.8)","rgba(138, 79, 125, 0.8)"],
                       borderColor: ["rgba(63, 142, 252, 1)","rgba(116, 165, 127, 1)","rgba(158, 206, 154, 1)","rgba(58, 175, 185, 1)","rgba(79, 124, 172, 1)","rgba(113, 128, 172, 1)","rgba(182, 140, 184, 1)","rgba(219, 108, 121, 1)","rgba(189, 79, 108, 1)","rgba(138, 79, 125, 1)"],
                       borderWidth: 1,
@@ -144,8 +151,8 @@ V8: 8.1.307.31-node.33</pre>
                   },
                   title: {
                     display: true,
-                    text: 'Synchronous (2098 files, 185 folders)',
-                    fontSize: 16,
+                    text: 'Synchronous (2111 files, 190 folders)',
+                    fontSize: 12,
                     padding: 20,
                   },
                   tooltips: {
@@ -163,7 +170,7 @@ V8: 8.1.307.31-node.33</pre>
                         },
                         scaleLabel: {
                           display: true,
-                          labelString: 'Operations per second',
+                          labelString: 'ops/s',
                         },
                         ticks: {
                           beginAtZero: true,
