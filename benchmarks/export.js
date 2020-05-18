@@ -1,4 +1,5 @@
 const fs = require("fs");
+const getinfo = require("./sysinfo");
 
 const colors = [
   "63, 142, 252",
@@ -24,7 +25,8 @@ function prepareColors(length, opacity) {
   );
 }
 
-module.exports = function exportToHTML(title, path, summaries) {
+module.exports = async function exportToHTML(title, path, summaries) {
+  const info = await getinfo();
   var header = `
   <!DOCTYPE html>
   <html lang="en">
@@ -38,6 +40,18 @@ module.exports = function exportToHTML(title, path, summaries) {
           display: flex;
           flex: wrap;
           order: row;
+        }
+        :root,
+        body {
+          height: 100%;
+          width: 100%;
+          margin: 0px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        body > div {
+          width: 100%;
         }
       </style>
       <title>${title}</title>
@@ -59,7 +73,11 @@ module.exports = function exportToHTML(title, path, summaries) {
         }
      </script>
     </head>
-    <body>`;
+    <body>
+    <h1>${title}</h1>
+    <p>System Information:</p>
+    <pre>${info}</pre>
+    `;
   for (var summary of summaries) {
     const labels = summary.results.map((result) => result.name);
     const values = summary.results.map((result) => result.ops);

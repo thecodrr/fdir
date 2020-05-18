@@ -52,6 +52,7 @@
     "recursive-fs": "^2.0.0",
     "recursive-readdir": "^2.2.2",
     "rrdir": "^6.1.2",
+    "systeminformation": "^4.26.1",
     "walk-sync": "^2.0.2"
   }
 }
