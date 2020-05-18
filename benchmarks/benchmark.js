@@ -92,7 +92,7 @@ async function benchmark() {
   );
 
   summaries.push(asyncSummary, syncSummary);
-  exportToHTML(
+  await exportToHTML(
     `fdir vs crawlers - (${counts.files} files, ${counts.dirs} folders)`,
     "benchmark/results/crawlers.html",
     summaries

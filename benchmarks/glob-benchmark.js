@@ -42,7 +42,7 @@ async function benchmark() {
   );
 
   summaries.push(asyncSummary, syncSummary);
-  exportToHTML(
+  await exportToHTML(
     `fdir vs globbers - (${counts.files} files, ${counts.dirs} folders)`,
     "benchmark/results/globbers.html",
     summaries
