@@ -201,6 +201,11 @@ fastq@^1.6.0:
   resolved "https://registry.yarnpkg.com/fdir/-/fdir-2.1.0.tgz#92ea339a3a4493fcbd31475f539d0ab80c92acfa"
   integrity sha512-3OrEdo5P0o6SCvy0G4TNXx97D4/f3E+oKMF0q9MmWGIxJDLSjQabRJnlBApLtopdoaZ108WjPjHQM7niFYHYGg==
 
+"fdir3@npm:fdir@3.4.2":
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/fdir/-/fdir-3.4.2.tgz#978bc4e8cf9884b03b1429d50feb0cc9fd4824ce"
+  integrity sha512-Bya64kBW9us4CmX4T7P3JV+TBY0cXB3JhmyYBQ6CXEePat5FD72f7eaKt75ljSP2R8EdwD4txEestENsH/D0Jg==
+
 fill-range@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/fill-range/-/fill-range-7.0.1.tgz#1919a6a7c75fe38b2c7c77e5198535da9acdda40"

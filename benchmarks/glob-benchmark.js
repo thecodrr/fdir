@@ -1,4 +1,4 @@
-const fdir = require("../index");
+const fdir = require("fdir3");
 const glob = require("glob");
 const fg = require("fast-glob");
 const b = require("benny");
@@ -7,12 +7,19 @@ const exportToHTML = require("./export");
 
 async function benchmark() {
   const summaries = [];
-  const counts = new fdir().glob("**.js").onlyCounts().crawl(".").sync();
+  const counts = new fdir()
+    .glob("**.js")
+    .onlyCounts()
+    .crawl(".")
+    .sync();
 
   const asyncSummary = await b.suite(
     `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
     b.add(`fdir ${packageJson.version} async`, async () => {
-      await new fdir().glob("**.js").crawl(".").withPromise();
+      await new fdir()
+        .glob("**.js")
+        .crawl(".")
+        .withPromise();
     }),
     b.add("glob async", async () => {
       await new Promise((resolve) => {
@@ -29,7 +36,10 @@ async function benchmark() {
   const syncSummary = await b.suite(
     `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
     b.add(`fdir ${packageJson.version} sync`, () => {
-      new fdir().glob("**.js").crawl(".").sync();
+      new fdir()
+        .glob("**.js")
+        .crawl(".")
+        .sync();
     }),
     b.add("glob sync", () => {
       glob.sync("**/**.js", { dot: true });

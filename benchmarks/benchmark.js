@@ -1,4 +1,4 @@
-const fdir = require("../index");
+const fdir = require("fdir3");
 const fdir1 = require("fdir1");
 const fdir2 = require("fdir2");
 const allFilesInTree = require("all-files-in-tree");
@@ -17,7 +17,10 @@ const exportToHTML = require("./export");
 
 async function benchmark() {
   const summaries = [];
-  const counts = new fdir().onlyCounts().crawl("node_modules").sync();
+  const counts = new fdir()
+    .onlyCounts()
+    .crawl("node_modules")
+    .sync();
 
   const syncSummary = await b.suite(
     `Synchronous (${counts.files} files, ${counts.dirs} folders)`,

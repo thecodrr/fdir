@@ -41,6 +41,7 @@
     "fast-glob": "^3.2.2",
     "fdir1": "npm:fdir@1.2.0",
     "fdir2": "npm:fdir@2.1.0",
+    "fdir3": "npm:fdir@3.4.2",
     "fs-readdir-recursive": "^1.1.0",
     "get-all-files": "^2.0.0",
     "glob": "^7.1.6",
