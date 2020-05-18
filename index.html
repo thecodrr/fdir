@@ -1,1 +1,75 @@
-Hello, World!
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fdir - the fastest node.js directory crawler</title>
+    <style>
+      #root,
+      :root,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Courier New", Courier, monospace;
+      }
+      .column {
+        display: flex;
+        flex-direction: column;
+      }
+      .center {
+        justify-content: center;
+        align-items: center;
+      }
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+      h1 {
+        font-size: 5rem;
+        margin: 0;
+      }
+      a {
+        font-size: small;
+      }
+      #link {
+        margin-right: 20px;
+      }
+      .version {
+        margin: 0;
+        font-size: 0.8rem;
+      }
+      #code {
+        background-color: #ededed;
+        margin-top: 2rem;
+        padding: 0.8rem;
+        white-space: pre;
+        overflow: auto;
+        max-width: 90%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="column center">
+      <h1>fdir</h1>
+      <p style="text-align: center;">
+        the fastest node.js globber and directory crawler
+      </p>
+      <div class="row center">
+        <a href="#" id="link">source</a>
+        <a href="#" id="link">npm</a>
+        <a href="#" id="link">docs</a>
+        <a href="#">donate</a>
+      </div>
+      <pre id="code"><code>$ npm i fdir</code></pre>
+      <h3>benchmarks</h3>
+      <div class="row center">
+        <a href="#" id="link">fdir vs crawlers</a>
+        <a href="#">fdir vs globbers</a>
+      </div>
+      <pre
+        id="code"
+      ><code>new fdir().withFullPaths().crawl("path/to/dir").sync();</code></pre>
+      <p class="version">version 3.4.2</p>
+    </div>
+  </body>
+</html>
