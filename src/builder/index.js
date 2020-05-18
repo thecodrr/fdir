@@ -79,7 +79,7 @@ Builder.prototype.glob = function(...patterns) {
   }
   var isMatch = globCache[patterns.join("||")];
   if (!isMatch) {
-    isMatch = pm(patterns);
+    isMatch = pm(patterns, { dot: true });
     globCache[patterns.join("||")] = isMatch;
   }
   this.filters.push((path) => isMatch(path));
