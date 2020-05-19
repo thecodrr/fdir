@@ -50,7 +50,15 @@ function walkSingleDir(
       pushFile(filename, files, dir, state);
     } else if (dirent.isDirectory()) {
       let dirPath = `${dir}${sep}${dirent.name}`;
-      walkDir(walk, state, dirPath, currentDepth - 1, callback, ...args);
+      walkDir(
+        walk,
+        state,
+        dirPath,
+        dirent.name,
+        currentDepth - 1,
+        callback,
+        ...args
+      );
     }
   }
 
