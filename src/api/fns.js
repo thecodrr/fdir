@@ -101,7 +101,7 @@ function report(err, callback, output, suppressErrors) {
 }
 
 function callbackInvokerBuilder(output) {
-  return function(err, state, callback) {
-    report(err, callback, state[output], state.options.suppressErrors);
+  return function(err, state) {
+    report(err, state.callback, state[output], state.options.suppressErrors);
   };
 }

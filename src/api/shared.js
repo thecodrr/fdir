@@ -3,7 +3,7 @@ const { cleanPath } = require("../utils");
 const fns = require("./fns");
 const readdirOpts = { withFileTypes: true };
 
-function init(dir, options, isSync) {
+function init(dir, options, callback, isSync) {
   if (options.resolvePaths) dir = pathResolve(dir);
   if (options.normalizePath) dir = cleanPath(dir);
 
@@ -15,6 +15,7 @@ function init(dir, options, isSync) {
     queue: 0,
     counts: { files: 0, dirs: 0 },
     options,
+    callback,
   };
 
   /*

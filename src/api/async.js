@@ -11,11 +11,11 @@ function promise(dir, options) {
 }
 
 function callback(dirPath, options, callback) {
-  const { state, callbackInvoker, dir } = init(dirPath, options, false);
-  walk(state, dir, options.maxDepth, callbackInvoker, state, callback);
+  const { state, callbackInvoker, dir } = init(dirPath, options, callback);
+  walk(state, dir, options.maxDepth, callbackInvoker);
 }
 
-function walk(state, dir, currentDepth, callback, ...args) {
+function walk(state, dir, currentDepth, callback) {
   if (currentDepth < 0) {
     --state.queue;
     return;
@@ -23,12 +23,12 @@ function walk(state, dir, currentDepth, callback, ...args) {
   readdir(dir, readdirOpts, function(error, dirents) {
     if (error) {
       --state.queue;
-      callback(error, ...args);
+      callback(error, state);
       return;
     }
 
-    walkSingleDir(walk, state, dir, dirents, currentDepth, callback, ...args);
-    if (--state.queue < 0) callback(null, ...args);
+    walkSingleDir(walk, state, dir, dirents, currentDepth, callback);
+    if (--state.queue < 0) callback(null, state);
   });
 }
 

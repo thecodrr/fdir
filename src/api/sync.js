@@ -2,7 +2,7 @@ const { readdirSync } = require("../compat/fs");
 const { init, walkSingleDir, readdirOpts } = require("./shared");
 
 function sync(dirPath, options) {
-  const { state, callbackInvoker, dir } = init(dirPath, options, true);
+  const { state, callbackInvoker, dir } = init(dirPath, options, null, true);
   walk(state, dir, options.maxDepth);
   return callbackInvoker(state);
 }
