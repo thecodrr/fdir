@@ -27,12 +27,12 @@ jobs:
         env:
           CI: true
       - name: Send Report to Coveralls
-        uses: coverallsapp/github-action@v1.0.1
+        uses: coverallsapp/github-action@v1.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
       - name: Send Parallel Finished
-        uses: coverallsapp/github-action@v1.0.1
+        uses: coverallsapp/github-action@v1.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
