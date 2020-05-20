@@ -15,7 +15,7 @@ if (!Dirent) {
         let path = `${dir}${sep}${name}`;
         lstat(path, (err, stat) => {
           if (err) return process.nextTick(callback, err, null);
-          dirents[dirents.length] = getDirent(stat);
+          dirents[dirents.length] = getDirent(name, stat);
           if (dirents.length === files.length) {
             process.nextTick(callback, null, dirents);
           }
@@ -31,12 +31,12 @@ if (!Dirent) {
       let name = files[i];
       let path = `${dir}${sep}${name}`;
       const stat = lstatSync(path);
-      dirents[dirents.length] = getDirent(stat);
+      dirents[dirents.length] = getDirent(name, stat);
     }
     return dirents;
   };
 
-  function getDirent(stat) {
+  function getDirent(name, stat) {
     return {
       name,
       isFile: () => stat.isFile(),
