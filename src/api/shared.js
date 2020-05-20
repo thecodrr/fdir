@@ -80,7 +80,6 @@ function buildFunctions(options, isSync) {
 module.exports = { buildFunctions, init, walkSingleDir, readdirOpts };
 
 function buildPushFile(filters, onlyCountsVar) {
-  // build function for adding paths to array
   if (filters.length && onlyCountsVar) {
     pushFile = fns.pushFileFilterAndCount(filters);
   } else if (filters.length) {
@@ -93,7 +92,6 @@ function buildPushFile(filters, onlyCountsVar) {
 }
 
 function buildCallbackInvoker(onlyCountsVar, isSync) {
-  // build callback invoker
   if (onlyCountsVar) {
     callbackInvoker = isSync
       ? fns.callbackInvokerOnlyCountsSync
