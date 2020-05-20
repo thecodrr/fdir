@@ -28,15 +28,7 @@ function init(dir, options, callback, isSync) {
   return { state, callbackInvoker, dir };
 }
 
-function walkSingleDir(
-  walk,
-  state,
-  dir,
-  dirents,
-  currentDepth,
-  callback,
-  ...args
-) {
+function walkSingleDir(walk, state, dir, dirents, currentDepth, callback) {
   pushDir(dir, state.paths);
   // in cases where we have / as path
   if (dir === sep) dir = "";
@@ -51,15 +43,7 @@ function walkSingleDir(
       pushFile(filename, files, dir, state);
     } else if (dirent.isDirectory()) {
       let dirPath = `${dir}${sep}${dirent.name}`;
-      walkDir(
-        walk,
-        state,
-        dirPath,
-        dirent.name,
-        currentDepth - 1,
-        callback,
-        ...args
-      );
+      walkDir(walk, state, dirPath, dirent.name, currentDepth - 1, callback);
     }
   }
 

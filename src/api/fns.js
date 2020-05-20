@@ -43,17 +43,9 @@ module.exports.joinPath = function(filename) {
 
 /** WALK DIR */
 module.exports.walkDirExclude = function(exclude) {
-  return function(walk, state, path, dir, currentDepth, callback, ...args) {
+  return function(walk, state, path, dir, currentDepth, callback) {
     if (!exclude(dir)) {
-      module.exports.walkDir(
-        walk,
-        state,
-        path,
-        dir,
-        currentDepth,
-        callback,
-        ...args
-      );
+      module.exports.walkDir(walk, state, path, dir, currentDepth, callback);
     }
   };
 };
@@ -64,12 +56,11 @@ module.exports.walkDir = function(
   path,
   _dir,
   currentDepth,
-  callback,
-  ...args
+  callback
 ) {
   state.queue++;
   state.counts.dirs++;
-  walk(state, path, currentDepth, callback, ...args);
+  walk(state, path, currentDepth, callback);
 };
 
 /** GROUP FILES */
