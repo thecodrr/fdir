@@ -60,16 +60,7 @@ function buildFunctions(options, isSync) {
     excludeFn,
   } = options;
 
-  // build function for adding paths to array
-  if (filters.length && onlyCountsVar) {
-    pushFile = fns.pushFileFilterAndCount(filters);
-  } else if (filters.length) {
-    pushFile = fns.pushFileFilter(filters);
-  } else if (onlyCountsVar) {
-    pushFile = fns.pushFileCount;
-  } else {
-    pushFile = fns.pushFile;
-  }
+  buildPushFile(filters, onlyCountsVar);
 
   pushDir = includeDirs ? fns.pushDir : fns.empty;
 
@@ -83,6 +74,25 @@ function buildFunctions(options, isSync) {
   groupFiles = groupVar ? fns.groupFiles : fns.empty;
   getArray = groupVar ? fns.getArrayGroup : fns.getArray;
 
+  buildCallbackInvoker(onlyCountsVar, isSync);
+}
+
+module.exports = { buildFunctions, init, walkSingleDir, readdirOpts };
+
+function buildPushFile(filters, onlyCountsVar) {
+  // build function for adding paths to array
+  if (filters.length && onlyCountsVar) {
+    pushFile = fns.pushFileFilterAndCount(filters);
+  } else if (filters.length) {
+    pushFile = fns.pushFileFilter(filters);
+  } else if (onlyCountsVar) {
+    pushFile = fns.pushFileCount;
+  } else {
+    pushFile = fns.pushFile;
+  }
+}
+
+function buildCallbackInvoker(onlyCountsVar, isSync) {
   // build callback invoker
   if (onlyCountsVar) {
     callbackInvoker = isSync
@@ -94,8 +104,6 @@ function buildFunctions(options, isSync) {
       : fns.callbackInvokerDefaultAsync;
   }
 }
-
-module.exports = { buildFunctions, init, walkSingleDir, readdirOpts };
 
 /* Dummies that will be filled later conditionally based on options */
 var pushFile = fns.empty;
