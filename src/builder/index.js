@@ -77,10 +77,10 @@ Builder.prototype.glob = function(...patterns) {
       `Please install picomatch: "npm i picomatch" to use glob matching.`
     );
   }
-  var isMatch = globCache[patterns.join("||")];
+  var isMatch = globCache[patterns.join()];
   if (!isMatch) {
     isMatch = pm(patterns, { dot: true });
-    globCache[patterns.join("||")] = isMatch;
+    globCache[patterns.join()] = isMatch;
   }
   this.filters.push((path) => isMatch(path));
   return this;
