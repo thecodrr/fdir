@@ -15,11 +15,7 @@ if (!Dirent) {
         let path = `${dir}${sep}${name}`;
         lstat(path, (err, stat) => {
           if (err) return process.nextTick(callback, err, null);
-          dirents[dirents.length] = {
-            name,
-            isFile: () => stat.isFile(),
-            isDirectory: () => stat.isDirectory(),
-          };
+          dirents[dirents.length] = getDirent(stat);
           if (dirents.length === files.length) {
             process.nextTick(callback, null, dirents);
           }
@@ -27,6 +23,7 @@ if (!Dirent) {
       }
     });
   };
+
   module.exports.readdirSync = function(dir) {
     const files = readdirSync(dir);
     let dirents = [];
@@ -34,14 +31,18 @@ if (!Dirent) {
       let name = files[i];
       let path = `${dir}${sep}${name}`;
       const stat = lstatSync(path);
-      dirents[dirents.length] = {
-        name,
-        isFile: () => stat.isFile(),
-        isDirectory: () => stat.isDirectory(),
-      };
+      dirents[dirents.length] = getDirent(stat);
     }
     return dirents;
   };
+
+  function getDirent(stat) {
+    return {
+      name,
+      isFile: () => stat.isFile(),
+      isDirectory: () => stat.isDirectory(),
+    };
+  }
 } else {
   module.exports = { readdirSync, readdir };
 }
