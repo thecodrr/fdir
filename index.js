@@ -1,1 +1,1 @@
-module.exports = require("./src/builder");
+module.exports.fdir = require("./src/builder");

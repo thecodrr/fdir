@@ -117,5 +117,5 @@ declare module "fdir" {
     crawlWithOptions(dirPath: string, options: Options): APIBuilder;
   }
 
-  export default Builder;
+  export { Builder as fdir };
 }
