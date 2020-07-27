@@ -1,4 +1,4 @@
-const fdir = require("../index.js");
+const { fdir } = require("../index.js");
 const mock = require("mock-fs");
 
 beforeEach(() => {
