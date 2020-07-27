@@ -49,7 +49,7 @@ $ yarn add fdir
 ### Usage
 
 ```js
-const fdir = require("fdir").default;
+const fdir = require("fdir");
 
 // create the builder
 const api = new fdir().withFullPaths().crawl("path/to/dir");

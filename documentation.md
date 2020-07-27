@@ -40,7 +40,7 @@ You will also need to import fdir at the top of your file, like this:
 **ES5 Require**
 
 ```js
-const fdir = require("fdir").default;
+const fdir = require("fdir");
 ```
 
 **ES6 Import**
