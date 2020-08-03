@@ -28,7 +28,7 @@
 
 ## Support
 
-> Do you like this project? **[Support me by donating](https://ko-fi.com/thecodrr)**, creating an issue, becoming a stargazer or opening a pull request. Thanks.
+> Do you like this project? **[Support me by donating](https://ko-fi.com/thecodrr)**, creating an issue, becoming a stargazer, or opening a pull request. Thanks.
 
 ## 🚄 Quickstart
 
@@ -65,32 +65,31 @@ api.withPromise().then((files) => {
 
 ## Documentation:
 
-I have written an [in-depth documentation here](https://github.com/thecodrr/fdir/blob/master/documentation.md).
+I have written [in-depth documentation here](https://github.com/thecodrr/fdir/blob/master/documentation.md).
 
 ## 📊 Benchmarks:
 
 **Specs:**
 
-- Intel i7 7th Generation (7700HQ)
-- 16 GB of RAM
-- 256 GB SSD
+- CPU: Intel i7 7th Generation (7700HQ)
+- RAM: 16 GB
+- Storage: 256 GB SSD
 - OS: Manjaro Linux
 - Directory Size: < 2k files
 
 **Notes:**
 
-- Some people asked that I benchmark `no-op` (without options) version of `fdir`. I did and found no performance difference. The results were identical. (I didn't include it here as it wasn't anything special.)
-- Some other people were doubtful about the authenticity of these results due to _frequency scaling_, _process overload_, _disk warmup_ etc. So I have updated the benchmark with new results that should resolve all those doubts. Here's the process I followed:
-
-  - Hard shutdown the laptop (a couple of times just to be sure) to clear disk, ram cache etc.
-  - Login directly to a TTY (avoiding any unnecessary process from starting).
-  - Disable CPU Scaling using
-
-  ```sh
-  $ sudo cpupower frequency-set --governor performance
-  ```
-
-  - Run the benchmark
+- Some people asked that I benchmark `no-op` (without options) version of `fdir`. 
+    - I did and found no performance difference. The results were identical. (I didn't include it here as it wasn't anything special.)
+- Some other people were doubtful about the authenticity of these results due to _frequency scaling_, _process overload_, _disk warmup_, etc. 
+    - So I have updated the benchmark with new results that should resolve all those doubts. Here's the process I followed:
+    - Hard shutdown the laptop (a couple of times just to be sure) to clear disk, ram cache etc.
+    - Login directly to a TTY (avoiding any unnecessary process from starting).
+    - Disable CPU Scaling using
+      ```sh
+      $ sudo cpupower frequency-set --governor performance
+      ```
+    - Run the benchmark
 
 ### The Fastest Globber
 
@@ -132,4 +131,4 @@ _Older versions of fdir (1.x & 2.x) used synchronous `lstat` call (`lstatSync`) 
 
 ## 🦮 LICENSE
 
-Copyright (c) 2020 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
+Copyright &copy; 2020 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
