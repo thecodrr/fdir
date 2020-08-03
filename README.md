@@ -83,13 +83,13 @@ I have written [in-depth documentation here](https://github.com/thecodrr/fdir/bl
     - I did and found no performance difference. The results were identical. (I didn't include it here as it wasn't anything special.)
 - Some other people were doubtful about the authenticity of these results due to _frequency scaling_, _process overload_, _disk warmup_, etc. 
     - So I have updated the benchmark with new results that should resolve all those doubts. Here's the process I followed:
-- Hard shutdown the laptop (a couple of times just to be sure) to clear disk, ram cache etc.
-- Login directly to a TTY (avoiding any unnecessary process from starting).
-- Disable CPU Scaling using
-  ```sh
-  $ sudo cpupower frequency-set --governor performance
-  ```
-- Run the benchmark
+    - Hard shutdown the laptop (a couple of times just to be sure) to clear disk, ram cache etc.
+    - Login directly to a TTY (avoiding any unnecessary process from starting).
+    - Disable CPU Scaling using
+      ```sh
+      $ sudo cpupower frequency-set --governor performance
+      ```
+    - Run the benchmark
 
 ### The Fastest Globber
 
