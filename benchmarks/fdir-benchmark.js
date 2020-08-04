@@ -1,7 +1,7 @@
 const b = require("benny");
 const child_process = require("child_process");
 
-const versions = ["3.0.0", "3.1.0", "3.2.0", "3.2.1", "3.3.0", "3.4.0"];
+const versions = ["4.0.0"];
 
 function versionNormalizer(version) {
   return version.replace(/\./g, "");
@@ -12,7 +12,7 @@ const asyncSuites = [];
 
 function makeSuite(version) {
   const normalized = versionNormalizer(version);
-  const fdir = require(`fdir${normalized}`);
+  const { fdir } = require(`fdir${normalized}`);
   addSuite(fdir, version);
 }
 
@@ -33,7 +33,7 @@ function fillSuites() {
   versions.forEach((version) => {
     makeSuite(version);
   });
-  const fdir = require("../index");
+  const { fdir } = require("../index");
   addSuite(fdir, "current");
 }
 
@@ -63,7 +63,7 @@ function getPackageAlias(version) {
 
 function getCounts() {
   const normalized = versionNormalizer(versions.pop());
-  const fdir = require(`fdir${normalized}`);
+  const { fdir } = require(`fdir${normalized}`);
   return new fdir()
     .onlyCounts()
     .crawl("node_modules")
