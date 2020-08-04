@@ -1,4 +1,4 @@
-const fdir = require("fdir3");
+const { fdir } = require("fdir4");
 const glob = require("glob");
 const fg = require("fast-glob");
 const b = require("benny");

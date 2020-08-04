@@ -1,4 +1,5 @@
-const fdir = require("fdir3");
+const { fdir } = require("fdir4");
+const fdir3 = require("fdir3");
 const fdir1 = require("fdir1");
 const fdir2 = require("fdir2");
 const allFilesInTree = require("all-files-in-tree");
@@ -33,6 +34,9 @@ async function benchmark() {
     b.add("fdir 2.1.1 sync", () => {
       fdir2.sync("node_modules");
     }),
+    b.add("fdir 3.4.2 sync", () => {
+      fdir3.sync("node_modules");
+    }),
     b.add(`get-all-files sync`, () => {
       getAllFiles.sync.array("node_modules");
     }),
@@ -62,6 +66,9 @@ async function benchmark() {
     `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
     b.add(`fdir ${packageJson.version} async`, async () => {
       await new fdir().crawl("node_modules").withPromise();
+    }),
+    b.add(`fdir 3.4.2 async`, async () => {
+      await new fdir3().crawl("node_modules").withPromise();
     }),
     b.add("recursive-fs async", async () => {
       await new Promise((resolve) => {
