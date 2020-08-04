@@ -1,6 +1,6 @@
 {
   "name": "fdir",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "The fastest directory crawler for NodeJS. Crawls 10k files in 13ms.",
   "main": "index.js",
   "scripts": {
@@ -42,6 +42,7 @@
     "fdir1": "npm:fdir@1.2.0",
     "fdir2": "npm:fdir@2.1.0",
     "fdir3": "npm:fdir@3.4.2",
+    "fdir4": "npm:fdir@4.1.0",
     "fs-readdir-recursive": "^1.1.0",
     "get-all-files": "^2.0.0",
     "glob": "^7.1.6",
