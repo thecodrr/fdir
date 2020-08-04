@@ -32,7 +32,7 @@
           min-height: 15%;
         }
       </style>
-      <title>fdir vs globbers - (1457 files, 470 folders)</title>
+      <title>fdir vs globbers - (1466 files, 476 folders)</title>
       <script>
         const format = (num) => {
         const chunked = []
@@ -52,29 +52,29 @@
      </script>
     </head>
     <body>
-    <h1>fdir vs globbers - (1457 files, 470 folders)</h1>
+    <h1>fdir vs globbers - (1466 files, 476 folders)</h1>
     <p>System Information:</p>
     <pre id="code">CPU: Intel® Core™ i7-7700HQ 2.80GHz
 Cores: 8 (4 Physical)
 RAM: 16GB
 Disk: Toshiba TOSHIBA_THNSNJ256G8NY 238GB SSD (SATA)
 OS: ManjaroLinux Lysia (linux)
-Kernel: 5.5.19-1-MANJARO x64
-Node: v14.2.0
-V8: 8.1.307.31-node.33</pre>
+Kernel: 5.7.9-1-MANJARO x64
+Node: v14.5.0
+V8: 8.3.110.9-node.23</pre>
     
             <div style="max-width: 800px;">
-              <canvas id="chart1589815061349" width="16" height="9"></canvas>
+              <canvas id="chart1596555149618" width="16" height="9"></canvas>
             </div>
             <script>
-              const ctx1589815061349 = document.getElementById('chart1589815061349').getContext('2d')
-              const chart1589815061349 = new Chart(ctx1589815061349, {
+              const ctx1596555149618 = document.getElementById('chart1596555149618').getContext('2d')
+              const chart1596555149618 = new Chart(ctx1596555149618, {
                 type: 'bar',
                 data: {
-                  labels: ["fdir 3.4.2 async","glob async","fast-glob async"],
+                  labels: ["fdir 4.1.0 async","glob async","fast-glob async"],
                   datasets: [
                     {
-                      data: [355,13,118],
+                      data: [350,12,109],
                       backgroundColor: ["rgba(63, 142, 252, 0.8)","rgba(116, 165, 127, 0.8)","rgba(158, 206, 154, 0.8)"],
                       borderColor: ["rgba(63, 142, 252, 1)","rgba(116, 165, 127, 1)","rgba(158, 206, 154, 1)"],
                       borderWidth: 1,
@@ -87,7 +87,7 @@ V8: 8.1.307.31-node.33</pre>
                   },
                   title: {
                     display: true,
-                    text: 'Asynchronous (1457 files, 470 folders)',
+                    text: 'Asynchronous (1466 files, 476 folders)',
                     fontSize: 12,
                     padding: 20,
                   },
@@ -128,17 +128,17 @@ V8: 8.1.307.31-node.33</pre>
             </script>
     
             <div style="max-width: 800px;">
-              <canvas id="chart1589815078076" width="16" height="9"></canvas>
+              <canvas id="chart1596555165983" width="16" height="9"></canvas>
             </div>
             <script>
-              const ctx1589815078076 = document.getElementById('chart1589815078076').getContext('2d')
-              const chart1589815078076 = new Chart(ctx1589815078076, {
+              const ctx1596555165983 = document.getElementById('chart1596555165983').getContext('2d')
+              const chart1596555165983 = new Chart(ctx1596555165983, {
                 type: 'bar',
                 data: {
-                  labels: ["fdir 3.4.2 sync","glob sync","fast-glob sync"],
+                  labels: ["fdir 4.1.0 sync","glob sync","fast-glob sync"],
                   datasets: [
                     {
-                      data: [204,20,135],
+                      data: [182,18,122],
                       backgroundColor: ["rgba(63, 142, 252, 0.8)","rgba(116, 165, 127, 0.8)","rgba(158, 206, 154, 0.8)"],
                       borderColor: ["rgba(63, 142, 252, 1)","rgba(116, 165, 127, 1)","rgba(158, 206, 154, 1)"],
                       borderWidth: 1,
@@ -151,7 +151,7 @@ V8: 8.1.307.31-node.33</pre>
                   },
                   title: {
                     display: true,
-                    text: 'Synchronous (1457 files, 470 folders)',
+                    text: 'Synchronous (1466 files, 476 folders)',
                     fontSize: 12,
                     padding: 20,
                   },
