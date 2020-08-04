@@ -11,7 +11,8 @@ function init(dir, options, callback, isSync) {
    * execution is independent of each other.
    */
   const state = {
-    paths: [],
+    // Perf: we explicitly tell the compiler to optimize for String arrays
+    paths: [""].slice(0, 0),
     queue: 0,
     counts: { files: 0, dirs: 0 },
     options,

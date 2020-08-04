@@ -5,7 +5,7 @@ module.exports.getArray = function(state) {
   return state.paths;
 };
 module.exports.getArrayGroup = function() {
-  return [];
+  return [""].slice(0, 0);
 };
 
 /** PUSH FILE */
