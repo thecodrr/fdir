@@ -8,7 +8,8 @@
     "test:coverage": "jest __tests__/fdir.test.js --coverage",
     "bench": "node benchmarks/benchmark.js",
     "bench:glob": "node benchmarks/glob-benchmark.js",
-    "bench:fdir": "node benchmarks/fdir-benchmark.js"
+    "bench:fdir": "node benchmarks/fdir-benchmark.js",
+    "release": "./scripts/release.sh"
   },
   "repository": {
     "type": "git",
