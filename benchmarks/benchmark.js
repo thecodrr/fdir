@@ -35,7 +35,7 @@ async function benchmark() {
       fdir2.sync("node_modules");
     }),
     b.add("fdir 3.4.2 sync", () => {
-      fdir3.sync("node_modules");
+      new fdir3().crawl("node_modules").sync("node_modules");
     }),
     b.add(`get-all-files sync`, () => {
       getAllFiles.sync.array("node_modules");
