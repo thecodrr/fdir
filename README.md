@@ -18,13 +18,15 @@
 
 💡 **Stupidly Easy:** `fdir` uses expressive Builder pattern to build the crawler increasing code readability.
 
-🤖 **Zero Dependencies:** `fdir` only uses NodeJS `fs` & `path` modules.
+🤖 **Zero Dependencies\*:** `fdir` only uses NodeJS `fs` & `path` modules.
 
 🕺 **Astonishingly Small:** < 2KB in size gzipped & minified.
 
 🔥 **All Node Versions Supported:** Unlike other similar libraries that have dropped support for Node versions < 10, `fdir` supports all versions >= 6.
 
 🖮 **Hackable:** Extending `fdir` is extremely simple now that the new Builder API is here. Feel free to experiment around.
+
+_\* `picomatch` must be installed manually by the user to support globbing._
 
 ## Support
 
