@@ -32,6 +32,19 @@ _\* `picomatch` must be installed manually by the user to support globbing._
 
 > Do you like this project? **[Support me by donating](https://ko-fi.com/thecodrr)**, creating an issue, becoming a stargazer, or opening a pull request. Thanks.
 
+## Status
+
+This project is **not dead**. In terms of performance, I don't think there is anything more to be done. This is as fast a NodeJS Directory Crawler as you can get. I could be wrong though.
+
+**What's next:**
+1. There is still no Async Iterator API (contributions welcome).
+2. We need to discuss whether its feasible (or even sensible) to have event emitters in different parts of the crawling process.
+3. Make globbing pluggable
+4. Finalize and freeze the API
+5. Improve documentation (maybe we can make a proper documentation website?)
+
+Contributions are welcome in all these.
+
 ## 🚄 Quickstart
 
 ### Installation
