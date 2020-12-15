@@ -218,7 +218,9 @@ const crawler = new fdir()
 
 ### `exclude(Function)`
 
-Applies an exclusion filter to all directories and only crawls those that do not satisfy the condition.
+Applies an exclusion filter to all directories and only crawls those that do not satisfy the condition. Useful for speeding up crawling if you know you can ignore some directories.
+
+The function receives two parameters: the first is the name of the directory, and the second is the absolute path to it.
 
 > _Currently, you can apply only one exclusion filter per crawler. This might change._
 
@@ -226,7 +228,7 @@ Applies an exclusion filter to all directories and only crawls those that do not
 
 ```js
 // do not crawl into hidden directories
-const crawler = new fdir().exclude((dir) => dir.startsWith("."));
+const crawler = new fdir().exclude((dirName, dirPath) => dirName.startsWith("."));
 ```
 
 ### `crawl(string)`
