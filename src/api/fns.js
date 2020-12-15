@@ -44,7 +44,7 @@ module.exports.joinPath = function(filename) {
 /** WALK DIR */
 module.exports.walkDirExclude = function(exclude) {
   return function(walk, state, path, dir, currentDepth, callback) {
-    if (!exclude(dir)) {
+    if (!exclude(dir, path)) {
       module.exports.walkDir(walk, state, path, dir, currentDepth, callback);
     }
   };
