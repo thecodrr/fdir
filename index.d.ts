@@ -4,7 +4,7 @@ declare module "fdir" {
   export type PathsOutput = string[];
 
   type FilterFn = (filePath: string) => boolean;
-  type ExcludeFn = (dirPath: string) => boolean;
+  type ExcludeFn = (dirName: string, dirPath: string) => boolean;
   type Callback = (error: Error, output: Output) => void;
 
   type Group = { dir: string; files: string[] };
