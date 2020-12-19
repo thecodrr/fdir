@@ -1,5 +1,5 @@
 const { readdir } = require("../compat/fs");
-const { init, walkSingleDir, readdirOpts } = require("./shared");
+const { makeWalkerFunctions, readdirOpts } = require("./shared");
 
 function promise(dir, options) {
   return new Promise((resolve, reject) => {
@@ -11,25 +11,28 @@ function promise(dir, options) {
 }
 
 function callback(dirPath, options, callback) {
-  const { state, callbackInvoker, dir } = init(dirPath, options, callback);
-  walk(state, dir, options.maxDepth, callbackInvoker);
-}
+  const { init, walkSingleDir } = makeWalkerFunctions();
 
-function walk(state, dir, currentDepth, callback) {
-  if (currentDepth < 0) {
-    --state.queue;
-    return;
-  }
-  readdir(dir, readdirOpts, function(error, dirents) {
-    if (error) {
+  const { state, callbackInvoker, dir } = init(dirPath, options, callback);
+
+  function walk(state, dir, currentDepth, callback) {
+    if (currentDepth < 0) {
       --state.queue;
-      callback(error, state);
       return;
     }
+    readdir(dir, readdirOpts, function(error, dirents) {
+      if (error) {
+        --state.queue;
+        callback(error, state);
+        return;
+      }
+  
+      walkSingleDir(walk, state, dir, dirents, currentDepth, callback);
+      if (--state.queue < 0) callback(null, state);
+    });
+  }
 
-    walkSingleDir(walk, state, dir, dirents, currentDepth, callback);
-    if (--state.queue < 0) callback(null, state);
-  });
+  walk(state, dir, options.maxDepth, callbackInvoker);
 }
 
 module.exports = { promise, callback };

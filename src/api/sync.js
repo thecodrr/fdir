@@ -1,5 +1,10 @@
 const { readdirSync } = require("../compat/fs");
-const { init, walkSingleDir, readdirOpts } = require("./shared");
+const { makeWalkerFunctions, readdirOpts } = require("./shared");
+
+// For sync usage, we can reuse the same walker functions, because
+// there will not be concurrent calls overwriting the 'built functions'
+// in the middle of everything.
+const { init, walkSingleDir } = makeWalkerFunctions();
 
 function sync(dirPath, options) {
   const { state, callbackInvoker, dir } = init(dirPath, options, null, true);
