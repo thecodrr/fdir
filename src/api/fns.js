@@ -84,11 +84,8 @@ module.exports.callbackInvokerOnlyCountsAsync = callbackInvokerBuilder(
 module.exports.callbackInvokerDefaultAsync = callbackInvokerBuilder("paths");
 
 function report(err, callback, output, suppressErrors) {
-  if (err) {
-    if (!suppressErrors) callback(err, null);
-    return;
-  }
-  callback(null, output);
+  if (err && !suppressErrors) callback(err, null);
+  else callback(null, output);
 }
 
 function callbackInvokerBuilder(output) {
