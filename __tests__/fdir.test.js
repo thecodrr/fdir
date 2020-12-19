@@ -1,4 +1,5 @@
 const { fdir } = require("../index.js");
+const fs = require("fs");
 const mock = require("mock-fs");
 
 beforeEach(() => {
@@ -152,6 +153,30 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     const api = new fdir().onlyCounts().crawl("node_modules");
     const result = await api[type]();
     expect(result.files).toBeGreaterThan(0);
+  });
+
+  test("crawl and return only directories", async () => {
+    const api = new fdir().onlyDirs().crawl("node_modules");
+    const result = await api[type]();
+    expect(result.length).toBeGreaterThan(0);
+    expect(
+      result.every((dir) => {
+        return fs.statSync(dir).isDirectory;
+      })
+    ).toBe(true);
+  });
+
+  test("crawl with options and return only directories", async () => {
+    const api = new fdir().crawlWithOptions("node_modules", {
+      excludeFiles: true,
+    });
+    const result = await api[type]();
+    expect(result.length).toBeGreaterThan(0);
+    expect(
+      result.every((dir) => {
+        return fs.statSync(dir).isDirectory;
+      })
+    ).toBe(true);
   });
 
   test("crawl and filter all files and get only counts", async () => {

@@ -21,6 +21,7 @@ declare module "fdir" {
     group?: boolean;
     onlyCounts?: boolean;
     filters?: FilterFn[];
+    excludeFiles?: boolean;
     exclude?: ExcludeFn;
   };
 
@@ -102,6 +103,11 @@ declare module "fdir" {
      * Return only counts in output
      */
     onlyCounts(): Builder;
+
+    /**
+     * Ignore all files and return only directories
+     */
+    onlyDirs(): Builder;
 
     /**
      * Finalize settings and start crawling

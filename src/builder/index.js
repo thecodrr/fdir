@@ -26,6 +26,11 @@ Builder.prototype.crawlWithOptions = function(path, options) {
   options.onlyCountsVar = options.onlyCounts;
   options.excludeFn = options.exclude;
   options.filters = options.filters || [];
+
+  if (options.excludeFiles) {
+    options.includeDirs = true;
+  }
+
   return new APIBuilder(path, options);
 };
 
@@ -70,6 +75,12 @@ Builder.prototype.filter = function(filterFn) {
   return this;
 };
 
+Builder.prototype.onlyDirs = function() {
+  this.excludeFiles = true;
+  this.includeDirs = true;
+  return this;
+};
+
 Builder.prototype.glob = function(...patterns) {
   /* istanbul ignore next */
   if (!pm) {
@@ -77,10 +88,10 @@ Builder.prototype.glob = function(...patterns) {
       `Please install picomatch: "npm i picomatch" to use glob matching.`
     );
   }
-  var isMatch = globCache[patterns.join('\0')];
+  var isMatch = globCache[patterns.join("\0")];
   if (!isMatch) {
     isMatch = pm(patterns, { dot: true });
-    globCache[patterns.join('\0')] = isMatch;
+    globCache[patterns.join("\0")] = isMatch;
   }
   this.filters.push((path) => isMatch(path));
   return this;

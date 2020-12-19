@@ -156,6 +156,16 @@ Using this will affect the output structure. In place of a simple array of file 
 const { files, dirs } = new fdir().onlyCounts().sync();
 ```
 
+### `onlyDirs`
+
+Ignore all files and return only the directory paths. Might be a little faster.
+
+**Usage**
+
+```js
+const crawler = new fdir().onlyDirs();
+```
+
 ### `normalize`
 
 Normalize the given directory path using `path.normalize`.
@@ -228,7 +238,9 @@ The function receives two parameters: the first is the name of the directory, an
 
 ```js
 // do not crawl into hidden directories
-const crawler = new fdir().exclude((dirName, dirPath) => dirName.startsWith("."));
+const crawler = new fdir().exclude((dirName, dirPath) =>
+  dirName.startsWith(".")
+);
 ```
 
 ### `crawl(string)`
@@ -330,6 +342,7 @@ type Options = {
   group?: boolean;
   onlyCounts?: boolean;
   filters?: FilterFn[];
+  excludeFiles?: boolean;
   exclude?: ExcludeFn;
 };
 ```

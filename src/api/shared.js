@@ -14,8 +14,8 @@ function makeWalkerFunctions() {
     if (options.normalizePath) dir = cleanPath(dir);
 
     /* We use a local state object instead of direct global variables so that each function
-    * execution is independent of each other.
-    */
+     * execution is independent of each other.
+     */
     const state = {
       // Perf: we explicitly tell the compiler to optimize for String arrays
       paths: [""].slice(0, 0),
@@ -26,10 +26,10 @@ function makeWalkerFunctions() {
     };
 
     /*
-    * Perf: We conditionally change functions according to options. This gives a slight
-    * performance boost. Since these functions are so small, they are automatically inlined
-    * by the engine so there's no function call overhead (in most cases).
-    */
+     * Perf: We conditionally change functions according to options. This gives a slight
+     * performance boost. Since these functions are so small, they are automatically inlined
+     * by the engine so there's no function call overhead (in most cases).
+     */
     buildFunctions(options, isSync);
 
     return { state, callbackInvoker, dir };
@@ -65,9 +65,10 @@ function makeWalkerFunctions() {
       includeDirs,
       groupVar,
       excludeFn,
+      excludeFiles,
     } = options;
 
-    buildPushFile(filters, onlyCountsVar);
+    buildPushFile(filters, onlyCountsVar, excludeFiles);
 
     pushDir = includeDirs ? fns.pushDir : fns.empty;
 
@@ -84,7 +85,11 @@ function makeWalkerFunctions() {
     buildCallbackInvoker(onlyCountsVar, isSync);
   }
 
-  function buildPushFile(filters, onlyCountsVar) {
+  function buildPushFile(filters, onlyCountsVar, excludeFiles) {
+    if (excludeFiles) {
+      return;
+    }
+
     if (filters.length && onlyCountsVar) {
       pushFile = fns.pushFileFilterAndCount(filters);
     } else if (filters.length) {
