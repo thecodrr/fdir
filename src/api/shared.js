@@ -70,7 +70,11 @@ function makeWalkerFunctions() {
 
     buildPushFile(filters, onlyCountsVar, excludeFiles);
 
-    pushDir = includeDirs ? fns.pushDir : fns.empty;
+    pushDir = includeDirs
+      ? filters.length
+        ? fns.pushDirFilter(filters)
+        : fns.pushDir
+      : fns.empty;
 
     // build function for joining paths
     joinPath = includeBasePath ? fns.joinPathWithBasePath : fns.joinPath;

@@ -213,24 +213,26 @@ const crawler = new fdir().glob("./**/*.js", "./**/*.md");
 
 ### `filter(Function)`
 
-Applies a filter to all files and only adds those that satisfy it.
+Applies a filter to all directories and files and only adds those that satisfy the filter.
 
-> _You can now apply multiple filters._
+> _Multiple filters are joined using AND._
+
+> The function receives two parameters: the first is the path of the item, and the second is a flag that indicates whether the item is a directory or not.
 
 **Usage**
 
 ```js
 // only get hidden & .js files
 const crawler = new fdir()
-  .filter((path) => path.startsWith("."))
-  .filter((path) => path.endsWith(".js"));
+  .filter((path, isDirectory) => path.startsWith("."))
+  .filter((path, isDirectory) => path.endsWith(".js"));
 ```
 
 ### `exclude(Function)`
 
 Applies an exclusion filter to all directories and only crawls those that do not satisfy the condition. Useful for speeding up crawling if you know you can ignore some directories.
 
-The function receives two parameters: the first is the name of the directory, and the second is the absolute path to it.
+> The function receives two parameters: the first is the name of the directory, and the second is the path to it.
 
 > _Currently, you can apply only one exclusion filter per crawler. This might change._
 

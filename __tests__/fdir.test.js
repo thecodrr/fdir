@@ -208,6 +208,15 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     expect(result.length).toBeGreaterThan(0);
   });
 
+  test("crawl and filter only directories", async () => {
+    const api = new fdir()
+      .onlyDirs()
+      .filter((path) => path.includes("api"))
+      .crawl("./src");
+    const result = await api[type]();
+    expect(result.length).toBe(1);
+  });
+
   test("crawl and give undefined directory path should throw", async () => {
     const api = new fdir().crawl();
     try {

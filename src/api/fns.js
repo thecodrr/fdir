@@ -11,13 +11,15 @@ module.exports.getArrayGroup = function() {
 /** PUSH FILE */
 module.exports.pushFileFilterAndCount = function(filters) {
   return function(filename, _files, _dir, state) {
-    if (filters.every((f) => f(filename))) state.counts.files++;
+    if (filters.every((filter) => filter(filename, false)))
+      state.counts.files++;
   };
 };
 
 module.exports.pushFileFilter = function(filters) {
   return function(filename, files) {
-    if (filters.every((f) => f(filename))) files.push(filename);
+    if (filters.every((filter) => filter(filename, false)))
+      files.push(filename);
   };
 };
 
@@ -31,6 +33,14 @@ module.exports.pushFile = function(filename, files) {
 /** PUSH DIR */
 module.exports.pushDir = function(dirPath, paths) {
   paths.push(dirPath);
+};
+
+module.exports.pushDirFilter = function(filters) {
+  return function(dirPath, paths) {
+    if (filters.every((filter) => filter(dirPath, true))) {
+      paths.push(dirPath);
+    }
+  };
 };
 
 /** JOIN PATH */

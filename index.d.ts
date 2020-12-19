@@ -3,7 +3,7 @@ declare module "fdir" {
   export type OnlyCountsOutput = { files: number; dirs: number };
   export type PathsOutput = string[];
 
-  type FilterFn = (filePath: string) => boolean;
+  type FilterFn = (path: string, isDirectory: boolean) => boolean;
   type ExcludeFn = (dirName: string, dirPath: string) => boolean;
   type Callback = (error: Error, output: Output) => void;
 
