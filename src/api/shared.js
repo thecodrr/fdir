@@ -87,6 +87,7 @@ function makeWalkerFunctions() {
 
   function buildPushFile(filters, onlyCountsVar, excludeFiles) {
     if (excludeFiles) {
+      pushFile = fns.empty;
       return;
     }
 
