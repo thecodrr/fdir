@@ -46,3 +46,12 @@ if (!Dirent) {
 } else {
   module.exports = { readdirSync, readdir };
 }
+module.exports.getRoot = function(dir) {
+  if(dir.startsWith(sep))
+    return sep;
+  let sep_re = new RegExp(`\\${sep}`);
+  let parts = dir.split(sep_re);
+  let root = parts[0];
+  return root;
+}
+module.exports.getWorkingRoot = function() { return module.exports.getRoot(process.cwd()); };

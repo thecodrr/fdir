@@ -1,6 +1,8 @@
 const { fdir } = require("../index.js");
 const fs = require("fs");
+const path = require("path");
 const mock = require("mock-fs");
+const { getWorkingRoot } = require("../src/compat/fs.js");
 
 beforeEach(() => {
   mock.restore();
@@ -44,7 +46,8 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
       maxDepth: 1,
     });
     const files = await api[type]();
-    expect(files.every((file) => file.split("/").length <= 3)).toBe(true);
+    const result = files.every((file) => file.split(path.sep).length <= 3);
+    expect(result).toBe(true);
   });
 
   test("crawl multi depth directory", async () => {
@@ -66,7 +69,8 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
       .withBasePath()
       .crawl("node_modules");
     const files = await api[type]();
-    expect(files.every((file) => file.split("/").length <= 3)).toBe(true);
+    const result = files.every((file) => file.split(path.sep).length <= 3);
+    expect(result).toBe(true);
   });
 
   test("crawl and get files that match a glob pattern", async () => {
@@ -117,7 +121,8 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
   test("get all files in a directory and output full paths (withFullPaths)", async () => {
     const api = new fdir().withFullPaths().crawl("./");
     const files = await api[type]();
-    expect(files.every((file) => file.startsWith("/"))).toBe(true);
+    const result = files.every((file) => path.isAbsolute(file));
+    expect(result).toBe(true);
   });
 
   test("getting files from restricted directory should throw", async () => {
@@ -130,22 +135,29 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
   });
 
   test("getting files from restricted directory shouldn't throw (suppressErrors)", async () => {
-    const api = new fdir().crawl("/etc");
+    const secureDir = 
+      process.platform === 'win32' 
+        ? 'C:\\Windows'
+        : '/etc'
+    ;
+    const api = new fdir().crawl(secureDir);
     const files = await api[type]();
     expect(files.length).toBeGreaterThan(0);
   });
 
   test("recurse root (files should not contain multiple /)", async () => {
+    const root = getWorkingRoot();
     mock({
-      "/": {
+      [root]: {
         etc: {
           hosts: "dooone",
         },
       },
-    });
-    const api = new fdir().normalize().crawl("/");
+    }, { createCwd: false, createTmp: false });
+    const api = new fdir().normalize().crawl(root);
     const files = await api[type]();
-    expect(files.every((file) => !file.includes("/"))).toBe(true);
+    const result = files.every((file) => !file.includes(root));
+    expect(result).toBe(true);
     mock.restore();
   });
 
@@ -194,7 +206,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     const files = api[type]();
     if (files instanceof Promise)
       return files.then((files) => {
-        const res = files.every((file) => !file.includes("/"));
+        const res = files.every((file) => !file.includes(path.sep));
         expect(res).toBe(true);
       });
   });
