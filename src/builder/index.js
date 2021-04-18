@@ -62,6 +62,7 @@ Builder.prototype.withErrors = function() {
 
 Builder.prototype.withSymlinks = function() {
   this.resolveSymlinks = true;
+  this.withFullPaths();
   return this;
 };
 
