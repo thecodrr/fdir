@@ -21,6 +21,7 @@ declare module "fdir" {
     group?: boolean;
     onlyCounts?: boolean;
     filters?: FilterFn[];
+    resolveSymlinks?: boolean;
     excludeFiles?: boolean;
     exclude?: ExcludeFn;
   };
@@ -53,6 +54,11 @@ declare module "fdir" {
      * Include directories in the output
      */
     withDirs(): Builder;
+
+    /**
+     * Resolve and recurse over all symlinks
+     */
+     withSymlinks(): Builder;
 
     /**
      * The depth to crawl to before stopping
