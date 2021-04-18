@@ -44,6 +44,7 @@
     "fdir2": "npm:fdir@2.1.0",
     "fdir3": "npm:fdir@3.4.2",
     "fdir4": "npm:fdir@4.1.0",
+    "fdir5": "npm:fdir@5.0.0",
     "fs-readdir-recursive": "^1.1.0",
     "get-all-files": "^2.0.0",
     "glob": "^7.1.6",

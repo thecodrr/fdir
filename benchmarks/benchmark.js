@@ -1,4 +1,6 @@
-const { fdir } = require("fdir4");
+const { fdir } = require("../index");
+const { fdir: fdir5 } = require("fdir5");
+const { fdir: fdir4 } = require("fdir4");
 const fdir3 = require("fdir3");
 const fdir1 = require("fdir1");
 const fdir2 = require("fdir2");
@@ -37,6 +39,12 @@ async function benchmark() {
     b.add("fdir 3.4.2 sync", () => {
       new fdir3().crawl("node_modules").sync("node_modules");
     }),
+    b.add(`fdir 4.1.0 sync`, () => {
+      new fdir4().crawl("node_modules").sync();
+    }),
+    b.add(`fdir 5.0.0 sync`, () => {
+      new fdir5().crawl("node_modules").sync();
+    }),
     b.add(`get-all-files sync`, () => {
       getAllFiles.sync.array("node_modules");
     }),
@@ -69,6 +77,12 @@ async function benchmark() {
     }),
     b.add(`fdir 3.4.2 async`, async () => {
       await new fdir3().crawl("node_modules").withPromise();
+    }),
+    b.add(`fdir 4.1.0 async`, async () => {
+      await new fdir4().crawl("node_modules").withPromise();
+    }),
+    b.add(`fdir 5.0.0 async`, async () => {
+      await new fdir5().crawl("node_modules").withPromise();
     }),
     b.add("recursive-fs async", async () => {
       await new Promise((resolve) => {
