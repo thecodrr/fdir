@@ -102,6 +102,18 @@ Use this to also add the directories to the output.
 const crawler = new fdir().withDirs();
 ```
 
+### `withSymlinks`
+
+Use this to resolve and recurse over all symlinks.
+
+> NOTE: This will affect crawling performance so use only if required.
+
+**Usage**
+
+```js
+const crawler = new fdir().withSymlinks();
+```
+
 ### `withMaxDepth(number)`
 
 Use this to limit the maximum depth fdir will crawl to before stopping.
