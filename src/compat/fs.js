@@ -41,6 +41,7 @@ if (!Dirent) {
       name,
       isFile: () => stat.isFile(),
       isDirectory: () => stat.isDirectory(),
+      isSymbolicLink: () => stat.isSymbolicLink(),
     };
   }
 } else {

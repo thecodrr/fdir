@@ -1,4 +1,5 @@
 const { sep } = require("path");
+const fs = require("fs");
 
 /* GET ARRAY */
 module.exports.getArray = function(state) {
@@ -53,9 +54,16 @@ module.exports.joinPath = function(filename) {
 
 /** WALK DIR */
 module.exports.walkDirExclude = function(exclude) {
-  return function(walk, state, path, dir, currentDepth, callback) {
+  return function(walk, state, path, dir, currentDepth, walkSingleDir) {
     if (!exclude(dir, path)) {
-      module.exports.walkDir(walk, state, path, dir, currentDepth, callback);
+      module.exports.walkDir(
+        walk,
+        state,
+        path,
+        dir,
+        currentDepth,
+        walkSingleDir
+      );
     }
   };
 };
@@ -66,11 +74,10 @@ module.exports.walkDir = function(
   path,
   _dir,
   currentDepth,
-  callback
+  walkSingleDir
 ) {
-  state.queue++;
   state.counts.dirs++;
-  walk(state, path, currentDepth, callback);
+  walk(state, path, currentDepth, walkSingleDir);
 };
 
 /** GROUP FILES */
@@ -103,3 +110,33 @@ function callbackInvokerBuilder(output) {
     report(err, state.callback, state[output], state.options.suppressErrors);
   };
 }
+
+/** SYMLINK RESOLVER */
+
+module.exports.resolveSymlinksAsync = function(path, state, callback) {
+  state.queue.queue();
+
+  fs.realpath(path, (error, resolvedPath) => {
+    if (error) {
+      state.queue.dequeue(error, state);
+      return;
+    }
+
+    fs.lstat(resolvedPath, (error, stat) => {
+      if (error) {
+        state.queue.dequeue(error, state);
+        return;
+      }
+
+      callback(stat, resolvedPath);
+
+      state.queue.dequeue(null, state);
+    });
+  });
+};
+
+module.exports.resolveSymlinksSync = function(path, _state, callback) {
+  const resolvedPath = fs.realpathSync(path);
+  const stat = fs.lstatSync(resolvedPath);
+  callback(stat, resolvedPath);
+};

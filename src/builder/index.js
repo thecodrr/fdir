@@ -60,6 +60,11 @@ Builder.prototype.withErrors = function() {
   return this;
 };
 
+Builder.prototype.withSymlinks = function() {
+  this.resolveSymlinks = true;
+  return this;
+};
+
 Builder.prototype.group = function() {
   this.groupVar = true;
   return this;

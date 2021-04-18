@@ -19,7 +19,6 @@ function makeWalkerFunctions() {
     const state = {
       // Perf: we explicitly tell the compiler to optimize for String arrays
       paths: [""].slice(0, 0),
-      queue: 0,
       counts: { files: 0, dirs: 0 },
       options,
       callback,
@@ -35,7 +34,7 @@ function makeWalkerFunctions() {
     return { state, callbackInvoker, dir };
   }
 
-  function walkSingleDir(walk, state, dir, dirents, currentDepth, callback) {
+  function walkSingleDir(walk, state, dir, dirents, currentDepth) {
     pushDir(dir, state.paths);
     // in cases where we have / as path
     if (dir === sep) dir = "";
@@ -50,7 +49,34 @@ function makeWalkerFunctions() {
         pushFile(filename, files, dir, state);
       } else if (dirent.isDirectory()) {
         let dirPath = `${dir}${sep}${dirent.name}`;
-        walkDir(walk, state, dirPath, dirent.name, currentDepth - 1, callback);
+        walkDir(
+          walk,
+          state,
+          dirPath,
+          dirent.name,
+          currentDepth - 1,
+          walkSingleDir
+        );
+      }
+      // perf: we can avoid entering the condition block if .withSymlinks is not set
+      // by using symlinkResolver !== fns.empty; this helps us avoid wasted allocations
+      // which are probably very minor
+      else if (dirent.isSymbolicLink() && symlinkResolver !== fns.empty) {
+        let path = `${dir}${sep}${dirent.name}`;
+        symlinkResolver(path, state, (stat, resolvedPath) => {
+          if (stat.isFile()) {
+            pushFile(resolvedPath, files, dir, state);
+          } else if (stat.isDirectory()) {
+            walkDir(
+              walk,
+              state,
+              resolvedPath,
+              dirent.name,
+              currentDepth - 1,
+              walkSingleDir
+            );
+          }
+        });
       }
     }
 
@@ -66,6 +92,7 @@ function makeWalkerFunctions() {
       groupVar,
       excludeFn,
       excludeFiles,
+      resolveSymlinks,
     } = options;
 
     buildPushFile(filters, onlyCountsVar, excludeFiles);
@@ -85,6 +112,8 @@ function makeWalkerFunctions() {
     // build groupFiles function for grouping files
     groupFiles = groupVar ? fns.groupFiles : fns.empty;
     getArray = groupVar ? fns.getArrayGroup : fns.getArray;
+
+    buildSymlinkResolver(resolveSymlinks, isSync);
 
     buildCallbackInvoker(onlyCountsVar, isSync);
   }
@@ -118,6 +147,14 @@ function makeWalkerFunctions() {
     }
   }
 
+  function buildSymlinkResolver(resolveSymlinks, isSync) {
+    if (!resolveSymlinks) return;
+
+    symlinkResolver = isSync
+      ? fns.resolveSymlinksSync
+      : fns.resolveSymlinksAsync;
+  }
+
   /* Dummies that will be filled later conditionally based on options */
   var pushFile = fns.empty;
   var pushDir = fns.empty;
@@ -126,6 +163,7 @@ function makeWalkerFunctions() {
   var groupFiles = fns.empty;
   var callbackInvoker = fns.empty;
   var getArray = fns.empty;
+  var symlinkResolver = fns.empty;
 
   return { init, walkSingleDir };
 }
