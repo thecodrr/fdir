@@ -61,14 +61,14 @@ Walker.prototype.processDirents = function processDirents(
       const filename = this.joinPath(dirent.name, directoryPath);
       this.pushFile(this, filename, files);
     } else if (dirent.isDirectory()) {
-      let path = fns.joinPathWithBasePath(dirent.name, directoryPath); //`${directoryPath}${sep}${dirent.name}`;
+      let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
       this.walkDir(this, path, dirent.name, currentDepth - 1);
     }
     // perf: we can avoid entering the condition block if .withSymlinks is not set
     // by using symlinkResolver !== fns.empty; this helps us avoid wasted allocations
     // which are probably very minor
     else if (dirent.isSymbolicLink() && this.symlinkResolver !== fns.empty) {
-      let path = `${directoryPath}${sep}${dirent.name}`;
+      let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
       this.symlinkResolver(path, this.state, (stat, resolvedPath) => {
         if (stat.isFile()) {
           this.pushFile(this, resolvedPath, files);
