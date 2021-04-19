@@ -146,7 +146,6 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
       .normalize()
       .crawl("/");
     const files = await api[type]();
-    console.log(files);
     expect(files.every((file) => !file.includes("//"))).toBe(true);
     mock.restore();
   });
