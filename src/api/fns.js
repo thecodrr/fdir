@@ -10,38 +10,32 @@ module.exports.getArrayGroup = function() {
 };
 
 /** PUSH FILE */
-module.exports.pushFileFilterAndCount = function(filters) {
-  return function(filename, _files, _dir, state) {
-    if (filters.every((filter) => filter(filename, false)))
-      state.counts.files++;
-  };
+module.exports.pushFileFilterAndCount = function(walker, filename) {
+  if (walker.options.filters.every((filter) => filter(filename, false)))
+    module.exports.pushFileCount(walker);
 };
 
-module.exports.pushFileFilter = function(filters) {
-  return function(filename, files) {
-    if (filters.every((filter) => filter(filename, false)))
-      files.push(filename);
-  };
+module.exports.pushFileFilter = function(walker, filename, files) {
+  if (walker.options.filters.every((filter) => filter(filename, false)))
+    files.push(filename);
 };
 
-module.exports.pushFileCount = function(_filename, _files, _dir, state) {
-  state.counts.files++;
+module.exports.pushFileCount = function(walker) {
+  walker.state.counts.files++;
 };
-module.exports.pushFile = function(filename, files) {
+module.exports.pushFile = function(_walker, filename, files) {
   files.push(filename);
 };
 
 /** PUSH DIR */
-module.exports.pushDir = function(dirPath, paths) {
+module.exports.pushDir = function(_walker, dirPath, paths) {
   paths.push(dirPath);
 };
 
-module.exports.pushDirFilter = function(filters) {
-  return function(dirPath, paths) {
-    if (filters.every((filter) => filter(dirPath, true))) {
-      paths.push(dirPath);
-    }
-  };
+module.exports.pushDirFilter = function(walker, dirPath, paths) {
+  if (walker.options.filters.every((filter) => filter(dirPath, true))) {
+    paths.push(dirPath);
+  }
 };
 
 /** JOIN PATH */
@@ -53,31 +47,20 @@ module.exports.joinPath = function(filename) {
 };
 
 /** WALK DIR */
-module.exports.walkDirExclude = function(exclude) {
-  return function(walk, state, path, dir, currentDepth, walkSingleDir) {
-    if (!exclude(dir, path)) {
-      module.exports.walkDir(
-        walk,
-        state,
-        path,
-        dir,
-        currentDepth,
-        walkSingleDir
-      );
-    }
-  };
+module.exports.walkDirExclude = function(
+  walker,
+  path,
+  directoryName,
+  currentDepth
+) {
+  if (!walker.options.excludeFn(directoryName, path)) {
+    module.exports.walkDir(walker, path, directoryName, currentDepth);
+  }
 };
 
-module.exports.walkDir = function(
-  walk,
-  state,
-  path,
-  _dir,
-  currentDepth,
-  walkSingleDir
-) {
-  state.counts.dirs++;
-  walk(state, path, currentDepth, walkSingleDir);
+module.exports.walkDir = function(walker, path, _directoryName, currentDepth) {
+  walker.state.counts.dirs++;
+  walker.walk(walker, path, currentDepth);
 };
 
 /** GROUP FILES */
