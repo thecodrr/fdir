@@ -95,14 +95,6 @@ Walker.prototype.buildFunctions = function buildFunctions() {
     isSync,
   } = this.options;
 
-  this.buildPushFile(filters, onlyCountsVar, excludeFiles);
-
-  this.pushDir = includeDirs
-    ? filters.length
-      ? fns.pushDirFilter
-      : fns.pushDir
-    : fns.empty;
-
   // build function for joining paths
   this.joinPath = includeBasePath ? fns.joinPathWithBasePath : fns.joinPath;
 
@@ -113,9 +105,20 @@ Walker.prototype.buildFunctions = function buildFunctions() {
   this.groupFiles = groupVar ? fns.groupFiles : fns.empty;
   this.getArray = groupVar ? fns.getArrayGroup : fns.getArray;
 
+  this.buildPushFile(filters, onlyCountsVar, excludeFiles);
+
+  this.buildPushDir(includeDirs, filters);
+
   this.buildSymlinkResolver(resolveSymlinks, isSync);
 
   this.buildCallbackInvoker(onlyCountsVar, isSync);
+};
+
+Walker.prototype.buildPushDir = function buildPushDir(includeDirs, filters) {
+  if (!includeDirs) return;
+
+  if (filters.length) this.pushDir = fns.pushDirFilter;
+  else this.pushDir = fns.pushDir;
 };
 
 Walker.prototype.buildPushFile = function buildPushFile(
@@ -123,15 +126,12 @@ Walker.prototype.buildPushFile = function buildPushFile(
   onlyCountsVar,
   excludeFiles
 ) {
-  if (excludeFiles) {
-    this.pushFile = fns.empty;
-    return;
-  }
+  if (excludeFiles) return;
 
-  if (filters.length && onlyCountsVar) {
-    this.pushFile = fns.pushFileFilterAndCount;
-  } else if (filters.length) {
-    this.pushFile = fns.pushFileFilter;
+  if (filters.length) {
+    this.pushFile = onlyCountsVar
+      ? fns.pushFileFilterAndCount
+      : fns.pushFileFilter;
   } else if (onlyCountsVar) {
     this.pushFile = fns.pushFileCount;
   } else {
