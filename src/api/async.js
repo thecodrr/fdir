@@ -1,27 +1,35 @@
 const { readdir } = require("../compat/fs");
 const Queue = require("./queue");
-const { makeWalkerFunctions, readdirOpts } = require("./shared");
+const { Walker, readdirOpts } = require("./walker");
 
-function promise(dir, options) {
+function promise(rootDirectory, options) {
   return new Promise((resolve, reject) => {
-    callback(dir, options, (err, output) => {
+    callback(rootDirectory, options, (err, output) => {
       if (err) return reject(err);
       resolve(output);
     });
   });
 }
 
-function callback(dirPath, options, callback) {
-  const { init, walkSingleDir } = makeWalkerFunctions();
+function callback(rootDirectory, options, callback) {
+  let walker = new Walker(options, callback);
+  walker.registerWalker(walkDirectory);
+  walker.state.queue = new Queue(walker.callbackInvoker);
 
-  const { state, callbackInvoker, dir } = init(dirPath, options, callback);
-  state.queue = new Queue(callbackInvoker);
-
-  // perf: we pass everything in arguments to avoid creating a closure
-  walk(state, dir, options.maxDepth, walkSingleDir);
+  const root = walker.normalizePath(rootDirectory);
+  walker.walk(walker, root, options.maxDepth);
 }
 
-function walk(state, dir, currentDepth, walkSingleDir) {
+/**
+ *
+ * @param {Walker} walker
+ * @param {string} directoryPath
+ * @param {number} currentDepth
+ * @returns
+ */
+function walkDirectory(walker, directoryPath, currentDepth) {
+  const { state } = walker;
+
   state.queue.queue();
 
   if (currentDepth < 0) {
@@ -29,13 +37,13 @@ function walk(state, dir, currentDepth, walkSingleDir) {
     return;
   }
 
-  readdir(dir, readdirOpts, function (error, dirents) {
+  readdir(directoryPath, readdirOpts, function(error, dirents) {
     if (error) {
       state.queue.dequeue(error, state);
       return;
     }
 
-    walkSingleDir(walk, state, dir, dirents, currentDepth);
+    walker.processDirents(directoryPath, dirents, currentDepth);
     state.queue.dequeue(null, state);
   });
 }

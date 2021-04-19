@@ -1,24 +1,38 @@
 const { readdirSync } = require("../compat/fs");
-const { makeWalkerFunctions, readdirOpts } = require("./shared");
+const { Walker, readdirOpts } = require("./shared");
 
 // For sync usage, we can reuse the same walker functions, because
 // there will not be concurrent calls overwriting the 'built functions'
 // in the middle of everything.
-const { init, walkSingleDir } = makeWalkerFunctions();
+// const { init, walkSingleDir } = makeWalkerFunctions();
 
-function sync(dirPath, options) {
-  const { state, callbackInvoker, dir } = init(dirPath, options, null, true);
-  walk(state, dir, options.maxDepth);
-  return callbackInvoker(state);
+function sync(rootDirectory, options) {
+  options.isSync = true;
+
+  let walker = new Walker(options);
+  walker.registerWalker(walkDirectory);
+
+  const root = walker.normalizePath(rootDirectory);
+  walker.walk(walker, root, options.maxDepth);
+
+  return walker.callbackInvoker(walker.state);
 }
 
-function walk(state, dir, currentDepth) {
+/**
+ *
+ * @param {Walker} walker
+ * @param {string} directoryPath
+ * @param {number} currentDepth
+ * @returns
+ */
+function walkDirectory(walker, directoryPath, currentDepth) {
   if (currentDepth < 0) {
     return;
   }
+  const { state } = walker;
   try {
-    const dirents = readdirSync(dir, readdirOpts);
-    walkSingleDir(walk, state, dir, dirents, currentDepth);
+    const dirents = readdirSync(directoryPath, readdirOpts);
+    walker.processDirents(directoryPath, dirents, currentDepth);
   } catch (e) {
     if (!state.options.suppressErrors) throw e;
   }
