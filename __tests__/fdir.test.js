@@ -137,15 +137,17 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
 
   test("recurse root (files should not contain multiple /)", async () => {
     mock({
-      "/": {
-        etc: {
-          hosts: "dooone",
-        },
+      "/etc": {
+        hosts: "dooone",
       },
     });
-    const api = new fdir().normalize().crawl("/");
+    const api = new fdir()
+      .withBasePath()
+      .normalize()
+      .crawl("/");
     const files = await api[type]();
-    expect(files.every((file) => !file.includes("/"))).toBe(true);
+    console.log(files);
+    expect(files.every((file) => !file.includes("//"))).toBe(true);
     mock.restore();
   });
 
