@@ -52,9 +52,6 @@ Walker.prototype.processDirents = function processDirents(
 ) {
   this.pushDir(this, directoryPath, this.state.paths);
 
-  // in cases where we have / as path
-  if (directoryPath === sep) directoryPath = "";
-
   const files = this.getArray(this.state);
 
   for (var i = 0; i < dirents.length; ++i) {
@@ -64,7 +61,7 @@ Walker.prototype.processDirents = function processDirents(
       const filename = this.joinPath(dirent.name, directoryPath);
       this.pushFile(this, filename, files);
     } else if (dirent.isDirectory()) {
-      let path = `${directoryPath}${sep}${dirent.name}`;
+      let path = fns.joinPathWithBasePath(dirent.name, directoryPath); //`${directoryPath}${sep}${dirent.name}`;
       this.walkDir(this, path, dirent.name, currentDepth - 1);
     }
     // perf: we can avoid entering the condition block if .withSymlinks is not set

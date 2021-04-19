@@ -40,7 +40,7 @@ module.exports.pushDirFilter = function(walker, dirPath, paths) {
 
 /** JOIN PATH */
 module.exports.joinPathWithBasePath = function(filename, dir) {
-  return `${dir}${sep}${filename}`;
+  return `${dir}${dir.endsWith(sep) ? "" : sep}${filename}`;
 };
 module.exports.joinPath = function(filename) {
   return filename;
