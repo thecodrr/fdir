@@ -1,6 +1,8 @@
 const { fdir } = require("fdir5");
 const glob = require("glob");
 const fg = require("fast-glob");
+const tg = require("tiny-glob");
+const tgSync = require("tiny-glob/sync");
 const b = require("benny");
 const packageJson = require("../package.json");
 const exportToHTML = require("./export");
@@ -27,7 +29,10 @@ async function benchmark() {
       });
     }),
     b.add("fast-glob async", async () => {
-      await fg("**.js", { dot: true });
+      await fg("**.js", { dot: true, onlyFiles: true });
+    }),
+    b.add("tiny-glob async", async () => {
+      await tg("**/**.js", { dot: true, filesOnly: true });
     }),
     b.cycle(),
     b.complete()
@@ -46,6 +51,9 @@ async function benchmark() {
     }),
     b.add("fast-glob sync", () => {
       fg.sync("**.js", { dot: true });
+    }),
+    b.add("tiny-glob sync", () => {
+      tgSync("**/**.js", { dot: true });
     }),
     b.cycle(),
     b.complete()
