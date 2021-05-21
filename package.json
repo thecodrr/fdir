@@ -1,7 +1,7 @@
 {
   "name": "fdir",
-  "version": "5.0.0",
-  "description": "The fastest directory crawler for NodeJS. Crawls 10k files in 13ms.",
+  "version": "5.1.0",
+  "description": "The fastest directory crawler & globbing alternative to glob, fast-glob, & tiny-glob. Crawls 1m files in < 1s",
   "main": "index.js",
   "scripts": {
     "test": "jest __tests__/fdir.test.js",
@@ -25,6 +25,9 @@
     "directory",
     "files",
     "io",
+    "tiny-glob",
+    "glob",
+    "fast-glob",
     "speed",
     "javascript",
     "nodejs"

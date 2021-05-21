@@ -2,7 +2,7 @@
 
 ## Introduction
 
-fdir v3.0 closely follows builder pattern to make an instance of the crawler fluently. So instead of doing:
+fdir > v3.0 closely follows builder pattern to make an instance of the crawler fluently. So instead of doing:
 
 ```js
 fdir.sync("path/to/dir", {
