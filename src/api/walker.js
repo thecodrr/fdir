@@ -1,3 +1,4 @@
+const { Dirent } = require("fs");
 const { sep, resolve: pathResolve } = require("path");
 const { cleanPath } = require("../utils");
 const fns = require("./fns");
@@ -16,7 +17,7 @@ function Walker(options, callback) {
 
   this.options = options;
 
-  /* Perf: We use a local state per walker instead of direct global variables
+  /* We use a local state per walker instead of direct global variables
    * so that each walker execution is independent.
    */
   this.state = {
@@ -35,19 +36,35 @@ function Walker(options, callback) {
   this.buildFunctions();
 }
 
+/**
+ * Process the given path using `path.resolve` & `path.normalize`
+ * @param {string} path Path to normalize
+ * @returns {string} Normalized path
+ */
 Walker.prototype.normalizePath = function normalizePath(path) {
   if (this.options.resolvePaths) path = pathResolve(path);
   if (this.options.normalizePath) path = cleanPath(path);
   return path;
 };
 
+/**
+ * Register the core directory walker function.
+ * This is used to by the sync/async walkers depending on usage.
+ * @param {(walker: Walker, directoryPath: string, currentDepth: number) => {}} walkerFunction
+ */
 Walker.prototype.registerWalker = function registerWalker(walkerFunction) {
   this.walk = walkerFunction;
 };
 
+/**
+ * Process dirents recursively (and also resolve symlinks if needed)
+ * @param {Dirent[]} dirents
+ * @param {string} directoryPath
+ * @param {number} currentDepth
+ */
 Walker.prototype.processDirents = function processDirents(
-  directoryPath,
   dirents,
+  directoryPath,
   currentDepth
 ) {
   this.pushDir(this, directoryPath, this.state.paths);
@@ -65,8 +82,8 @@ Walker.prototype.processDirents = function processDirents(
       this.walkDir(this, path, dirent.name, currentDepth - 1);
     }
     // perf: we can avoid entering the condition block if .withSymlinks is not set
-    // by using symlinkResolver !== fns.empty; this helps us avoid wasted allocations
-    // which are probably very minor
+    // by using symlinkResolver !== fns.empty; this helps us avoid wasted allocations -
+    // which are probably very minor but still.
     else if (dirent.isSymbolicLink() && this.symlinkResolver !== fns.empty) {
       let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
       this.symlinkResolver(path, this.state, (stat, resolvedPath) => {
@@ -82,6 +99,9 @@ Walker.prototype.processDirents = function processDirents(
   this.groupFiles(directoryPath, files, this.state);
 };
 
+/**
+ * Build all the different walker functions based on options
+ */
 Walker.prototype.buildFunctions = function buildFunctions() {
   const {
     filters,
@@ -154,6 +174,9 @@ Walker.prototype.buildCallbackInvoker = function buildCallbackInvoker(
   }
 };
 
+/**
+ *
+ */
 Walker.prototype.buildSymlinkResolver = function buildSymlinkResolver(
   resolveSymlinks,
   isSync
