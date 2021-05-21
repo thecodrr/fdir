@@ -1,15 +1,14 @@
 const { sep } = require("path");
 const fs = require("fs");
 
-/* GET ARRAY */
 module.exports.getArray = function(state) {
   return state.paths;
 };
+
 module.exports.getArrayGroup = function() {
   return [""].slice(0, 0);
 };
 
-/** PUSH FILE */
 module.exports.pushFileFilterAndCount = function(walker, filename) {
   if (walker.options.filters.every((filter) => filter(filename, false)))
     module.exports.pushFileCount(walker);
@@ -27,7 +26,6 @@ module.exports.pushFile = function(_walker, filename, files) {
   files.push(filename);
 };
 
-/** PUSH DIR */
 module.exports.pushDir = function(_walker, dirPath, paths) {
   paths.push(dirPath);
 };
@@ -38,7 +36,6 @@ module.exports.pushDirFilter = function(walker, dirPath, paths) {
   }
 };
 
-/** JOIN PATH */
 module.exports.joinPathWithBasePath = function(filename, dir) {
   return `${dir}${dir.endsWith(sep) ? "" : sep}${filename}`;
 };
@@ -46,7 +43,6 @@ module.exports.joinPath = function(filename) {
   return filename;
 };
 
-/** WALK DIR */
 module.exports.walkDirExclude = function(
   walker,
   path,
@@ -63,14 +59,12 @@ module.exports.walkDir = function(walker, path, _directoryName, currentDepth) {
   walker.walk(walker, path, currentDepth);
 };
 
-/** GROUP FILES */
 module.exports.groupFiles = function(dir, files, state) {
   state.counts.files += files.length;
   state.paths.push({ dir, files });
 };
 module.exports.empty = function() {};
 
-/** CALLBACK INVOKER */
 module.exports.callbackInvokerOnlyCountsSync = function(state) {
   return state.counts;
 };
@@ -93,8 +87,6 @@ function callbackInvokerBuilder(output) {
     report(err, state.callback, state[output], state.options.suppressErrors);
   };
 }
-
-/** SYMLINK RESOLVER */
 
 module.exports.resolveSymlinksAsync = function(path, state, callback) {
   state.queue.queue();
