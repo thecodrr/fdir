@@ -74,10 +74,7 @@ Walker.prototype.processDirents = function processDirents(
   for (var i = 0; i < dirents.length; ++i) {
     const dirent = dirents[i];
 
-    if (dirent.isFile()) {
-      const filename = this.joinPath(dirent.name, directoryPath);
-      this.pushFile(this, filename, files);
-    } else if (dirent.isDirectory()) {
+    if (dirent.isDirectory()) {
       let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
       this.walkDir(this, path, dirent.name, currentDepth - 1);
     }
@@ -93,6 +90,9 @@ Walker.prototype.processDirents = function processDirents(
           this.walkDir(this, resolvedPath, dirent.name, currentDepth - 1);
         }
       });
+    } else {
+      const filename = this.joinPath(dirent.name, directoryPath);
+      this.pushFile(this, filename, files);
     }
   }
 
