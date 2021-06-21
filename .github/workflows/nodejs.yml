@@ -17,12 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
       - run: npm install --only=prod
       - run: npm -g install jest@^24.0.0
-      - run: npm ci
+        if: matrix.node-version == '8.x'
+      - run: npm -g install jest@^27.0.0
+        if: matrix.node-version != '8.x'
+      - run: yarn install --ignore-engines
+      - run: yarn add mock-fs@4 --ignore-engines -D
+        if: matrix.node-version == '8.x'
       - run: npm run test:coverage
         env:
           CI: true
