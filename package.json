@@ -52,7 +52,7 @@
     "get-all-files": "^2.0.0",
     "glob": "^7.1.6",
     "klaw-sync": "^6.0.0",
-    "mock-fs": "^4.11.0",
+    "mock-fs": "^5.0.0",
     "picomatch": "^2.2.2",
     "recur-readdir": "0.0.1",
     "recursive-files": "^1.0.2",
