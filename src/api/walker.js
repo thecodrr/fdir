@@ -107,6 +107,7 @@ Walker.prototype.buildFunctions = function buildFunctions() {
     filters,
     onlyCountsVar,
     includeBasePath,
+    relativePath,
     includeDirs,
     groupVar,
     excludeFn,
@@ -116,7 +117,11 @@ Walker.prototype.buildFunctions = function buildFunctions() {
   } = this.options;
 
   // build function for joining paths
-  this.joinPath = includeBasePath ? fns.joinPathWithBasePath : fns.joinPath;
+  this.joinPath = relativePath
+    ? fns.joinPathWithRelativePath(relativePath)
+    : includeBasePath
+    ? fns.joinPathWithBasePath
+    : fns.joinPath;
 
   // build recursive walk directory function
   this.walkDir = excludeFn ? fns.walkDirExclude : fns.walkDir;

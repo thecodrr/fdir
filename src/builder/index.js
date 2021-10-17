@@ -17,6 +17,7 @@ function Builder() {
 }
 
 Builder.prototype.crawl = function(path) {
+  this.relativePath = this.relativePath === true ? path : undefined;
   return new APIBuilder(path, this);
 };
 
@@ -26,6 +27,7 @@ Builder.prototype.crawlWithOptions = function(path, options) {
   options.onlyCountsVar = options.onlyCounts;
   options.excludeFn = options.exclude;
   options.filters = options.filters || [];
+  options.relativePath = options.relativePaths ? path : undefined;
 
   if (options.excludeFiles) {
     options.includeDirs = true;
@@ -36,6 +38,11 @@ Builder.prototype.crawlWithOptions = function(path, options) {
 
 Builder.prototype.withBasePath = function() {
   this.includeBasePath = true;
+  return this;
+};
+
+Builder.prototype.withRelativePaths = function() {
+  this.relativePath = true;
   return this;
 };
 

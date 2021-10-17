@@ -39,6 +39,14 @@ module.exports.pushDirFilter = function(walker, dirPath, paths) {
 module.exports.joinPathWithBasePath = function(filename, dir) {
   return `${dir}${dir.endsWith(sep) ? "" : sep}${filename}`;
 };
+module.exports.joinPathWithRelativePath = function(relativePath) {
+  relativePath += relativePath.endsWith(sep) ? "" : sep;
+  return function(filename, dir) {
+    dir += dir.endsWith(sep) ? "" : sep;
+    let tail = dir.replace(relativePath, "");
+    return `${tail}${filename}`;
+  };
+};
 module.exports.joinPath = function(filename) {
   return filename;
 };
