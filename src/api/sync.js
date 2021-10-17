@@ -33,12 +33,13 @@ function walkDirectory(walker, directoryPath, currentDepth) {
     return;
   }
   const { state } = walker;
+  let dirents = [];
   try {
-    const dirents = readdirSync(directoryPath, readdirOpts);
-    walker.processDirents(dirents, directoryPath, currentDepth);
+    dirents = readdirSync(directoryPath, readdirOpts);
   } catch (e) {
     if (!state.options.suppressErrors) throw e;
   }
+  walker.processDirents(dirents, directoryPath, currentDepth);
 }
 
 module.exports = sync;
