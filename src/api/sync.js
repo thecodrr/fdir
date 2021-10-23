@@ -11,11 +11,10 @@ const { Walker, readdirOpts } = require("./walker");
 function sync(directoryPath, options) {
   options.isSync = true;
 
-  let walker = new Walker(options);
-  walker.registerWalker(walkDirectory);
+  let walker = new Walker(options, walkDirectory);
 
   const root = walker.normalizePath(directoryPath);
-  walker.walk(walker, root, options.maxDepth);
+  walker.walkDir(walker, root, options.maxDepth);
 
   return walker.callbackInvoker(walker.state);
 }
@@ -33,6 +32,8 @@ function walkDirectory(walker, directoryPath, currentDepth) {
     return;
   }
   const { state } = walker;
+  state.counts.dirs++;
+
   let dirents = [];
   try {
     dirents = readdirSync(directoryPath, readdirOpts);

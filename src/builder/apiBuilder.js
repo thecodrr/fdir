@@ -6,15 +6,15 @@ function APIBuilder(path, options) {
   this.options = options;
 }
 
-APIBuilder.prototype.withPromise = function() {
+APIBuilder.prototype.withPromise = function () {
   return promise(this.dir, this.options);
 };
 
-APIBuilder.prototype.withCallback = function(cb) {
+APIBuilder.prototype.withCallback = function (cb) {
   callback(this.dir, this.options, cb);
 };
 
-APIBuilder.prototype.sync = function() {
+APIBuilder.prototype.sync = function () {
   return sync(this.dir, this.options);
 };
 

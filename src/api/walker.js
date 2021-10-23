@@ -1,14 +1,15 @@
 const { Dirent } = require("fs");
-const { sep, resolve: pathResolve } = require("path");
+const { sep } = require("../compat/fs");
+const { resolve: pathResolve } = require("path");
 const { cleanPath } = require("../utils");
 const fns = require("./fns");
 const readdirOpts = { withFileTypes: true };
 
-function Walker(options, callback) {
+function Walker(options, walkerFunction, callback) {
   /* Dummy functions that will be filled later conditionally based on options */
   this.pushFile = fns.empty;
   this.pushDir = fns.empty;
-  this.walkDir = fns.empty;
+  this.walkDir = walkerFunction;
   this.joinPath = fns.empty;
   this.groupFiles = fns.empty;
   this.callbackInvoker = fns.empty;
@@ -44,16 +45,8 @@ function Walker(options, callback) {
 Walker.prototype.normalizePath = function normalizePath(path) {
   if (this.options.resolvePaths) path = pathResolve(path);
   if (this.options.normalizePath) path = cleanPath(path);
-  return path;
-};
-
-/**
- * Register the core directory walker function.
- * This is used to by the sync/async walkers depending on usage.
- * @param {(walker: Walker, directoryPath: string, currentDepth: number) => {}} walkerFunction
- */
-Walker.prototype.registerWalker = function registerWalker(walkerFunction) {
-  this.walk = walkerFunction;
+  const needsSeperator = path[path.length - 1] !== sep;
+  return needsSeperator ? path + sep : path;
 };
 
 /**
@@ -67,16 +60,18 @@ Walker.prototype.processDirents = function processDirents(
   directoryPath,
   currentDepth
 ) {
-  this.pushDir(this, directoryPath, this.state.paths);
+  this.pushDir(directoryPath, this.state.paths, this.options.filters);
 
-  const files = this.getArray(this.state);
-
+  const files = this.getArray(this.state.paths);
   for (var i = 0; i < dirents.length; ++i) {
     const dirent = dirents[i];
 
-    if (dirent.isDirectory()) {
+    if (dirent.isFile()) {
+      const filename = this.joinPath(dirent.name, directoryPath);
+      this.pushFile(filename, files, this.options.filters, this.state.counts);
+    } else if (dirent.isDirectory()) {
       let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
-      this.walkDir(this, path, dirent.name, currentDepth - 1);
+      this.walkDir(this, path, currentDepth - 1, dirent.name);
     }
     // perf: we can avoid entering the condition block if .withSymlinks is not set
     // by using symlinkResolver !== fns.empty; this helps us avoid wasted allocations -
@@ -85,14 +80,16 @@ Walker.prototype.processDirents = function processDirents(
       let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
       this.symlinkResolver(path, this.state, (stat, resolvedPath) => {
         if (stat.isFile()) {
-          this.pushFile(this, resolvedPath, files);
+          this.pushFile(
+            resolvedPath,
+            files,
+            this.options.filters,
+            this.state.counts
+          );
         } else if (stat.isDirectory()) {
-          this.walkDir(this, resolvedPath, dirent.name, currentDepth - 1);
+          this.walkDir(this, resolvedPath, currentDepth - 1, dirent.name);
         }
       });
-    } else {
-      const filename = this.joinPath(dirent.name, directoryPath);
-      this.pushFile(this, filename, files);
     }
   }
 
@@ -124,7 +121,7 @@ Walker.prototype.buildFunctions = function buildFunctions() {
     : fns.joinPath;
 
   // build recursive walk directory function
-  this.walkDir = excludeFn ? fns.walkDirExclude : fns.walkDir;
+  if (excludeFn) this.walkDir = fns.walkDirExclude;
 
   // build groupFiles function for grouping files
   this.groupFiles = groupVar ? fns.groupFiles : fns.empty;

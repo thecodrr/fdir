@@ -25,12 +25,11 @@ function promise(directoryPath, options) {
  * @param {(error: Object, output: Object) => void} callback
  */
 function callback(directoryPath, options, callback) {
-  let walker = new Walker(options, callback);
-  walker.registerWalker(walkDirectory);
+  let walker = new Walker(options, walkDirectory, callback);
   walker.state.queue = new Queue(walker.callbackInvoker);
 
   const root = walker.normalizePath(directoryPath);
-  walker.walk(walker, root, options.maxDepth);
+  walker.walkDir(walker, root, options.maxDepth);
 }
 
 /**
@@ -54,18 +53,16 @@ function walkDirectory(walker, directoryPath, currentDepth) {
     return;
   }
 
+  state.counts.dirs++;
+
   // Perf: Node >= 10 introduced withFileTypes that helps us
   // skip an extra fs.stat call.
-  // Howver, since this API is not availble in Node < 10, I had to create
+  // However, since this API is not availble in Node < 10, I had to create
   // a compatibility layer to support both variants.
-  readdir(directoryPath, readdirOpts, function(error, dirents) {
-    if (error) {
-      state.queue.dequeue(error, state);
-      return;
-    }
-
+  readdir(directoryPath, readdirOpts, function process(error, dirents = []) {
     walker.processDirents(dirents, directoryPath, currentDepth);
-    state.queue.dequeue(null, state);
+
+    state.queue.dequeue(walker.options.suppressErrors ? null : error, state);
   });
 }
 

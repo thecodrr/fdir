@@ -3,7 +3,7 @@ const { sep } = require("path");
 
 /* istanbul ignore next */
 if (!Dirent) {
-  module.exports.readdir = function(dir, _, callback) {
+  module.exports.readdir = function (dir, _, callback) {
     readdir(dir, (err, files) => {
       if (err) return process.nextTick(callback, err, null);
       if (!files.length) return process.nextTick(callback, null, []);
@@ -24,7 +24,7 @@ if (!Dirent) {
     });
   };
 
-  module.exports.readdirSync = function(dir) {
+  module.exports.readdirSync = function (dir) {
     const files = readdirSync(dir);
     let dirents = [];
     for (let i = 0; i < files.length; ++i) {
@@ -45,5 +45,5 @@ if (!Dirent) {
     };
   }
 } else {
-  module.exports = { readdirSync, readdir };
+  module.exports = { sep, readdirSync, readdir };
 }

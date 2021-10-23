@@ -1,88 +1,85 @@
-const { sep } = require("path");
+const { sep } = require("../compat/fs");
 const fs = require("fs");
 
-module.exports.getArray = function(state) {
-  return state.paths;
+module.exports.getArray = function (paths) {
+  return paths;
 };
 
-module.exports.getArrayGroup = function() {
+module.exports.getArrayGroup = function () {
   return [""].slice(0, 0);
 };
 
-module.exports.pushFileFilterAndCount = function(walker, filename) {
-  if (walker.options.filters.every((filter) => filter(filename, false)))
-    module.exports.pushFileCount(walker);
+module.exports.pushFileFilterAndCount = function (
+  filename,
+  _paths,
+  filters,
+  counts
+) {
+  if (filters.every((filter) => filter(filename, false))) counts.files++;
 };
 
-module.exports.pushFileFilter = function(walker, filename, files) {
-  if (walker.options.filters.every((filter) => filter(filename, false)))
-    files.push(filename);
+module.exports.pushFileFilter = function (filename, paths, filters) {
+  if (filters.every((filter) => filter(filename, false))) paths.push(filename);
 };
 
-module.exports.pushFileCount = function(walker) {
-  walker.state.counts.files++;
-};
-module.exports.pushFile = function(_walker, filename, files) {
-  files.push(filename);
+module.exports.pushFileCount = function (_filename, _paths, _filters, counts) {
+  counts.files++;
 };
 
-module.exports.pushDir = function(_walker, dirPath, paths) {
+module.exports.pushFile = function (filename, paths) {
+  paths.push(filename);
+};
+
+module.exports.pushDir = function (dirPath, paths) {
   paths.push(dirPath);
 };
 
-module.exports.pushDirFilter = function(walker, dirPath, paths) {
-  if (walker.options.filters.every((filter) => filter(dirPath, true))) {
+module.exports.pushDirFilter = function (dirPath, paths, filters) {
+  if (filters.every((filter) => filter(dirPath, true))) {
     paths.push(dirPath);
   }
 };
 
-module.exports.joinPathWithBasePath = function(filename, dir) {
-  return `${dir}${dir.endsWith(sep) ? "" : sep}${filename}`;
+module.exports.joinPathWithBasePath = function (filename, dir) {
+  return dir + filename + sep;
 };
-module.exports.joinPathWithRelativePath = function(relativePath) {
-  relativePath += relativePath.endsWith(sep) ? "" : sep;
-  return function(filename, dir) {
-    dir += dir.endsWith(sep) ? "" : sep;
-    let tail = dir.replace(relativePath, "");
-    return `${tail}${filename}`;
+
+module.exports.joinPathWithRelativePath = function (relativePath) {
+  relativePath += relativePath[relativePath.length - 1] === sep ? "" : sep;
+  return function (filename, dir) {
+    return dir.substring(relativePath.length) + filename + sep;
   };
 };
-module.exports.joinPath = function(filename) {
+
+module.exports.joinPath = function (filename) {
   return filename;
 };
 
-module.exports.walkDirExclude = function(
+module.exports.walkDirExclude = function (
   walker,
   path,
-  directoryName,
-  currentDepth
+  currentDepth,
+  directoryName
 ) {
   if (!walker.options.excludeFn(directoryName, path)) {
-    module.exports.walkDir(walker, path, directoryName, currentDepth);
+    walker.walk(walker, path, currentDepth);
   }
 };
 
-module.exports.walkDir = function(walker, path, _directoryName, currentDepth) {
-  walker.state.counts.dirs++;
-  walker.walk(walker, path, currentDepth);
+module.exports.groupFiles = function (dir, files, paths) {
+  paths[dir] = files;
 };
+module.exports.empty = function () {};
 
-module.exports.groupFiles = function(dir, files, state) {
-  state.counts.files += files.length;
-  state.paths.push({ dir, files });
-};
-module.exports.empty = function() {};
-
-module.exports.callbackInvokerOnlyCountsSync = function(state) {
+module.exports.callbackInvokerOnlyCountsSync = function (state) {
   return state.counts;
 };
-module.exports.callbackInvokerDefaultSync = function(state) {
+module.exports.callbackInvokerDefaultSync = function (state) {
   return state.paths;
 };
 
-module.exports.callbackInvokerOnlyCountsAsync = callbackInvokerBuilder(
-  "counts"
-);
+module.exports.callbackInvokerOnlyCountsAsync =
+  callbackInvokerBuilder("counts");
 module.exports.callbackInvokerDefaultAsync = callbackInvokerBuilder("paths");
 
 function report(err, callback, output, suppressErrors) {
@@ -91,12 +88,12 @@ function report(err, callback, output, suppressErrors) {
 }
 
 function callbackInvokerBuilder(output) {
-  return function(err, state) {
+  return function (err, state) {
     report(err, state.callback, state[output], state.options.suppressErrors);
   };
 }
 
-module.exports.resolveSymlinksAsync = function(path, state, callback) {
+module.exports.resolveSymlinksAsync = function (path, state, callback) {
   state.queue.queue();
 
   fs.realpath(path, (error, resolvedPath) => {
@@ -118,7 +115,7 @@ module.exports.resolveSymlinksAsync = function(path, state, callback) {
   });
 };
 
-module.exports.resolveSymlinksSync = function(path, _state, callback) {
+module.exports.resolveSymlinksSync = function (path, _state, callback) {
   const resolvedPath = fs.realpathSync(path);
   const stat = fs.lstatSync(resolvedPath);
   callback(stat, resolvedPath);
