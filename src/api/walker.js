@@ -70,14 +70,18 @@ Walker.prototype.processDirents = function processDirents(
       const filename = this.joinPath(dirent.name, directoryPath);
       this.pushFile(filename, files, this.options.filters, this.state.counts);
     } else if (dirent.isDirectory()) {
-      let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
+      let path = fns.joinDirPath(dirent.name, directoryPath);
+
+      if (this.options.excludeFn && this.options.excludeFn(dirent.name, path))
+        continue;
+
       this.walkDir(this, path, currentDepth - 1, dirent.name);
     }
     // perf: we can avoid entering the condition block if .withSymlinks is not set
     // by using symlinkResolver !== fns.empty; this helps us avoid wasted allocations -
     // which are probably very minor but still.
     else if (dirent.isSymbolicLink() && this.symlinkResolver !== fns.empty) {
-      let path = fns.joinPathWithBasePath(dirent.name, directoryPath);
+      let path = fns.joinDirPath(dirent.name, directoryPath);
       this.symlinkResolver(path, this.state, (stat, resolvedPath) => {
         if (stat.isFile()) {
           this.pushFile(
@@ -87,13 +91,20 @@ Walker.prototype.processDirents = function processDirents(
             this.state.counts
           );
         } else if (stat.isDirectory()) {
+          resolvedPath = this.normalizePath(resolvedPath);
+          if (
+            this.options.excludeFn &&
+            this.options.excludeFn(dirent.name, resolvedPath)
+          )
+            return;
+
           this.walkDir(this, resolvedPath, currentDepth - 1, dirent.name);
         }
       });
     }
   }
 
-  this.groupFiles(directoryPath, files, this.state);
+  this.groupFiles(this.state, directoryPath, files);
 };
 
 /**
@@ -107,7 +118,6 @@ Walker.prototype.buildFunctions = function buildFunctions() {
     relativePath,
     includeDirs,
     groupVar,
-    excludeFn,
     excludeFiles,
     resolveSymlinks,
     isSync,
@@ -119,9 +129,6 @@ Walker.prototype.buildFunctions = function buildFunctions() {
     : includeBasePath
     ? fns.joinPathWithBasePath
     : fns.joinPath;
-
-  // build recursive walk directory function
-  if (excludeFn) this.walkDir = fns.walkDirExclude;
 
   // build groupFiles function for grouping files
   this.groupFiles = groupVar ? fns.groupFiles : fns.empty;

@@ -57,7 +57,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     expect(files[0]).toBeTruthy();
     expect(files.every((t) => t)).toBeTruthy();
     expect(files[0].length).toBeGreaterThan(0);
-    expect(files[0].endsWith("node_modules")).toBe(true);
+    expect(files[0].endsWith("node_modules/")).toBe(true);
   });
 
   test("crawl and get all files (withMaxDepth = 1)", async () => {
@@ -169,6 +169,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     });
     const api = new fdir().withSymlinks().crawl("/some/dir");
     const files = await api[type]();
+    expect(files.length).toBe(2);
     expect(files.indexOf("/sym/linked/file-1")).toBeGreaterThan(-1);
     expect(files.indexOf("/other/dir/file-2")).toBeGreaterThan(-1);
     mock.restore();
@@ -224,13 +225,13 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
       });
   });
 
-  test("crawl and filter all files and group them by directory", async () => {
+  test("crawl all files and group them by directory", async () => {
     const api = new fdir()
       .withBasePath()
       .group()
       .crawl("node_modules");
     const result = await api[type]();
-    expect(result.length).toBeGreaterThan(0);
+    expect(Object.keys(result).length).toBeGreaterThan(0);
   });
 
   test("crawl and filter only directories", async () => {
@@ -242,12 +243,18 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     expect(result.length).toBe(1);
   });
 
-  test("crawl and give undefined directory path should throw", async () => {
+  test("giving undefined directory path should throw", async () => {
     const api = new fdir().crawl();
     try {
       await api[type]();
     } catch (e) {
       expect(e).toBeDefined();
     }
+  });
+
+  test("crawl and return relative paths", async () => {
+    const api = new fdir().withRelativePaths().crawl("node_modules");
+    const paths = await api[type]();
+    expect(paths.every((p) => !p.startsWith("node_modules"))).toBe(true);
   });
 });
