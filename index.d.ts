@@ -3,15 +3,15 @@ declare module "fdir" {
   export type OnlyCountsOutput = { files: number; dirs: number };
   export type PathsOutput = string[];
 
-  type FilterFn = (path: string, isDirectory: boolean) => boolean;
-  type ExcludeFn = (dirName: string, dirPath: string) => boolean;
-  type Callback = (error: Error, output: Output) => void;
+  export type FilterFn = (path: string, isDirectory: boolean) => boolean;
+  export type ExcludeFn = (dirName: string, dirPath: string) => boolean;
+  export type Callback = (error: Error, output: Output) => void;
 
-  type Group = { dir: string; files: string[] };
+  export type Group = { dir: string; files: string[] };
 
-  type Output = GroupOutput | OnlyCountsOutput | PathsOutput;
+  export type Output = GroupOutput | OnlyCountsOutput | PathsOutput;
 
-  type Options = {
+  export type Options = {
     includeBasePath?: boolean;
     includeDirs?: boolean;
     normalizePath?: boolean;
@@ -24,6 +24,7 @@ declare module "fdir" {
     resolveSymlinks?: boolean;
     excludeFiles?: boolean;
     exclude?: ExcludeFn;
+    relativePaths?: boolean;
   };
 
   class APIBuilder {
@@ -58,7 +59,12 @@ declare module "fdir" {
     /**
      * Resolve and recurse over all symlinks
      */
-     withSymlinks(): Builder;
+    withSymlinks(): Builder;
+
+    /**
+     * Return paths relative to the root directory
+     */
+    withRelativePaths(): Builder;
 
     /**
      * The depth to crawl to before stopping

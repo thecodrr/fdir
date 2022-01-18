@@ -138,6 +138,16 @@ Use this to get full absolute paths in the output.
 const crawler = new fdir().withFullPaths();
 ```
 
+### `withRelativePaths`
+
+Use this to get paths relative to the root directory in the output.
+
+**Usage**
+
+```js
+const crawler = new fdir().withRelativePaths();
+```
+
 ### `withErrors`
 
 Use this if you want to handle all errors manually.
