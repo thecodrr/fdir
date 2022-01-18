@@ -329,6 +329,10 @@ new fdir()
 
 Crawl the directory synchronously.
 
+> **Note about performance:**
+> Sync performance is much, much slower than async performance. Only use this
+> if absolutely necessary.
+
 **Usage**
 
 ```js
@@ -366,7 +370,9 @@ type Options = {
   group?: boolean;
   onlyCounts?: boolean;
   filters?: FilterFn[];
+  resolveSymlinks?: boolean;
   excludeFiles?: boolean;
   exclude?: ExcludeFn;
+  relativePaths?: boolean;
 };
 ```
