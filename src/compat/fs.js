@@ -5,7 +5,7 @@ const { sep } = require("path");
 if (!Dirent) {
   module.exports.readdir = function (dir, _, callback) {
     readdir(dir, (err, files) => {
-      if (err) return process.nextTick(callback, err, null);
+      if (err) return process.nextTick(callback, err, []);
       if (!files.length) return process.nextTick(callback, null, []);
 
       let dirents = [];
@@ -15,7 +15,7 @@ if (!Dirent) {
         let path = `${dir}${sep}${name}`;
         lstat(path, (err, stat) => {
           if (err) return process.nextTick(callback, err, null);
-          dirents[dirents.length] = getDirent(name, stat);
+          dirents.push(getDirent(name, stat));
           if (dirents.length === files.length) {
             process.nextTick(callback, null, dirents);
           }
@@ -44,6 +44,7 @@ if (!Dirent) {
       isSymbolicLink: () => stat.isSymbolicLink(),
     };
   }
+  module.exports.sep = sep;
 } else {
   module.exports = { sep, readdirSync, readdir };
 }
