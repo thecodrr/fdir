@@ -269,7 +269,7 @@ const crawler = new fdir().exclude((dirName, dirPath) =>
 
 ### `crawl(string)`
 
-Prepare the crawler. This should be called at then end after all the configuration has been done.
+Prepare the crawler. This should be called at the end after all the configuration has been done.
 
 **Parameters**
 
