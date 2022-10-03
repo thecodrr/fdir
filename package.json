@@ -65,5 +65,10 @@
   },
   "peerDependencies": {
     "picomatch": "2.x"
+  },
+  "peerDependenciesMeta": {
+    "picomatch": {
+      "optional": true
+    }
   }
 }
