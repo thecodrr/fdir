@@ -1,32 +1,31 @@
-const { fdir } = require("../index");
-const { fdir: fdir5 } = require("fdir5");
-const { fdir: fdir4 } = require("fdir4");
-const fdir3 = require("fdir3");
-const fdir1 = require("fdir1");
-const fdir2 = require("fdir2");
-const allFilesInTree = require("all-files-in-tree");
-const fsReadDirRecursive = require("fs-readdir-recursive");
-const klawSync = require("klaw-sync");
-const recurReadDir = require("recur-readdir");
-const recursiveFiles = require("recursive-files");
-const recursiveReadDir = require("recursive-readdir");
-const rrdir = require("rrdir");
-const walkSync = require("walk-sync");
-const recursiveFs = require("recursive-fs");
-const b = require("benny");
-const getAllFiles = require("get-all-files").default;
-const packageJson = require("../package.json");
-const exportToHTML = require("./export");
+import { fdir } from "../index";
+import { fdir as fdir5 } from "fdir5";
+import { fdir as fdir4 } from "fdir4";
+import fdir3 from "fdir3";
+import fdir1 from "fdir1";
+import fdir2 from "fdir2";
+import allFilesInTree from "all-files-in-tree";
+import fsReadDirRecursive from "fs-readdir-recursive";
+import klawSync from "klaw-sync";
+import * as recurReadDir from "recur-readdir";
+import recursiveFiles from "recursive-files";
+import recursiveReadDir from "recursive-readdir";
+import rrdir from "rrdir";
+import walkSync from "walk-sync";
+import recursiveFs from "recursive-fs";
+import b from "benny";
+import getAllFiles from "get-all-files";
+import packageJson from "../package.json";
+// import exportToHTML from "./export";
 
 async function benchmark() {
-  const summaries = [];
   const counts = new fdir()
     .onlyCounts()
     .crawl("node_modules")
     .sync();
 
-  const syncSummary = await b.suite(
-    `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
+  await b.suite(
+    `Synchronous (${counts.files} files, ${counts.directories} folders)`,
     b.add(`fdir ${packageJson.version} sync`, () => {
       new fdir().crawl("node_modules").sync();
     }),
@@ -70,8 +69,8 @@ async function benchmark() {
     b.complete()
   );
 
-  const asyncSummary = await b.suite(
-    `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
+  await b.suite(
+    `Asynchronous (${counts.files} files, ${counts.directories} folders)`,
     b.add(`fdir ${packageJson.version} async`, async () => {
       await new fdir().crawl("node_modules").withPromise();
     }),
@@ -87,7 +86,7 @@ async function benchmark() {
     b.add("recursive-fs async", async () => {
       await new Promise((resolve) => {
         recursiveFs.readdirr("node_modules", () => {
-          resolve();
+          resolve(undefined);
         });
       });
     }),
@@ -95,12 +94,12 @@ async function benchmark() {
       await recurReadDir.crawl("node_modules");
     }),
     b.add("recursive-files async", async () => {
-      let timeout;
+      let timeout: NodeJS.Timeout;
       await new Promise((resolve) => {
         recursiveFiles("node_modules", { hidden: true }, () => {
           clearTimeout(timeout);
           timeout = setTimeout(() => {
-            resolve();
+            resolve(undefined);
           }, 0);
         });
       });
@@ -113,13 +112,6 @@ async function benchmark() {
     }),
     b.cycle(),
     b.complete()
-  );
-
-  summaries.push(asyncSummary, syncSummary);
-  await exportToHTML(
-    `fdir vs crawlers - (${counts.files} files, ${counts.dirs} folders)`,
-    "benchmark/results/crawlers.html",
-    summaries
   );
 }
 benchmark();

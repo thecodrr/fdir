@@ -1,4 +1,4 @@
-name: Build & Test
+name: Run tests
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [8.x, 12.x, 14.x, 16.x]
+        node-version: [12.x, 14.x, 16.x, 18.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -22,13 +22,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           check-latest: true
       - run: npm install --only=prod
-      - run: npm -g install jest@^24.0.0
-        if: matrix.node-version == '8.x'
-      - run: npm -g install jest@^27.0.0
-        if: matrix.node-version != '8.x'
-      - run: yarn install --ignore-engines
-      - run: yarn add mock-fs@4 --ignore-engines -D
-        if: matrix.node-version == '8.x'
       - run: npm run test:coverage
         env:
           CI: true

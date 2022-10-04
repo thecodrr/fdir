@@ -3,3 +3,5 @@ benchmark
 coverage
 cli
 scripts
+dist
+.nyc_output

@@ -1,46 +1,49 @@
-const b = require("benny");
-const child_process = require("child_process");
+import child_process from "child_process";
+import { Fdir } from "../index";
+import b from "benny";
 
-const versions = ["4.0.0", "4.1.0", "5.0.0"];
+type Version = typeof versions[number] | "current";
+const versions = ["4.0.0", "4.1.0", "5.0.0", "5.2.0"] as const;
 
-function versionNormalizer(version) {
+const syncSuites: Promise<any>[] = [];
+const asyncSuites: Promise<any>[] = [];
+
+function normalizeVersion(version: Version) {
   return version.replace(/\./g, "");
 }
 
-const syncSuites = [];
-const asyncSuites = [];
-
-function makeSuite(version) {
-  const normalized = versionNormalizer(version);
+function makeSuite(version: Version) {
+  const normalized = normalizeVersion(version);
   const { fdir } = require(`fdir${normalized}`);
   addSuite(fdir, version);
 }
 
-function addSuite(fdir, version) {
+function addSuite(instance: Fdir, version: Version) {
   syncSuites[syncSuites.length] = b.add(`fdir ${version} sync`, function() {
-    new fdir().crawl("node_modules").sync();
+    new instance().crawl("node_modules").sync();
   });
 
   asyncSuites[asyncSuites.length] = b.add(
     `fdir ${version} async`,
     async function() {
-      await new fdir().crawl("node_modules").withPromise();
+      await new instance().crawl("node_modules").withPromise();
     }
   );
 }
 
-function fillSuites() {
+async function fillSuites() {
+  const { fdir } = await import("../index");
+  addSuite(fdir, "current");
+
   versions.forEach((version) => {
     makeSuite(version);
   });
-  const { fdir } = require("../index");
-  addSuite(fdir, "current");
 }
 
 async function runBenchmark() {
-  fillSuites();
+  await fillSuites();
 
-  const counts = getCounts();
+  const counts = await getCounts();
 
   await b.suite(
     `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
@@ -48,6 +51,7 @@ async function runBenchmark() {
     b.cycle(),
     b.complete()
   );
+
   await b.suite(
     `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
     ...syncSuites,
@@ -56,32 +60,31 @@ async function runBenchmark() {
   );
 }
 
-function getPackageAlias(version) {
-  const normalized = versionNormalizer(version);
+function getPackageAlias(version: Version) {
+  const normalized = normalizeVersion(version);
   return `fdir${normalized}@npm:fdir@${version}`;
 }
 
-function getCounts() {
-  const normalized = versionNormalizer(versions.pop());
-  const { fdir } = require(`fdir${normalized}`);
+async function getCounts() {
+  const normalized = normalizeVersion(versions[3]);
+  const { fdir } = await import(`fdir${normalized}`);
   return new fdir()
     .onlyCounts()
     .crawl("node_modules")
     .sync();
 }
 
-function appendVersionsToCommand(command) {
-  let cmd = command;
+function appendVersionsToCommand(command: string) {
   versions.forEach((v) => {
-    cmd += getPackageAlias(v) + " ";
+    command += getPackageAlias(v) + " ";
   });
-  return cmd.trim();
+  return command.trim();
 }
 
 function removePackages() {
-  const v = versions.map((v) => versionNormalizer(v)).join(" fdir");
-  let cmd = `yarn remove fdir${v}`;
-  child_process.execSync(cmd.trim(), (err) => {
+  const v = versions.map((v) => normalizeVersion(v)).join(" fdir");
+  let cmd = `npm uninstall fdir${v}`;
+  child_process.exec(cmd.trim(), (err) => {
     if (err) {
       console.error(err);
       process.exit(err.code);
@@ -91,7 +94,7 @@ function removePackages() {
 }
 
 function addPackages() {
-  let cmd = appendVersionsToCommand(`yarn add --dev `);
+  let cmd = appendVersionsToCommand(`npm i -D `);
   child_process.exec(cmd.trim(), async (err) => {
     if (err) process.exit(err.code);
     console.log(`Done installing all versions...`);
@@ -103,7 +106,7 @@ function addPackages() {
   });
 }
 
-function setCPUScaling(isEnabled) {
+function setCPUScaling(isEnabled: boolean) {
   return new Promise((resolve, reject) => {
     console.log((isEnabled ? "Enabling" : "Disabling") + " cpu scaling...");
     const profile = isEnabled ? "powersave" : "performance";
@@ -111,7 +114,7 @@ function setCPUScaling(isEnabled) {
       `sudo cpupower frequency-set --governor ${profile}`,
       (err) => {
         if (err) return reject(err);
-        resolve();
+        resolve(undefined);
       }
     );
   });
