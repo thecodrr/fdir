@@ -32,7 +32,7 @@ async function crawl(type: APITypes, path: string) {
 }
 
 for (const type of apiTypes) {
-  tap.test(`[${type}] crawl single depth directory`, async (t) => {
+  tap.test(`[${type}] crawl single depth directory`, async () => {
     await crawl(type, "__tests__");
   });
 
@@ -129,7 +129,7 @@ for (const type of apiTypes) {
   );
 
   tap.test(
-    "get all files in a directory and output full paths (withFullPaths)",
+    `[${type}] get all files in a directory and output full paths (withFullPaths)`,
     async (t) => {
       const api = new fdir().withFullPaths().crawl("./");
       const files = await api[type]();
@@ -138,7 +138,7 @@ for (const type of apiTypes) {
   );
 
   tap.test(
-    "getting files from restricted directory should throw",
+    `[${type}] getting files from restricted directory should throw`,
     async (t) => {
       try {
         const api = new fdir().withErrors().crawl("/etc");
@@ -150,7 +150,7 @@ for (const type of apiTypes) {
   );
 
   tap.test(
-    "getting files from restricted directory shouldn't throw (suppressErrors)",
+    `[${type}] getting files from restricted directory shouldn't throw (suppressErrors)`,
     async (t) => {
       const api = new fdir().crawl("/etc");
       const files = await api[type]();
