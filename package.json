@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "test": "tap --ts __tests__/",
-    "test:coverage": "tap --ts --coverage-report=html __tests__/",
+    "test:coverage": "tap --ts --no-check-coverage --coverage-report=html __tests__/",
     "bench": "node benchmarks/benchmark.js",
     "bench:glob": "node benchmarks/glob-benchmark.js",
     "bench:fdir": "node benchmarks/fdir-benchmark.js",
@@ -48,7 +48,6 @@
     "@types/tap": "^15.0.7",
     "all-files-in-tree": "^1.1.2",
     "benny": "^3.6.14",
-    "expect": "^29.1.2",
     "fast-glob": "^3.2.2",
     "fdir1": "npm:fdir@1.2.0",
     "fdir2": "npm:fdir@2.1.0",
