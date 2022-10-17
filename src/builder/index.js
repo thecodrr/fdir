@@ -22,7 +22,7 @@ Builder.prototype.crawl = function(path) {
 };
 
 Builder.prototype.crawlWithOptions = function(path, options) {
-  if (!options.maxDepth) options.maxDepth = Infinity;
+  if (options.maxDepth === undefined) options.maxDepth = Infinity;
   options.groupVar = options.group;
   options.onlyCountsVar = options.onlyCounts;
   options.excludeFn = options.exclude;

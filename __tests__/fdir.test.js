@@ -6,7 +6,7 @@ beforeEach(() => {
   mock.restore();
 });
 
-test("crawl single depth directory with callback", (done) => {
+test("crawl directory with callback", (done) => {
   const api = new fdir().crawl("__tests__");
   api.withCallback((err, files) => {
     if (err) done(err);
@@ -27,11 +27,11 @@ async function crawl(type, path) {
 }
 
 describe.each(["withPromise", "sync"])("fdir %s", (type) => {
-  test("crawl single depth directory", async () => {
+  test("crawl directory", async () => {
     await crawl(type, "__tests__");
   });
 
-  test("crawl single depth directory with options", async () => {
+  test("crawl directory with options", async () => {
     const api = new fdir().crawlWithOptions("__tests__", {
       includeBasePath: true,
     });
@@ -39,9 +39,19 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     expect(files.every((file) => file.startsWith("__tests__"))).toBe(true);
   });
 
+  test("crawl single depth directory with options", async () => {
+    const api = new fdir().crawlWithOptions("node_modules", {
+      maxDepth: 0,
+      includeBasePath: true,
+    });
+    const files = await api[type]();
+    expect(files.every((file) => file.split("/").length <= 2)).toBe(true);
+  });
+
   test("crawl multi depth directory with options", async () => {
     const api = new fdir().crawlWithOptions("node_modules", {
       maxDepth: 1,
+      includeBasePath: true,
     });
     const files = await api[type]();
     expect(files.every((file) => file.split("/").length <= 3)).toBe(true);
