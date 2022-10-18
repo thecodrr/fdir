@@ -73,6 +73,11 @@ Builder.prototype.withSymlinks = function() {
   return this;
 };
 
+Builder.prototype.withRealPaths = function() {
+  this.useRealPaths = true;
+  return this;
+};
+
 Builder.prototype.group = function() {
   this.groupVar = true;
   return this;
