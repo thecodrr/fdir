@@ -167,7 +167,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
         }),
       },
     });
-    const api = new fdir().withSymlinks().crawl("/some/dir");
+    const api = new fdir().withSymlinks(false).crawl("/some/dir");
     const files = await api[type]();
     expect(files.length).toBe(2);
     expect(files.indexOf("/some/dir/fileSymlink/")).toBeGreaterThan(-1);
@@ -192,10 +192,7 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
         }),
       },
     });
-    const api = new fdir()
-      .withSymlinks()
-      .withRealPaths()
-      .crawl("/some/dir");
+    const api = new fdir().withSymlinks(true).crawl("/some/dir");
     const files = await api[type]();
     expect(files.length).toBe(2);
     expect(files.indexOf("/sym/linked/file-1")).toBeGreaterThan(-1);

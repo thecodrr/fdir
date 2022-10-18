@@ -28,6 +28,7 @@ Builder.prototype.crawlWithOptions = function(path, options) {
   options.excludeFn = options.exclude;
   options.filters = options.filters || [];
   options.relativePath = options.relativePaths ? path : undefined;
+  options.useRealPaths = options.useRealPaths || true;
 
   if (options.excludeFiles) {
     options.includeDirs = true;
@@ -67,14 +68,10 @@ Builder.prototype.withErrors = function() {
   return this;
 };
 
-Builder.prototype.withSymlinks = function() {
+Builder.prototype.withSymlinks = function(resolvePaths = true) {
   this.resolveSymlinks = true;
+  this.useRealPaths = resolvePaths;
   this.withFullPaths();
-  return this;
-};
-
-Builder.prototype.withRealPaths = function() {
-  this.useRealPaths = true;
   return this;
 };
 

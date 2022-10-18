@@ -102,30 +102,24 @@ Use this to also add the directories to the output.
 const crawler = new fdir().withDirs();
 ```
 
-### `withSymlinks`
+### `withSymlinks(boolean)`
 
-By default `fdir` does not follow symlinks but if such a functionality is required, you can use this flag. Do note that the returned paths are not real paths i.e., they are not relative to the original directory but the symlink itself. You can change this behavior by using `withRealPaths`.
+Use this to follow all symlinks recursively.
+
+**Parameters:**
+
+- `resolvePaths: boolean` — By default, `fdir` returns original paths to files irrespective of whether they are inside a symlinked directory or not. If you want the paths to be relative to the symlink, set this flag to `false`. (Default is `true`).
 
 > NOTE: This will affect crawling performance.
 
 **Usage**
 
 ```js
-const crawler = new fdir().withSymlinks();
-```
+// to resolve all symlinked paths to their original path
+const crawler = new fdir().withSymlinks(true);
 
-### `withRealPaths`
-
-This changes the default behavior of `withSymlinks` to return real paths instead of the symlinked paths.
-
-Do note that using `withRealPaths` will be slower since `fdir` will call `realpath` in addition to `stat`. 2 calls instead of 1 so only use this if absolutely required.
-
-**This is intended to be used with `withSymlinks`**
-
-**Usage**
-
-```js
-const crawler = new fdir().withSymlinks().withRealPaths();
+// to disable path resolution
+const crawler = new fdir().withSymlinks(false);
 ```
 
 ### `withMaxDepth(number)`

@@ -59,13 +59,9 @@ declare module "fdir" {
 
     /**
      * Recursively follow all symlinks
+     * @param {boolean} resolvePaths  By default, `fdir` returns original paths to files irrespective of whether they are inside a symlinked directory or not. If you want the paths to be relative to the symlink, set this flag to `false`. (Default is `true`).
      */
-    withSymlinks(): Builder;
-
-    /**
-     * Return real paths for symlinked files & directories
-     */
-    withRealPaths(): Builder;
+    withSymlinks(resolvePaths?: boolean): Builder;
 
     /**
      * Return paths relative to the root directory
