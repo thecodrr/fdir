@@ -1,7 +1,6 @@
 const { fdir } = require("../index.js");
 const fs = require("fs");
 const mock = require("mock-fs");
-const path = require("path");
 
 beforeEach(() => {
   mock.restore();
