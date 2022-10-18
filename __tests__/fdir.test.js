@@ -170,6 +170,34 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
     const api = new fdir().withSymlinks().crawl("/some/dir");
     const files = await api[type]();
     expect(files.length).toBe(2);
+    expect(files.indexOf("/some/dir/fileSymlink/")).toBeGreaterThan(-1);
+    expect(files.indexOf("/some/dir/dirSymlink/file-1")).toBeGreaterThan(-1);
+    mock.restore();
+  });
+
+  test("crawl all files and include symlinks with real paths", async () => {
+    mock({
+      "/sym/linked": {
+        "file-1": "file contents",
+      },
+      "/other/dir": {
+        "file-2": "file contents2",
+      },
+      "/some/dir": {
+        fileSymlink: mock.symlink({
+          path: "/other/dir/file-2",
+        }),
+        dirSymlink: mock.symlink({
+          path: "/sym/linked",
+        }),
+      },
+    });
+    const api = new fdir()
+      .withSymlinks()
+      .withRealPaths()
+      .crawl("/some/dir");
+    const files = await api[type]();
+    expect(files.length).toBe(2);
     expect(files.indexOf("/sym/linked/file-1")).toBeGreaterThan(-1);
     expect(files.indexOf("/other/dir/file-2")).toBeGreaterThan(-1);
     mock.restore();

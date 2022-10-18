@@ -90,7 +90,7 @@ function callbackInvokerBuilder(output) {
 module.exports.resolveSymlinksAsync = function(path, state, callback) {
   state.queue.queue();
 
-  fs.lstat(path, (error, stat) => {
+  fs.stat(path, (error, stat) => {
     if (error) {
       state.queue.dequeue(state.options.suppressErrors ? null : error, state);
       return;
@@ -128,7 +128,7 @@ module.exports.resolveSymlinksWithRealPathsAsync = function(
 };
 
 module.exports.resolveSymlinksSync = function(path, _state, callback) {
-  const stat = fs.lstatSync(path);
+  const stat = fs.statSync(path);
   callback(stat, path);
 };
 
