@@ -1,6 +1,7 @@
 const { fdir } = require("../index.js");
 const fs = require("fs");
 const mock = require("mock-fs");
+const path = require("path");
 
 beforeEach(() => {
   mock.restore();
@@ -76,6 +77,15 @@ describe.each(["withPromise", "sync"])("fdir %s", (type) => {
       .crawl("node_modules");
     const files = await api[type]();
     expect(files.every((file) => file.endsWith(".js"))).toBe(true);
+  });
+
+  test("crawl and get files that match a glob pattern that is a filename", async () => {
+    const api = new fdir()
+      .withBasePath()
+      .glob("a.js")
+      .crawl("__tests__/fixtures");
+    const files = await api[type]();
+    expect(files).toEqual(['__tests__/fixtures/a.js']);
   });
 
   test("crawl but exclude node_modules dir", async () => {
