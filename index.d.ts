@@ -25,6 +25,7 @@ declare module "fdir" {
     excludeFiles?: boolean;
     exclude?: ExcludeFn;
     relativePaths?: boolean;
+    useRealPaths?: boolean;
   };
 
   class APIBuilder {
@@ -57,9 +58,14 @@ declare module "fdir" {
     withDirs(): Builder;
 
     /**
-     * Resolve and recurse over all symlinks
+     * Recursively follow all symlinks
      */
     withSymlinks(): Builder;
+
+    /**
+     * Return real paths for symlinked files & directories
+     */
+    withRealPaths(): Builder;
 
     /**
      * Return paths relative to the root directory

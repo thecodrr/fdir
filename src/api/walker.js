@@ -121,6 +121,7 @@ Walker.prototype.buildFunctions = function buildFunctions() {
     excludeFiles,
     resolveSymlinks,
     isSync,
+    useRealPaths,
   } = this.options;
 
   // build function for joining paths
@@ -138,7 +139,7 @@ Walker.prototype.buildFunctions = function buildFunctions() {
 
   this.buildPushDir(includeDirs, filters);
 
-  this.buildSymlinkResolver(resolveSymlinks, isSync);
+  this.buildSymlinkResolver(resolveSymlinks, useRealPaths, isSync);
 
   this.buildCallbackInvoker(onlyCountsVar, isSync);
 };
@@ -188,12 +189,17 @@ Walker.prototype.buildCallbackInvoker = function buildCallbackInvoker(
  */
 Walker.prototype.buildSymlinkResolver = function buildSymlinkResolver(
   resolveSymlinks,
+  useRealPaths,
   isSync
 ) {
   if (!resolveSymlinks) return;
 
   this.symlinkResolver = isSync
-    ? fns.resolveSymlinksSync
+    ? useRealPaths
+      ? fns.resolveSymlinksWithRealPathsSync
+      : fns.resolveSymlinksSync
+    : useRealPaths
+    ? fns.resolveSymlinksWithRealPathsAsync
     : fns.resolveSymlinksAsync;
 };
 

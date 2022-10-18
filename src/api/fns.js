@@ -90,27 +90,54 @@ function callbackInvokerBuilder(output) {
 module.exports.resolveSymlinksAsync = function(path, state, callback) {
   state.queue.queue();
 
-  fs.realpath(path, (error, resolvedPath) => {
+  fs.stat(path, (error, stat) => {
     if (error) {
       state.queue.dequeue(state.options.suppressErrors ? null : error, state);
       return;
     }
 
-    fs.lstat(resolvedPath, (error, stat) => {
+    callback(stat, path);
+
+    state.queue.dequeue(null, state);
+  });
+};
+
+module.exports.resolveSymlinksWithRealPathsAsync = function(
+  path,
+  state,
+  callback
+) {
+  state.queue.queue();
+
+  fs.stat(path, (error, stat) => {
+    if (error) {
+      state.queue.dequeue(state.options.suppressErrors ? null : error, state);
+      return;
+    }
+
+    fs.realpath(path, (error, resolvedPath) => {
       if (error) {
         state.queue.dequeue(state.options.suppressErrors ? null : error, state);
         return;
       }
 
       callback(stat, resolvedPath);
-
       state.queue.dequeue(null, state);
     });
   });
 };
 
 module.exports.resolveSymlinksSync = function(path, _state, callback) {
+  const stat = fs.statSync(path);
+  callback(stat, path);
+};
+
+module.exports.resolveSymlinksWithRealPathsSync = function(
+  path,
+  _state,
+  callback
+) {
+  const stat = fs.statSync(path);
   const resolvedPath = fs.realpathSync(path);
-  const stat = fs.lstatSync(resolvedPath);
   callback(stat, resolvedPath);
 };
