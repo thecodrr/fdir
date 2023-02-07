@@ -2,10 +2,52 @@ import { fdir } from "../index";
 import fs from "fs";
 import mock from "mock-fs";
 import tap from "tap";
+import path from "path";
 
 tap.beforeEach(() => {
   mock.restore();
 });
+
+const mockFsWithSymlinks = {
+  "/sym/linked": {
+    "file-1": "file contents",
+    "file-excluded-1": "file contents",
+  },
+  "/other/dir": {
+    "file-2": "file contents2",
+  },
+  "/some/dir": {
+    fileSymlink: mock.symlink({
+      path: "/other/dir/file-2",
+    }),
+    fileSymlink2: mock.symlink({
+      path: "/other/dir/file-3",
+    }),
+    dirSymlink: mock.symlink({
+      path: "/sym/linked",
+    }),
+  },
+};
+
+function root() {
+  return process.platform === "win32" ? process.cwd().split(path.sep)[0] : "/";
+}
+
+function cwd() {
+  return `.${path.sep}`;
+}
+
+function restricted() {
+  return process.platform === "win32"
+    ? path.join(root(), "Windows", "System32")
+    : "/etc";
+}
+
+function resolveSymlinkRoot(p: string) {
+  return process.platform === "win32"
+    ? path.join(root(), path.normalize(p))
+    : p;
+}
 
 tap.test(`crawl single depth directory with callback`, (t) => {
   const api = new fdir().crawl("__tests__");
@@ -47,7 +89,7 @@ for (const type of apiTypes) {
       maxDepth: 1,
     }).crawl("node_modules");
     const files = await api[type]();
-    t.ok(files.every((file) => file.split("/").length <= 3));
+    t.ok(files.every((file) => file.split(path.sep).length <= 3));
   });
 
   tap.test(`[${type}] crawl multi depth directory`, async (t) => {
@@ -62,7 +104,7 @@ for (const type of apiTypes) {
       t.ok(files[0]);
       t.ok(files.every((t) => t));
       t.ok(files[0].length > 0);
-      t.ok(files[0].endsWith("node_modules/"));
+      t.ok(files[0].endsWith(path.normalize("node_modules/")));
     }
   );
 
@@ -74,7 +116,7 @@ for (const type of apiTypes) {
         .withBasePath()
         .crawl("node_modules");
       const files = await api[type]();
-      t.ok(files.every((file) => file.split("/").length <= 3));
+      t.ok(files.every((file) => file.split(path.sep).length <= 3));
     }
   );
 
@@ -95,7 +137,7 @@ for (const type of apiTypes) {
     const api = new fdir()
       .withBasePath()
       .exclude((dir) => dir.includes("node_modules"))
-      .crawl("./");
+      .crawl(cwd());
     const files = await api[type]();
     t.ok(files.every((file) => !file.includes("node_modules")));
   });
@@ -104,7 +146,7 @@ for (const type of apiTypes) {
     const api = new fdir()
       .withBasePath()
       .filter((file) => file.includes(".git"))
-      .crawl("./");
+      .crawl(cwd());
     const files = await api[type]();
     t.ok(files.every((file) => file.includes(".git")));
   });
@@ -114,7 +156,7 @@ for (const type of apiTypes) {
       .withBasePath()
       .filter((file) => file.includes(".git"))
       .filter((file) => file.includes(".js"))
-      .crawl("./");
+      .crawl(cwd());
     const files = await api[type]();
     t.ok(files.every((file) => file.includes(".git") || file.includes(".js")));
   });
@@ -122,18 +164,18 @@ for (const type of apiTypes) {
   tap.test(
     `[${type}] crawl all files in a directory (with base path)`,
     async (t) => {
-      const api = new fdir().withBasePath().crawl("./");
+      const api = new fdir().withBasePath().crawl(cwd());
       const files = await api[type]();
-      t.ok(files.every((file) => file.includes("./")));
+      t.ok(files.every((file) => file.includes(cwd())));
     }
   );
 
   tap.test(
     `[${type}] get all files in a directory and output full paths (withFullPaths)`,
     async (t) => {
-      const api = new fdir().withFullPaths().crawl("./");
+      const api = new fdir().withFullPaths().crawl(cwd());
       const files = await api[type]();
-      t.ok(files.every((file) => file.startsWith("/")));
+      t.ok(files.every((file) => file.startsWith(root())));
     }
   );
 
@@ -141,7 +183,7 @@ for (const type of apiTypes) {
     `[${type}] getting files from restricted directory should throw`,
     async (t) => {
       try {
-        const api = new fdir().withErrors().crawl("/etc");
+        const api = new fdir().withErrors().crawl(restricted());
         await api[type]();
       } catch (e) {
         t.ok(e);
@@ -152,7 +194,7 @@ for (const type of apiTypes) {
   tap.test(
     `[${type}] getting files from restricted directory shouldn't throw (suppressErrors)`,
     async (t) => {
-      const api = new fdir().crawl("/etc");
+      const api = new fdir().crawl(restricted());
       const files = await api[type]();
       t.ok(files.length > 0);
     }
@@ -172,129 +214,6 @@ for (const type of apiTypes) {
         .crawl("/");
       const files = await api[type]();
       t.ok(files.every((file) => !file.includes("//")));
-      mock.restore();
-    }
-  );
-
-  tap.test(
-    `[${type}] crawl all files and include resolved symlinks`,
-    async (t) => {
-      mock({
-        "/sym/linked": {
-          "file-1": "file contents",
-        },
-        "/other/dir": {
-          "file-2": "file contents2",
-        },
-        "/some/dir": {
-          fileSymlink: mock.symlink({
-            path: "/other/dir/file-2",
-          }),
-          fileSymlink2: mock.symlink({
-            path: "/other/dir/file-3",
-          }),
-          dirSymlink: mock.symlink({
-            path: "/sym/linked",
-          }),
-        },
-      });
-      const api = new fdir().withSymlinks().crawl("/some/dir");
-      const files = await api[type]();
-      t.ok(files.length === 2);
-      t.ok(files.indexOf("/sym/linked/file-1") > -1);
-      t.ok(files.indexOf("/other/dir/file-2") > -1);
-      mock.restore();
-    }
-  );
-
-  tap.test(
-    "crawl all files and include resolved symlinks with exclusions",
-    async (t) => {
-      mock({
-        "/sym/linked": {
-          "file-1": "file contents",
-          "file-excluded-1": "file contents",
-        },
-        "/other/dir": {
-          "file-2": "file contents2",
-        },
-        "/some/dir": {
-          fileSymlink: mock.symlink({
-            path: "/other/dir/file-2",
-          }),
-          dirSymlink: mock.symlink({
-            path: "/sym/linked",
-          }),
-        },
-      });
-      const api = new fdir()
-        .withSymlinks()
-        .exclude((_name, path) => path === "/sym/linked/")
-        .crawl("/some/dir");
-      const files = await api[type]();
-      t.ok(files.length === 1);
-      t.ok(files.indexOf("/other/dir/file-2") > -1);
-      mock.restore();
-    }
-  );
-
-  tap.test(
-    `[${type}] crawl all files and include unresolved symlinks`,
-    async (t) => {
-      mock({
-        "/sym/linked": {
-          "file-1": "file contents",
-        },
-        "/other/dir": {
-          "file-2": "file contents2",
-        },
-        "/some/dir": {
-          fileSymlink: mock.symlink({
-            path: "/other/dir/file-2",
-          }),
-          dirSymlink: mock.symlink({
-            path: "/sym/linked",
-          }),
-        },
-      });
-      const api = new fdir().withDirs().crawl("/some/dir");
-      const files = await api[type]();
-      t.ok(files.length === 3);
-      t.ok(files.indexOf("/some/dir/") > -1);
-      t.ok(files.indexOf("fileSymlink") > -1);
-      t.ok(files.indexOf("dirSymlink") > -1);
-      mock.restore();
-    }
-  );
-
-  tap.test(
-    "crawl all files (including symlinks) and throw errors",
-    async (t) => {
-      mock({
-        "/sym/linked": {
-          "file-1": "file contents",
-        },
-        "/other/dir": {},
-        "/some/dir": {
-          fileSymlink: mock.symlink({
-            path: "/other/dir/file-3",
-          }),
-          dirSymlink: mock.symlink({
-            path: "/sym/linked",
-          }),
-        },
-      });
-      try {
-        const api = new fdir()
-          .withErrors()
-          .withSymlinks()
-          .crawl("/some/dir");
-
-        await api[type]();
-      } catch (e) {
-        if (e instanceof Error)
-          t.ok(e.message.includes("no such file or directory"));
-      }
       mock.restore();
     }
   );
@@ -340,7 +259,7 @@ for (const type of apiTypes) {
         .withBasePath()
         .filter((file) => file.includes("node_modules"))
         .onlyCounts()
-        .crawl("./");
+        .crawl(cwd());
       const result = await api[type]();
       t.ok(result.files > 0);
     }
@@ -391,7 +310,9 @@ for (const type of apiTypes) {
   );
 
   tap.test(`[${type}] crawl and return relative paths`, async (t) => {
-    const api = new fdir().withRelativePaths().crawl("node_modules");
+    const api = new fdir()
+      .withRelativePaths()
+      .crawl(path.normalize(`node_modules/`));
     const paths = await api[type]();
     t.ok(paths.every((p) => !p.startsWith("node_modules")));
   });
@@ -404,6 +325,79 @@ for (const type of apiTypes) {
       t.ok(
         paths.every((p) => !p.startsWith("node_modules") && !p.includes("//"))
       );
+    }
+  );
+
+  tap.test(
+    `[${type}] crawl all files and include resolved symlinks`,
+    async (t) => {
+      mock(mockFsWithSymlinks);
+
+      const api = new fdir().withSymlinks().crawl("/some/dir");
+      const files = await api[type]();
+      t.ok(files.length === 3);
+      t.ok(files.indexOf(resolveSymlinkRoot("/sym/linked/file-1")) > -1);
+      t.ok(files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1);
+      mock.restore();
+    }
+  );
+
+  tap.test(
+    "crawl all files and include resolved symlinks with exclusions",
+    async (t) => {
+      mock(mockFsWithSymlinks);
+      const api = new fdir()
+        .withSymlinks()
+        .exclude((_name, path) => path === resolveSymlinkRoot("/sym/linked/"))
+        .crawl("/some/dir");
+      const files = await api[type]();
+      t.ok(files.length === 1);
+      t.ok(files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1);
+      mock.restore();
+    }
+  );
+
+  tap.test(
+    `[${type}] crawl all files and include unresolved symlinks`,
+    async (t) => {
+      mock(mockFsWithSymlinks);
+
+      const api = new fdir().withDirs().crawl("/some/dir");
+      const files = await api[type]();
+      t.ok(files.length === 4);
+
+      t.ok(files.indexOf(path.normalize("/some/dir/")) > -1);
+      t.ok(files.indexOf("fileSymlink") > -1);
+      t.ok(files.indexOf("fileSymlink2") > -1);
+      t.ok(files.indexOf("dirSymlink") > -1);
+      mock.restore();
+    }
+  );
+
+  tap.test(
+    "crawl all files (including symlinks) and throw errors",
+    async (t) => {
+      mock({
+        "/other/dir": {},
+        "/some/dir": {
+          fileSymlink: mock.symlink({
+            path: "/other/dir/file-3",
+          }),
+        },
+      });
+
+      try {
+        const api = new fdir()
+          .withErrors()
+          .withSymlinks()
+          .crawl("/some/dir");
+
+        await api[type]();
+      } catch (e) {
+        if (e instanceof Error)
+          t.ok(e.message.includes("no such file or directory"));
+      }
+      mock.restore();
     }
   );
 }

@@ -68,8 +68,13 @@ export class Walker<TOutput extends Output> {
   }
 
   private normalizePath(path: string) {
+    const pathNeedsCleaning =
+      process.platform === "win32" && path.includes("/");
+
     if (this.state.options.resolvePaths) path = pathResolve(path);
-    if (this.state.options.normalizePath) path = cleanPath(path);
+    if (this.state.options.normalizePath || pathNeedsCleaning)
+      path = cleanPath(path);
+
     const needsSeperator = path[path.length - 1] !== sep;
     return needsSeperator ? path + sep : path;
   }
