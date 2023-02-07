@@ -3,6 +3,7 @@ import fs from "fs";
 import mock from "mock-fs";
 import tap from "tap";
 import path from "path";
+import expect from "expect";
 
 tap.beforeEach(() => {
   mock.restore();
@@ -53,9 +54,9 @@ tap.test(`crawl single depth directory with callback`, (t) => {
   const api = new fdir().crawl("__tests__");
   api.withCallback((err, files) => {
     if (err) return t.end();
-    t.ok(files[0]);
-    t.ok(files.every((t) => t));
-    t.ok(files[0].length > 0);
+    expect(files[0]).toBeDefined();
+    expect(files.every((t) => t)).toBeTruthy();
+    expect(files[0].length).toBeGreaterThan(0);
     t.end();
   });
 });
@@ -67,9 +68,9 @@ async function crawl(type: APITypes, path: string) {
   const api = new fdir().crawl(path);
   const files = await api[type]();
   if (!files) throw new Error("files cannot be null.");
-  tap.ok(files[0]);
-  tap.ok(files.every((t) => t));
-  tap.ok(files[0].length > 0);
+  expect(files[0]).toBeDefined();
+  expect(files.every((t) => t)).toBeTruthy();
+  expect(files[0].length).toBeGreaterThan(0);
   return files;
 }
 
@@ -81,7 +82,7 @@ for (const type of apiTypes) {
   tap.test(`[${type}] crawl single depth directory with options`, async (t) => {
     const api = new fdir({ includeBasePath: true }).crawl("__tests__");
     const files = await api[type]();
-    t.ok(files.every((file) => file.startsWith("__tests__")));
+    expect(files.every((file) => file.startsWith("__tests__"))).toBeTruthy();
   });
 
   tap.test(`[${type}] crawl multi depth directory with options`, async (t) => {
@@ -89,7 +90,9 @@ for (const type of apiTypes) {
       maxDepth: 1,
     }).crawl("node_modules");
     const files = await api[type]();
-    t.ok(files.every((file) => file.split(path.sep).length <= 3));
+    expect(
+      files.every((file) => file.split(path.sep).length <= 3)
+    ).toBeTruthy();
   });
 
   tap.test(`[${type}] crawl multi depth directory`, async (t) => {
@@ -101,10 +104,10 @@ for (const type of apiTypes) {
     async (t) => {
       const api = new fdir().withDirs().crawl("node_modules");
       const files = await api[type]();
-      t.ok(files[0]);
-      t.ok(files.every((t) => t));
-      t.ok(files[0].length > 0);
-      t.ok(files[0].endsWith(path.normalize("node_modules/")));
+      expect(files[0]).toBeDefined();
+      expect(files.every((t) => t)).toBeTruthy();
+      expect(files[0].length).toBeGreaterThan(0);
+      expect(files[0].endsWith(path.normalize("node_modules/"))).toBeTruthy();
     }
   );
 
@@ -116,7 +119,9 @@ for (const type of apiTypes) {
         .withBasePath()
         .crawl("node_modules");
       const files = await api[type]();
-      t.ok(files.every((file) => file.split(path.sep).length <= 3));
+      expect(
+        files.every((file) => file.split(path.sep).length <= 3)
+      ).toBeTruthy();
     }
   );
 
@@ -129,7 +134,7 @@ for (const type of apiTypes) {
         .glob("./**/*.js")
         .crawl("node_modules");
       const files = await api[type]();
-      t.ok(files.every((file) => file.endsWith(".js")));
+      expect(files.every((file) => file.endsWith(".js"))).toBeTruthy();
     }
   );
 
@@ -139,7 +144,7 @@ for (const type of apiTypes) {
       .exclude((dir) => dir.includes("node_modules"))
       .crawl(cwd());
     const files = await api[type]();
-    t.ok(files.every((file) => !file.includes("node_modules")));
+    expect(files.every((file) => !file.includes("node_modules"))).toBeTruthy();
   });
 
   tap.test(`[${type}] crawl all files with filter`, async (t) => {
@@ -148,7 +153,7 @@ for (const type of apiTypes) {
       .filter((file) => file.includes(".git"))
       .crawl(cwd());
     const files = await api[type]();
-    t.ok(files.every((file) => file.includes(".git")));
+    expect(files.every((file) => file.includes(".git"))).toBeTruthy();
   });
 
   tap.test(`[${type}] crawl all files with multifilter`, async (t) => {
@@ -158,7 +163,9 @@ for (const type of apiTypes) {
       .filter((file) => file.includes(".js"))
       .crawl(cwd());
     const files = await api[type]();
-    t.ok(files.every((file) => file.includes(".git") || file.includes(".js")));
+    expect(
+      files.every((file) => file.includes(".git") || file.includes(".js"))
+    ).toBeTruthy();
   });
 
   tap.test(
@@ -166,7 +173,7 @@ for (const type of apiTypes) {
     async (t) => {
       const api = new fdir().withBasePath().crawl(cwd());
       const files = await api[type]();
-      t.ok(files.every((file) => file.includes(cwd())));
+      expect(files.every((file) => file.includes(cwd()))).toBeTruthy();
     }
   );
 
@@ -175,7 +182,7 @@ for (const type of apiTypes) {
     async (t) => {
       const api = new fdir().withFullPaths().crawl(cwd());
       const files = await api[type]();
-      t.ok(files.every((file) => file.startsWith(root())));
+      expect(files.every((file) => file.startsWith(root()))).toBeTruthy();
     }
   );
 
@@ -186,7 +193,7 @@ for (const type of apiTypes) {
         const api = new fdir().withErrors().crawl(restricted());
         await api[type]();
       } catch (e) {
-        t.ok(e);
+        expect(e).toBeTruthy();
       }
     }
   );
@@ -196,7 +203,7 @@ for (const type of apiTypes) {
     async (t) => {
       const api = new fdir().crawl(restricted());
       const files = await api[type]();
-      t.ok(files.length > 0);
+      expect(files.length).toBeGreaterThanOrEqual(0);
     }
   );
 
@@ -213,7 +220,7 @@ for (const type of apiTypes) {
         .normalize()
         .crawl("/");
       const files = await api[type]();
-      t.ok(files.every((file) => !file.includes("//")));
+      expect(files.every((file) => !file.includes("//"))).toBeTruthy();
       mock.restore();
     }
   );
@@ -221,18 +228,18 @@ for (const type of apiTypes) {
   tap.test(`[${type}] crawl all files with only counts`, async (t) => {
     const api = new fdir().onlyCounts().crawl("node_modules");
     const result = await api[type]();
-    t.ok(result.files > 0);
+    expect(result.files).toBeGreaterThan(0);
   });
 
   tap.test(`[${type}] crawl and return only directories`, async (t) => {
     const api = new fdir().onlyDirs().crawl("node_modules");
     const result = await api[type]();
-    t.ok(result.length > 0);
-    t.ok(
+    expect(result.length).toBeGreaterThan(0);
+    expect(
       result.every((dir) => {
         return fs.statSync(dir).isDirectory;
       })
-    );
+    ).toBeTruthy();
   });
 
   tap.test(
@@ -243,12 +250,12 @@ for (const type of apiTypes) {
         includeDirs: true,
       }).crawl("node_modules");
       const result = await api[type]();
-      t.ok(result.length > 0);
-      t.ok(
+      expect(result.length).toBeGreaterThan(0);
+      expect(
         result.every((dir) => {
           return fs.statSync(dir).isDirectory;
         })
-      );
+      ).toBeTruthy();
     }
   );
 
@@ -261,7 +268,7 @@ for (const type of apiTypes) {
         .onlyCounts()
         .crawl(cwd());
       const result = await api[type]();
-      t.ok(result.files > 0);
+      expect(result.files).toBeGreaterThan(0);
     }
   );
 
@@ -271,7 +278,7 @@ for (const type of apiTypes) {
       const api = new fdir().normalize().crawl("node_modules/");
       const files = await api[type]();
       const res = files.every((file) => !file.includes("/"));
-      t.ok(res);
+      expect(res).toBeDefined();
     }
   );
 
@@ -283,7 +290,7 @@ for (const type of apiTypes) {
         .group()
         .crawl("node_modules");
       const result = await api[type]();
-      t.ok(result.length > 0);
+      expect(result.length).toBeGreaterThan(0);
     }
   );
 
@@ -293,7 +300,7 @@ for (const type of apiTypes) {
       .filter((path) => path.includes("api"))
       .crawl("./src");
     const result = await api[type]();
-    t.ok(result.length === 2);
+    expect(result).toHaveLength(2);
   });
 
   tap.test(
@@ -304,7 +311,7 @@ for (const type of apiTypes) {
       try {
         await api[type]();
       } catch (e) {
-        t.ok(!!e);
+        expect(!!e).toBeTruthy();
       }
     }
   );
@@ -314,7 +321,7 @@ for (const type of apiTypes) {
       .withRelativePaths()
       .crawl(path.normalize(`node_modules/`));
     const paths = await api[type]();
-    t.ok(paths.every((p) => !p.startsWith("node_modules")));
+    expect(paths.every((p) => !p.startsWith("node_modules"))).toBeTruthy();
   });
 
   tap.test(
@@ -322,9 +329,9 @@ for (const type of apiTypes) {
     async (t) => {
       const api = new fdir().withRelativePaths().crawl("./node_modules/");
       const paths = await api[type]();
-      t.ok(
+      expect(
         paths.every((p) => !p.startsWith("node_modules") && !p.includes("//"))
-      );
+      ).toBeTruthy();
     }
   );
 
@@ -335,9 +342,13 @@ for (const type of apiTypes) {
 
       const api = new fdir().withSymlinks().crawl("/some/dir");
       const files = await api[type]();
-      t.ok(files.length === 3);
-      t.ok(files.indexOf(resolveSymlinkRoot("/sym/linked/file-1")) > -1);
-      t.ok(files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1);
+      expect(files).toHaveLength(3);
+      expect(
+        files.indexOf(resolveSymlinkRoot("/sym/linked/file-1")) > -1
+      ).toBeTruthy();
+      expect(
+        files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1
+      ).toBeTruthy();
       mock.restore();
     }
   );
@@ -351,8 +362,10 @@ for (const type of apiTypes) {
         .exclude((_name, path) => path === resolveSymlinkRoot("/sym/linked/"))
         .crawl("/some/dir");
       const files = await api[type]();
-      t.ok(files.length === 1);
-      t.ok(files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1);
+      expect(files).toHaveLength(1);
+      expect(
+        files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1
+      ).toBeTruthy();
       mock.restore();
     }
   );
@@ -364,12 +377,12 @@ for (const type of apiTypes) {
 
       const api = new fdir().withDirs().crawl("/some/dir");
       const files = await api[type]();
-      t.ok(files.length === 4);
+      expect(files).toHaveLength(4);
 
-      t.ok(files.indexOf(path.normalize("/some/dir/")) > -1);
-      t.ok(files.indexOf("fileSymlink") > -1);
-      t.ok(files.indexOf("fileSymlink2") > -1);
-      t.ok(files.indexOf("dirSymlink") > -1);
+      expect(files.indexOf(path.normalize("/some/dir/")) > -1).toBeTruthy();
+      expect(files.indexOf("fileSymlink") > -1).toBeTruthy();
+      expect(files.indexOf("fileSymlink2") > -1).toBeTruthy();
+      expect(files.indexOf("dirSymlink") > -1).toBeTruthy();
       mock.restore();
     }
   );
@@ -395,7 +408,7 @@ for (const type of apiTypes) {
         await api[type]();
       } catch (e) {
         if (e instanceof Error)
-          t.ok(e.message.includes("no such file or directory"));
+          expect(e.message.includes("no such file or directory")).toBeTruthy();
       }
       mock.restore();
     }
