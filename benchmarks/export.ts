@@ -1,6 +1,6 @@
-const si = require("systeminformation");
+import si from "systeminformation";
 
-async function getinfo() {
+export async function getSystemInfo() {
   const cpu = await si.cpu();
   const disk = (await si.diskLayout())[0];
   const os = await si.osInfo();
@@ -28,4 +28,3 @@ async function getinfo() {
   info += `V8: ${versions.v8}`;
   return info;
 }
-module.exports = getinfo;
