@@ -73,4 +73,4 @@ _New benchmarks will be added soon._
 
 ## 🦮 LICENSE
 
-Copyright &copy; 2022 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
+Copyright &copy; 2023 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
