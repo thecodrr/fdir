@@ -1,12 +1,2 @@
-benchmark
-benchmarks
-assets
-__tests__
-coverage
-cli
-.github
-documentation.md
-CODE_OF_CONDUCT.md
-ARCHITECTURE.md
-CONTRIBUTING.md
-scripts
+*
+!dist/**/**
