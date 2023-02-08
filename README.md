@@ -65,11 +65,11 @@ api.withPromise().then((files) => {
 
 ## Documentation:
 
-_New docs will be added soon._
+Documentation for all methods is available [here](/documentation.md).
 
 ## 📊 Benchmarks:
 
-_New benchmarks will be added soon._
+Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 
 ## 🦮 LICENSE
 
