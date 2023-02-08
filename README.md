@@ -71,6 +71,22 @@ Documentation for all methods is available [here](/documentation.md).
 
 Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 
+## 🙏Used by:
+
+`fdir` is downloaded over 100k+ times a week by projects around the world. Here's a list of some notable projects using `fdir` in production:
+
+> Note: if you think your project should be here, feel free to open an issue. Notable is anything with a considerable amount of GitHub stars.
+
+1. [mdn/yari](https://github.com/mdn/yari)
+2. [streetwriters/notesnook](https://github.com/streetwriters/notesnook)
+3. [zhangdaren/miniprogram-to-uniapp](https://github.com/zhangdaren/miniprogram-to-uniapp)
+4. [imba/imba](https://github.com/imba/imba)
+5. [napi-rs/napi-rs](https://github.com/napi-rs/napi-rs)
+6. [moroshko/react-scanner](https://github.com/moroshko/react-scanner)
+7. [FredKSchott/snowpack](https://github.com/FredKSchott/snowpack)\*
+
+- `snowpack` has since been discontinued.
+
 ## 🦮 LICENSE
 
 Copyright &copy; 2023 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
