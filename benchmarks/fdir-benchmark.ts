@@ -5,8 +5,8 @@ import b from "benny";
 type Version = typeof versions[number] | "current";
 const versions = ["4.0.0", "4.1.0", "5.0.0", "5.2.0"] as const;
 
-const syncSuites: Promise<any>[] = [];
-const asyncSuites: Promise<any>[] = [];
+const syncSuites: ReturnType<typeof b["add"]>[] = [];
+const asyncSuites: ReturnType<typeof b["add"]>[] = [];
 
 function normalizeVersion(version: Version) {
   return version.replace(/\./g, "");
@@ -19,13 +19,13 @@ function makeSuite(version: Version) {
 }
 
 function addSuite(instance: Fdir, version: Version) {
-  syncSuites[syncSuites.length] = b.add(`fdir ${version} sync`, function() {
+  syncSuites[syncSuites.length] = b.add(`fdir ${version} sync`, function () {
     new instance().crawl("node_modules").sync();
   });
 
   asyncSuites[asyncSuites.length] = b.add(
     `fdir ${version} async`,
-    async function() {
+    async function () {
       await new instance().crawl("node_modules").withPromise();
     }
   );
@@ -68,10 +68,7 @@ function getPackageAlias(version: Version) {
 async function getCounts() {
   const normalized = normalizeVersion(versions[3]);
   const { fdir } = await import(`fdir${normalized}`);
-  return new fdir()
-    .onlyCounts()
-    .crawl("node_modules")
-    .sync();
+  return new fdir().onlyCounts().crawl("node_modules").sync();
 }
 
 function appendVersionsToCommand(command: string) {
@@ -95,8 +92,12 @@ function removePackages() {
 
 function addPackages() {
   let cmd = appendVersionsToCommand(`npm i -D `);
+  console.log("Running cmd", cmd);
   child_process.exec(cmd.trim(), async (err) => {
-    if (err) process.exit(err.code);
+    if (err) {
+      console.error(err);
+      process.exit(err.code);
+    }
     console.log(`Done installing all versions...`);
     console.log("Starting benchmarks...");
     await setCPUScaling(false);
@@ -107,6 +108,8 @@ function addPackages() {
 }
 
 function setCPUScaling(isEnabled: boolean) {
+  if (process.platform !== "linux") return;
+
   return new Promise((resolve, reject) => {
     console.log((isEnabled ? "Enabling" : "Disabling") + " cpu scaling...");
     const profile = isEnabled ? "powersave" : "performance";

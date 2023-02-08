@@ -10,11 +10,11 @@ import klawSync from "klaw-sync";
 import * as recurReadDir from "recur-readdir";
 import recursiveFiles from "recursive-files";
 import recursiveReadDir from "recursive-readdir";
-import rrdir from "rrdir";
+// import rrdir from "rrdir";
 import walkSync from "walk-sync";
 import recursiveFs from "recursive-fs";
 import b from "benny";
-import getAllFiles from "get-all-files";
+import {getAllFilesSync, getAllFiles} from "get-all-files";
 import packageJson from "../package.json";
 // import exportToHTML from "./export";
 
@@ -45,7 +45,7 @@ async function benchmark() {
       new fdir5().crawl("node_modules").sync();
     }),
     b.add(`get-all-files sync`, () => {
-      getAllFiles.sync.array("node_modules");
+      getAllFilesSync("node_modules").toArray();
     }),
     b.add("all-files-in-tree sync", () => {
       allFilesInTree.sync("node_modules");
@@ -62,11 +62,12 @@ async function benchmark() {
     b.add("walk-sync", () => {
       walkSync("node_modules");
     }),
-    b.add("rrdir sync", () => {
-      rrdir.sync("node_modules");
-    }),
+    // b.add("rrdir sync", () => {
+    //   rrdir.sync("node_modules");
+    // }),
     b.cycle(),
-    b.complete()
+    b.complete(),
+    b.save({format:"csv", file:"sync.csv"})
   );
 
   await b.suite(
@@ -94,7 +95,7 @@ async function benchmark() {
       await recurReadDir.crawl("node_modules");
     }),
     b.add("recursive-files async", async () => {
-      let timeout: NodeJS.Timeout;
+      let timeout;
       await new Promise((resolve) => {
         recursiveFiles("node_modules", { hidden: true }, () => {
           clearTimeout(timeout);
@@ -107,11 +108,15 @@ async function benchmark() {
     b.add("recursive-readdir async", async () => {
       await recursiveReadDir("node_modules");
     }),
-    b.add("rrdir async", async () => {
-      await rrdir("node_modules");
+    b.add("getAllFiles async", async () => {
+      await getAllFiles("node_modules").toArray();
     }),
+    // b.add("rrdir async", async () => {
+    //   await rrdir("node_modules");
+    // }),
     b.cycle(),
-    b.complete()
+    b.complete(),
+    b.save({format:"csv", file:"./async.csv"})
   );
 }
 benchmark();
