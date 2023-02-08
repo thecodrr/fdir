@@ -4,6 +4,7 @@
   "description": "The fastest directory crawler & globbing alternative to glob, fast-glob, & tiny-glob. Crawls 1m files in < 1s",
   "main": "dist/index.js",
   "scripts": {
+    "prepublishOnly": "npm run test && npm run build",
     "build": "tsc",
     "test": "tap --ts __tests__/",
     "test:coverage": "tap --ts --no-check-coverage --coverage-report=html __tests__/",
