@@ -1,8 +1,9 @@
 {
   "name": "fdir",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "The fastest directory crawler & globbing alternative to glob, fast-glob, & tiny-glob. Crawls 1m files in < 1s",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepublishOnly": "npm run test && npm run build",
     "build": "tsc",
@@ -35,7 +36,6 @@
     "nodejs"
   ],
   "author": "thecodrr <thecodrr@protonmail.com>",
-  "types": "index.d.ts",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/thecodrr/fdir/issues"
