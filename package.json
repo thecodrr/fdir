@@ -49,6 +49,7 @@
     "@types/tap": "^15.0.8",
     "all-files-in-tree": "^1.1.2",
     "benny": "^3.7.1",
+    "csv-to-markdown-table": "^1.3.0",
     "expect": "^29.4.2",
     "fast-glob": "^3.2.2",
     "fdir1": "npm:fdir@1.2.0",
