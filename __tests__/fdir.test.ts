@@ -77,14 +77,23 @@ async function crawl(type: APITypes, path: string, t: TestContext) {
 }
 
 for (const type of apiTypes) {
-  test(`[${type}] crawl single depth directory`, async (t) => {
+  test(`[${type}] crawl directory`, async (t) => {
     await crawl(type, "__tests__", t);
   });
 
-  test(`[${type}] crawl single depth directory with options`, async (t) => {
+  test(`[${type}] crawl directory with options`, async (t) => {
     const api = new fdir({ includeBasePath: true }).crawl("__tests__");
     const files = await api[type]();
     t.expect(files.every((file) => file.startsWith("__tests__"))).toBeTruthy();
+  });
+
+  test("crawl single depth directory with options", async (t) => {
+    const api = new fdir({
+      maxDepth: 0,
+      includeBasePath: true,
+    }).crawl("node_modules");
+    const files = await api[type]();
+    t.expect(files.every((file) => file.split("/").length <= 2)).toBe(true);
   });
 
   test(`[${type}] crawl multi depth directory with options`, async (t) => {
