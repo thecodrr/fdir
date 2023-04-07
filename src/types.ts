@@ -46,6 +46,7 @@ export type Options = {
   includeDirs?: boolean;
   normalizePath?: boolean;
   maxDepth: number;
+  maxFiles?: number;
   resolvePaths?: boolean;
   suppressErrors: boolean;
   group?: boolean;

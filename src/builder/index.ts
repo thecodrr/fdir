@@ -57,6 +57,11 @@ export class Builder<TReturnType extends Output = PathsOutput> {
     return this;
   }
 
+  withMaxFiles(limit: number) {
+    this.options.maxFiles = limit;
+    return this;
+  }
+
   withFullPaths() {
     this.options.resolvePaths = true;
     this.options.includeBasePath = true;
@@ -100,6 +105,20 @@ export class Builder<TReturnType extends Output = PathsOutput> {
   }
 
   crawl(root: string) {
+    if (this.options.maxFiles && this.options.onlyCounts) {
+      console.warn(
+        "WARN: You cannot use maxFiles with onlyCounts. maxFiles will be unset."
+      );
+      this.options.maxFiles = undefined;
+    }
+
+    if (this.options.maxFiles && this.options.group) {
+      console.warn(
+        "WARN: You cannot use maxFiles with groups. maxFiles will be unset."
+      );
+      this.options.maxFiles = undefined;
+    }
+
     return new APIBuilder<TReturnType>(root, this.options);
   }
 

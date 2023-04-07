@@ -24,9 +24,7 @@ export class Walker<TOutput extends Output> {
   private readonly groupFiles: groupFiles.GroupFilesFunction;
   private readonly resolveSymlink: resolveSymlink.ResolveSymlinkFunction | null;
   private readonly walkDirectory: walkDirectory.WalkDirectoryFunction;
-  private readonly callbackInvoker: invokeCallback.InvokeCallbackFunction<
-    TOutput
-  >;
+  private readonly callbackInvoker: invokeCallback.InvokeCallbackFunction<TOutput>;
 
   constructor(
     root: string,
@@ -82,8 +80,10 @@ export class Walker<TOutput extends Output> {
   private walk = (entries: Dirent[], directoryPath: string, depth: number) => {
     const {
       paths,
-      options: { filters, resolveSymlinks, exclude },
+      options: { filters, resolveSymlinks, exclude, maxFiles },
     } = this.state;
+
+    if (maxFiles && paths.length > maxFiles) return;
 
     this.pushDirectory(directoryPath, paths, filters);
 

@@ -26,6 +26,10 @@ const defaultSync: InvokeCallbackFunction<PathsOutput> = (state) => {
   return state.paths;
 };
 
+const limitFilesSync: InvokeCallbackFunction<PathsOutput> = (state) => {
+  return state.paths.slice(0, state.options.maxFiles);
+};
+
 const onlyCountsAsync: InvokeCallbackFunction<OnlyCountsOutput> = (
   state,
   error,
@@ -41,6 +45,20 @@ const defaultAsync: InvokeCallbackFunction<PathsOutput> = (
   callback
 ) => {
   report(error, callback!, state.paths, state.options.suppressErrors);
+  return null;
+};
+
+const limitFilesAsync: InvokeCallbackFunction<PathsOutput> = (
+  state,
+  error,
+  callback
+) => {
+  report(
+    error,
+    callback!,
+    state.paths.slice(0, state.options.maxFiles),
+    state.options.suppressErrors
+  );
   return null;
 };
 
@@ -67,7 +85,7 @@ export function build<TOutput extends Output>(
   options: Options,
   isSynchronous: boolean
 ): InvokeCallbackFunction<TOutput> {
-  const { onlyCounts, group } = options;
+  const { onlyCounts, group, maxFiles } = options;
 
   if (onlyCounts)
     return isSynchronous
@@ -77,6 +95,10 @@ export function build<TOutput extends Output>(
     return isSynchronous
       ? (groupsSync as InvokeCallbackFunction<TOutput>)
       : (groupsAsync as InvokeCallbackFunction<TOutput>);
+  else if (maxFiles)
+    return isSynchronous
+      ? (limitFilesSync as InvokeCallbackFunction<TOutput>)
+      : (limitFilesAsync as InvokeCallbackFunction<TOutput>);
   else
     return isSynchronous
       ? (defaultSync as InvokeCallbackFunction<TOutput>)
