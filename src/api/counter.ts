@@ -21,7 +21,7 @@ export class Counter {
   /**
    * @deprecated use `directories` instead
    */
-  /* istanbul ignore next */
+  /* c8 ignore next 3 */
   get dirs() {
     return this._directories;
   }

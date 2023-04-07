@@ -12,7 +12,7 @@ import type picomatch from "picomatch";
 import type { Matcher, PicomatchOptions } from "picomatch";
 
 var pm: typeof picomatch | null = null;
-/* istanbul ignore next */
+/* c8 ignore next 6 */
 try {
   require.resolve("picomatch");
   pm = require("picomatch");
@@ -105,20 +105,6 @@ export class Builder<TReturnType extends Output = PathsOutput> {
   }
 
   crawl(root: string) {
-    if (this.options.maxFiles && this.options.onlyCounts) {
-      console.warn(
-        "WARN: You cannot use maxFiles with onlyCounts. maxFiles will be unset."
-      );
-      this.options.maxFiles = undefined;
-    }
-
-    if (this.options.maxFiles && this.options.group) {
-      console.warn(
-        "WARN: You cannot use maxFiles with groups. maxFiles will be unset."
-      );
-      this.options.maxFiles = undefined;
-    }
-
     return new APIBuilder<TReturnType>(root, this.options);
   }
 
@@ -129,7 +115,7 @@ export class Builder<TReturnType extends Output = PathsOutput> {
    * ```
    * This method will be removed in v7.0
    */
-  /* istanbul ignore next */
+  /* c8 ignore next 4 */
   crawlWithOptions(root: string, options: Partial<Options>) {
     this.options = { ...this.options, ...options };
     return new APIBuilder<TReturnType>(root, this.options);
@@ -140,7 +126,7 @@ export class Builder<TReturnType extends Output = PathsOutput> {
   }
 
   globWithOptions(patterns: string[], options: PicomatchOptions) {
-    /* istanbul ignore next */
+    /* c8 ignore next 5 */
     if (!pm) {
       throw new Error(
         `Please install picomatch: "npm i picomatch" to use glob matching.`
