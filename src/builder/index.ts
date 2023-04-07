@@ -78,6 +78,11 @@ export class Builder<TReturnType extends Output = PathsOutput> {
     return this.withFullPaths();
   }
 
+  withAbortSignal(signal: AbortSignal) {
+    this.options.signal = signal;
+    return this;
+  }
+
   normalize() {
     this.options.normalizePath = true;
     return this;

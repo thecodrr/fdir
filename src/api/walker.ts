@@ -80,10 +80,11 @@ export class Walker<TOutput extends Output> {
   private walk = (entries: Dirent[], directoryPath: string, depth: number) => {
     const {
       paths,
-      options: { filters, resolveSymlinks, exclude, maxFiles },
+      options: { filters, resolveSymlinks, exclude, maxFiles, signal },
     } = this.state;
 
-    if (maxFiles && paths.length > maxFiles) return;
+    if ((signal && signal.aborted) || (maxFiles && paths.length > maxFiles))
+      return;
 
     this.pushDirectory(directoryPath, paths, filters);
 

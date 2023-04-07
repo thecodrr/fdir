@@ -56,4 +56,5 @@ export type Options = {
   excludeFiles?: boolean;
   exclude?: ExcludePredicate;
   relativePaths?: boolean;
+  signal?: AbortSignal;
 };

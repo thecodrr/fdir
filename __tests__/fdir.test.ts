@@ -95,8 +95,7 @@ for (const type of apiTypes) {
     const files = await api[type]();
     t.expect(files.every((file) => file.split("/").length <= 2)).toBe(true);
   });
-
-  test(`[${type}] crawl multi depth directory with options`, async (t) => {
+  -test(`[${type}] crawl multi depth directory with options`, async (t) => {
     const api = new fdir({
       maxDepth: 1,
     }).crawl("node_modules");
@@ -367,3 +366,17 @@ for (const type of apiTypes) {
     mock.restore();
   });
 }
+
+test(`[async] crawl directory & use abort signal to abort`, async (t) => {
+  const totalFiles = new fdir().onlyCounts().crawl("node_modules").sync();
+  const abortController = new AbortController();
+  const api = new fdir()
+    .withAbortSignal(abortController.signal)
+    .filter((p) => {
+      if (p.endsWith(".js")) abortController.abort();
+      return true;
+    })
+    .crawl("node_modules");
+  const files = await api.withPromise();
+  t.expect(files.length).toBeLessThan(totalFiles.files);
+});
