@@ -385,6 +385,22 @@ test(`[async] crawl directory & use abort signal to abort`, async (t) => {
   t.expect(files.length).toBeLessThan(totalFiles.files);
 });
 
+test(`paths should never start with ./`, async (t) => {
+  const apis = [
+    new fdir().withBasePath().crawl("./node_modules"),
+    new fdir().withBasePath().crawl("./"),
+    new fdir().withRelativePaths().crawl("./"),
+    new fdir().withDirs().crawl("."),
+    new fdir().onlyDirs().crawl("."),
+  ];
+  for (const api of apis) {
+    const files = await api.withPromise();
+    t.expect(
+      files.every((file) => !file.startsWith("./") && !file.startsWith(".\\"))
+    ).toBe(true);
+  }
+});
+
 test(`ignore withRelativePath if root === ./`, async (t) => {
   const relativeFiles = await new fdir()
     .withRelativePaths()
