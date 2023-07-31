@@ -384,3 +384,8 @@ test(`[async] crawl directory & use abort signal to abort`, async (t) => {
   const files = await api.withPromise();
   t.expect(files.length).toBeLessThan(totalFiles.files);
 });
+
+test(`there should be no empty directory when using withDirs`, async (t) => {
+  const files = await new fdir().withDirs().crawl("./").withPromise();
+  t.expect(files.every((r) => r.length > 0)).toBe(true);
+});

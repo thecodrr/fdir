@@ -7,7 +7,7 @@ export type PushDirectoryFunction = (
 ) => void;
 
 const pushDirectory: PushDirectoryFunction = (directoryPath, paths) => {
-  paths.push(directoryPath);
+  paths.push(directoryPath || ".");
 };
 
 const pushDirectoryFilter: PushDirectoryFunction = (
@@ -16,7 +16,7 @@ const pushDirectoryFilter: PushDirectoryFunction = (
   filters
 ) => {
   if (filters!.every((filter) => filter(directoryPath, true))) {
-    paths.push(directoryPath);
+    paths.push(directoryPath || ".");
   }
 };
 
