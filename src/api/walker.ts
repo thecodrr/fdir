@@ -15,6 +15,7 @@ import { Output } from "../types";
 import { Counter } from "./counter";
 
 export class Walker<TOutput extends Output> {
+  private readonly root: string;
   private readonly isSynchronous: boolean;
   private readonly state: WalkerState;
   private readonly joinPath: joinPath.JoinPathFunction;
@@ -45,12 +46,14 @@ export class Walker<TOutput extends Output> {
       ),
     };
 
+    this.root = this.normalizePath(root);
+
     /*
      * Perf: We conditionally change functions according to options. This gives a slight
      * performance boost. Since these functions are so small, they are automatically inlined
      * by the javascript engine so there's no function call overhead (in most cases).
      */
-    this.joinPath = joinPath.build(root, options);
+    this.joinPath = joinPath.build(this.root, options);
     this.pushDirectory = pushDirectory.build(options);
     this.pushFile = pushFile.build(options);
     this.getArray = getArray.build(options);
@@ -59,9 +62,13 @@ export class Walker<TOutput extends Output> {
     this.walkDirectory = walkDirectory.build(this.isSynchronous);
   }
 
-  start(root: string, depth: number): TOutput | null {
-    root = this.normalizePath(root);
-    this.walkDirectory(this.state, root, depth, this.walk);
+  start(): TOutput | null {
+    this.walkDirectory(
+      this.state,
+      this.root,
+      this.state.options.maxDepth,
+      this.walk
+    );
     return this.isSynchronous ? this.callbackInvoker(this.state, null) : null;
   }
 

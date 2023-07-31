@@ -19,5 +19,5 @@ export function callback<TOutput extends Output>(
   callback: ResultCallback<TOutput>
 ) {
   let walker = new Walker(root, options, callback);
-  walker.start(root, options.maxDepth);
+  walker.start();
 }

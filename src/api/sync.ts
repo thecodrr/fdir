@@ -6,5 +6,5 @@ export function sync<TOutput extends Output>(
   options: Options
 ): TOutput {
   const walker = new Walker<TOutput>(root, options);
-  return walker.start(root, options.maxDepth) as TOutput;
+  return walker.start() as TOutput;
 }

@@ -385,6 +385,15 @@ test(`[async] crawl directory & use abort signal to abort`, async (t) => {
   t.expect(files.length).toBeLessThan(totalFiles.files);
 });
 
+test(`ignore withRelativePath if root === ./`, async (t) => {
+  const relativeFiles = await new fdir()
+    .withRelativePaths()
+    .crawl("./")
+    .withPromise();
+  const files = await new fdir().crawl("./").withPromise();
+  t.expect(relativeFiles.every((r) => files.includes(r))).toBe(true);
+});
+
 test(`there should be no empty directory when using withDirs`, async (t) => {
   const files = await new fdir().withDirs().crawl("./").withPromise();
   t.expect(files.every((r) => r.length > 0)).toBe(true);

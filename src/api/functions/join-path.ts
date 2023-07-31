@@ -7,7 +7,7 @@ function joinPathWithBasePath(filename: string, directoryPath: string) {
 
 function joinPathWithRelativePath(relativePath: string) {
   relativePath += relativePath[relativePath.length - 1] === sep ? "" : sep;
-  return function(filename: string, directoryPath: string) {
+  return function (filename: string, directoryPath: string) {
     return directoryPath.substring(relativePath.length) + filename;
   };
 }
@@ -28,7 +28,7 @@ export type JoinPathFunction = (
 export function build(root: string, options: Options): JoinPathFunction {
   const { relativePaths, includeBasePath } = options;
 
-  return relativePaths
+  return relativePaths && root
     ? joinPathWithRelativePath(root)
     : includeBasePath
     ? joinPathWithBasePath
