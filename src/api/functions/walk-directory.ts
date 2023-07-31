@@ -27,13 +27,15 @@ const walkAsync: WalkDirectoryFunction = (
 
   // Perf: Node >= 10 introduced withFileTypes that helps us
   // skip an extra fs.stat call.
-  // However, since this API is not availble in Node < 10, I had to create
-  // a compatibility layer to support both variants.
-  fs.readdir(directoryPath, readdirOpts, function process(error, entries = []) {
-    callback(entries, directoryPath, currentDepth);
+  fs.readdir(
+    directoryPath || ".",
+    readdirOpts,
+    function process(error, entries = []) {
+      callback(entries, directoryPath, currentDepth);
 
-    state.queue.dequeue(state.options.suppressErrors ? null : error, state);
-  });
+      state.queue.dequeue(state.options.suppressErrors ? null : error, state);
+    }
+  );
 };
 
 const walkSync: WalkDirectoryFunction = (
@@ -49,7 +51,7 @@ const walkSync: WalkDirectoryFunction = (
 
   let entries: fs.Dirent[] = [];
   try {
-    entries = fs.readdirSync(directoryPath, readdirOpts);
+    entries = fs.readdirSync(directoryPath || ".", readdirOpts);
   } catch (e) {
     if (!state.options.suppressErrors) throw e;
   }
