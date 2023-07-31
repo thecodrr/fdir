@@ -33,7 +33,6 @@ jobs:
 
   finish:
     needs: test
-    if: $
     runs-on: ubuntu-latest
     steps:
       - name: Send Parallel Finished
