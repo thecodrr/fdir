@@ -30,6 +30,12 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
+
+  finish:
+    needs: test
+    if: $
+    runs-on: ubuntu-latest
+    steps:
       - name: Send Parallel Finished
         uses: coverallsapp/github-action@v1.1.1
         with:
