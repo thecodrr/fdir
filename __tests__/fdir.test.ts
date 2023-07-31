@@ -135,8 +135,8 @@ for (const type of apiTypes) {
   test(`[${type}] crawl and get files that match a glob pattern`, async (t) => {
     const api = new fdir()
       .withBasePath()
-      .glob("./**/*.js")
-      .glob("./**/*.js")
+      .glob("**/*.js")
+      .glob("**/*.js")
       .crawl("node_modules");
     const files = await api[type]();
     t.expect(files.every((file) => file.endsWith(".js"))).toBeTruthy();
@@ -175,9 +175,13 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl all files in a directory (with base path)`, async (t) => {
-    const api = new fdir().withBasePath().crawl(cwd());
+    const api = new fdir()
+      .withBasePath()
+      .crawl(path.join(cwd(), "node_modules"));
     const files = await api[type]();
-    t.expect(files.every((file) => file.includes(cwd()))).toBeTruthy();
+    t.expect(
+      files.every((file) => file.startsWith("node_modules"))
+    ).toBeTruthy();
   });
 
   test(`[${type}] get all files in a directory and output full paths (withFullPaths)`, async (t) => {
