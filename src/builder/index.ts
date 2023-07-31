@@ -110,7 +110,7 @@ export class Builder<TReturnType extends Output = PathsOutput> {
   }
 
   crawl(root: string) {
-    return new APIBuilder<TReturnType>(root, this.options);
+    return new APIBuilder<TReturnType>(root || ".", this.options);
   }
 
   /**
@@ -123,7 +123,7 @@ export class Builder<TReturnType extends Output = PathsOutput> {
   /* c8 ignore next 4 */
   crawlWithOptions(root: string, options: Partial<Options>) {
     this.options = { ...this.options, ...options };
-    return new APIBuilder<TReturnType>(root, this.options);
+    return new APIBuilder<TReturnType>(root || ".", this.options);
   }
 
   glob(...patterns: string[]) {
