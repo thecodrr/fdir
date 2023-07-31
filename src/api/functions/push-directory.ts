@@ -16,7 +16,7 @@ const pushDirectoryFilter: PushDirectoryFunction = (
   filters
 ) => {
   if (filters!.every((filter) => filter(directoryPath, true))) {
-    paths.push(directoryPath || ".");
+    paths.push(directoryPath);
   }
 };
 
