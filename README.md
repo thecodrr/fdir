@@ -81,9 +81,12 @@ Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 2. [streetwriters/notesnook](https://github.com/streetwriters/notesnook)
 3. [zhangdaren/miniprogram-to-uniapp](https://github.com/zhangdaren/miniprogram-to-uniapp)
 4. [imba/imba](https://github.com/imba/imba)
-5. [napi-rs/napi-rs](https://github.com/napi-rs/napi-rs)
-6. [moroshko/react-scanner](https://github.com/moroshko/react-scanner)
+5. [moroshko/react-scanner](https://github.com/moroshko/react-scanner)
+6. [netlify/build](https://github.com/netlify/build)
 7. [FredKSchott/snowpack](https://github.com/FredKSchott/snowpack)\*
+8. [yassinedoghri/astro-i18next](https://github.com/yassinedoghri/astro-i18next)
+9. [immich-app/CLI](https://github.com/immich-app/CLI)
+10. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
 
 - `snowpack` has since been discontinued.
 
