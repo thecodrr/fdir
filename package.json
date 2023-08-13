@@ -1,6 +1,6 @@
 {
   "name": "fdir",
-  "version": "6.0.2",
+  "version": "6.1.0",
   "description": "The fastest directory crawler & globbing alternative to glob, fast-glob, & tiny-glob. Crawls 1m files in < 1s",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
     "test": "vitest run __tests__/",
     "test:coverage": "vitest run --coverage __tests__/",
     "test:watch": "vitest __tests__/",
-    "bench": "node benchmarks/benchmark.js",
+    "bench": "ts-node benchmarks/benchmark.js",
     "bench:glob": "ts-node benchmarks/glob-benchmark.ts",
     "bench:fdir": "ts-node benchmarks/fdir-benchmark.ts",
     "release": "./scripts/release.sh"
