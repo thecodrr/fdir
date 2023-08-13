@@ -2,7 +2,7 @@ import { fdir } from "../index";
 import fs from "fs";
 import mock from "mock-fs";
 import { test, beforeEach, TestContext } from "vitest";
-import path from "path";
+import path, { sep } from "path";
 
 beforeEach(() => {
   mock.restore();
@@ -349,6 +349,15 @@ for (const type of apiTypes) {
     mock.restore();
   });
 
+  test(`[${type}] crawl all files and invert path separator`, async (t) => {
+    const api = new fdir()
+      .withPathSeparator(sep === "/" ? "\\" : "/")
+      .crawl("node_modules");
+    const files = await api[type]();
+
+    t.expect(files.every((f) => !f.includes(sep))).toBeTruthy();
+  });
+
   test("crawl all files (including symlinks) and throw errors", async (t) => {
     mock({
       "/other/dir": {},
@@ -393,6 +402,7 @@ test(`paths should never start with ./`, async (t) => {
     new fdir().withBasePath().crawl("./node_modules"),
     new fdir().withBasePath().crawl("./"),
     new fdir().withRelativePaths().crawl("./"),
+    new fdir().withRelativePaths().crawl("."),
     new fdir().withDirs().crawl("."),
     new fdir().onlyDirs().crawl("."),
   ];
@@ -411,6 +421,14 @@ test(`ignore withRelativePath if root === ./`, async (t) => {
     .withPromise();
   const files = await new fdir().crawl("./").withPromise();
   t.expect(relativeFiles.every((r) => files.includes(r))).toBe(true);
+});
+
+test(`add path separator if root path does not end with one`, async (t) => {
+  const relativeFiles = await new fdir()
+    .withRelativePaths()
+    .crawl("node_modules")
+    .withPromise();
+  t.expect(relativeFiles.every((r) => !r.startsWith(sep))).toBe(true);
 });
 
 test(`there should be no empty directory when using withDirs`, async (t) => {

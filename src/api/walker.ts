@@ -1,5 +1,5 @@
-import { resolve as pathResolve, sep } from "path";
-import { cleanPath } from "../utils";
+import { resolve as pathResolve } from "path";
+import { cleanPath, convertSlashes } from "../utils";
 import { ResultCallback, WalkerState, Options } from "../types";
 import * as joinPath from "./functions/join-path";
 import * as pushDirectory from "./functions/push-directory";
@@ -73,18 +73,21 @@ export class Walker<TOutput extends Output> {
   }
 
   private normalizePath(path: string) {
+    const { resolvePaths, normalizePath, pathSeparator } = this.state.options;
     const pathNeedsCleaning =
       (process.platform === "win32" && path.includes("/")) ||
       path.startsWith(".");
 
-    if (this.state.options.resolvePaths) path = pathResolve(path);
-    if (this.state.options.normalizePath || pathNeedsCleaning)
-      path = cleanPath(path);
+    if (resolvePaths) path = pathResolve(path);
+    if (normalizePath || pathNeedsCleaning) path = cleanPath(path);
 
     if (path === ".") return "";
 
-    const needsSeperator = path[path.length - 1] !== sep;
-    return needsSeperator ? path + sep : path;
+    const needsSeperator = path[path.length - 1] !== pathSeparator;
+    return convertSlashes(
+      needsSeperator ? path + pathSeparator : path,
+      pathSeparator
+    );
   }
 
   private walk = (entries: Dirent[], directoryPath: string, depth: number) => {
@@ -106,11 +109,19 @@ export class Walker<TOutput extends Output> {
         const filename = this.joinPath(entry.name, directoryPath);
         this.pushFile(filename, files, this.state.counts, filters);
       } else if (entry.isDirectory()) {
-        let path = joinPath.joinDirectoryPath(entry.name, directoryPath);
+        let path = joinPath.joinDirectoryPath(
+          entry.name,
+          directoryPath,
+          this.state.options.pathSeparator
+        );
         if (exclude && exclude(entry.name, path)) continue;
         this.walkDirectory(this.state, path, depth - 1, this.walk);
       } else if (entry.isSymbolicLink() && resolveSymlinks) {
-        let path = joinPath.joinDirectoryPath(entry.name, directoryPath);
+        let path = joinPath.joinDirectoryPath(
+          entry.name,
+          directoryPath,
+          this.state.options.pathSeparator
+        );
         this.resolveSymlink!(path, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {
             resolvedPath = this.normalizePath(resolvedPath);

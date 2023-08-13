@@ -1,3 +1,4 @@
+import { sep } from "path";
 import {
   Output,
   OnlyCountsOutput,
@@ -25,6 +26,7 @@ export class Builder<TReturnType extends Output = PathsOutput> {
   private options: Options = {
     maxDepth: Infinity,
     suppressErrors: true,
+    pathSeparator: sep,
     filters: [],
   };
 
@@ -35,6 +37,11 @@ export class Builder<TReturnType extends Output = PathsOutput> {
   group(): Builder<GroupOutput> {
     this.options.group = true;
     return this as Builder<GroupOutput>;
+  }
+
+  withPathSeparator(separator: "/" | "\\") {
+    this.options.pathSeparator = separator;
+    return this;
   }
 
   withBasePath() {

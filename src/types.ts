@@ -40,7 +40,7 @@ export type ResultCallback<TOutput extends Output> = (
 
 export type FilterPredicate = (path: string, isDirectory: boolean) => boolean;
 export type ExcludePredicate = (dirName: string, dirPath: string) => boolean;
-
+export type PathSeparator = "/" | "\\";
 export type Options = {
   includeBasePath?: boolean;
   includeDirs?: boolean;
@@ -56,5 +56,6 @@ export type Options = {
   excludeFiles?: boolean;
   exclude?: ExcludePredicate;
   relativePaths?: boolean;
+  pathSeparator: PathSeparator;
   signal?: AbortSignal;
 };

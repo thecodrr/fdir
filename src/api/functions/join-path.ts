@@ -1,14 +1,12 @@
-import { sep } from "path";
-import { Options } from "../../types";
+import { Options, PathSeparator } from "../../types";
 
 function joinPathWithBasePath(filename: string, directoryPath: string) {
   return directoryPath + filename;
 }
 
-function joinPathWithRelativePath(relativePath: string) {
-  relativePath += relativePath[relativePath.length - 1] === sep ? "" : sep;
+function joinPathWithRelativePath(root: string) {
   return function (filename: string, directoryPath: string) {
-    return directoryPath.substring(relativePath.length) + filename;
+    return directoryPath.substring(root.length) + filename;
   };
 }
 
@@ -16,8 +14,12 @@ function joinPath(filename: string) {
   return filename;
 }
 
-export function joinDirectoryPath(filename: string, directoryPath: string) {
-  return directoryPath + filename + sep;
+export function joinDirectoryPath(
+  filename: string,
+  directoryPath: string,
+  separator: PathSeparator
+) {
+  return directoryPath + filename + separator;
 }
 
 export type JoinPathFunction = (
