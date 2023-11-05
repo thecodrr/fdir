@@ -15,7 +15,7 @@ async function benchmark() {
       await new fdir().glob("**/*.js").crawl(".").withPromise();
     }),
     b.add("glob async", async () => {
-      await glob("**/*.js", { dot: true });
+      await glob("**/*.js", { dot: true, withFileTypes: true });
     }),
     b.add("fast-glob async", async () => {
       await fg("**/*.js", { dot: true, onlyFiles: true });
@@ -33,7 +33,7 @@ async function benchmark() {
       new fdir().glob("**.js").crawl(".").sync();
     }),
     b.add("glob sync", () => {
-      globSync("**/**.js", { dot: true });
+      globSync("**/**.js", { dot: true, withFileTypes: true });
     }),
     b.add("fast-glob sync", () => {
       fg.sync("**.js", { dot: true });
