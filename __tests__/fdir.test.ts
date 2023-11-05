@@ -3,6 +3,7 @@ import fs from "fs";
 import mock from "mock-fs";
 import { test, beforeEach, TestContext } from "vitest";
 import path, { sep } from "path";
+import { convertSlashes } from "../src/utils";
 
 beforeEach(() => {
   mock.restore();
@@ -434,4 +435,10 @@ test(`add path separator if root path does not end with one`, async (t) => {
 test(`there should be no empty directory when using withDirs`, async (t) => {
   const files = await new fdir().withDirs().crawl("./").withPromise();
   t.expect(files.every((r) => r.length > 0)).toBe(true);
+});
+
+test(`do not convert \\\\ to \\`, async (t) => {
+  t.expect(convertSlashes("\\\\wsl.localhost\\Ubuntu\\home\\", "\\")).toBe(
+    "\\\\wsl.localhost\\Ubuntu\\home\\"
+  );
 });

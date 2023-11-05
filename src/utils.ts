@@ -12,7 +12,7 @@ export function cleanPath(path: string) {
   return normalized;
 }
 
-const SLASHES_REGEX = /[\\/]+/g;
+const SLASHES_REGEX = /[\\/]/g;
 export function convertSlashes(path: string, separator: PathSeparator) {
   return path.replace(SLASHES_REGEX, separator);
 }
