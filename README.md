@@ -73,7 +73,7 @@ Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 
 ## 🙏Used by:
 
-`fdir` is downloaded over 100k+ times a week by projects around the world. Here's a list of some notable projects using `fdir` in production:
+`fdir` is downloaded over 200k+ times a week by projects around the world. Here's a list of some notable projects using `fdir` in production:
 
 > Note: if you think your project should be here, feel free to open an issue. Notable is anything with a considerable amount of GitHub stars.
 
