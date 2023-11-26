@@ -15,50 +15,55 @@ import recursiveFs from "recursive-fs";
 import b from "benny";
 import { getAllFilesSync, getAllFiles } from "get-all-files";
 import packageJson from "../package.json";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, readdirSync, writeFileSync } from "fs";
 import CSV2MD from "csv-to-markdown-table";
 import { getSystemInfo } from "./export";
+import { readdir } from "fs/promises";
 
 async function benchmark() {
-  const counts = new fdir().onlyCounts().crawl("node_modules").sync();
+  const DIRECTORY = "node_modules";
+  const counts = new fdir().onlyCounts().crawl(DIRECTORY).sync();
 
   await b.suite(
     `Synchronous (${counts.files} files, ${counts.directories} folders)`,
     b.add(`fdir (v${packageJson.version})`, () => {
-      new fdir().crawl("node_modules").sync();
+      new fdir().crawl(DIRECTORY).sync();
     }),
     b.add("fdir (v1.2.0)", () => {
-      fdir1.sync("node_modules");
+      fdir1.sync(DIRECTORY);
     }),
     b.add("fdir (v2.1.1)", () => {
-      fdir2.sync("node_modules");
+      fdir2.sync(DIRECTORY);
     }),
     b.add("fdir (v3.4.2)", () => {
-      new fdir3().crawl("node_modules").sync("node_modules");
+      new fdir3().crawl(DIRECTORY).sync(DIRECTORY);
     }),
     b.add(`fdir (v4.1.0)`, () => {
-      new fdir4().crawl("node_modules").sync();
+      new fdir4().crawl(DIRECTORY).sync();
     }),
     b.add(`fdir (v5.0.0)`, () => {
-      new fdir5().crawl("node_modules").sync();
+      new fdir5().crawl(DIRECTORY).sync();
     }),
     b.add(`get-all-files`, () => {
-      getAllFilesSync("node_modules").toArray();
+      getAllFilesSync(DIRECTORY).toArray();
     }),
     b.add("all-files-in-tree", () => {
-      allFilesInTree.sync("node_modules");
+      allFilesInTree.sync(DIRECTORY);
     }),
     b.add("fs-readdir-recursive", () => {
-      fsReadDirRecursive("node_modules");
+      fsReadDirRecursive(DIRECTORY);
     }),
     b.add("klaw-sync", () => {
-      klawSync("node_modules", {});
+      klawSync(DIRECTORY, {});
     }),
     b.add("recur-readdir", () => {
-      recurReadDir.crawlSync("node_modules");
+      recurReadDir.crawlSync(DIRECTORY);
     }),
     b.add("walk-sync", () => {
-      walkSync("node_modules");
+      walkSync(DIRECTORY);
+    }),
+    b.add("node:fs.readdirSync", () => {
+      readdirSync(DIRECTORY, { withFileTypes: true, recursive: true });
     }),
     b.cycle(),
     b.complete(),
@@ -68,31 +73,31 @@ async function benchmark() {
   await b.suite(
     `Asynchronous (${counts.files} files, ${counts.directories} folders)`,
     b.add(`fdir (v${packageJson.version})`, async () => {
-      await new fdir().crawl("node_modules").withPromise();
+      await new fdir().crawl(DIRECTORY).withPromise();
     }),
     b.add(`fdir (v3.4.2)`, async () => {
-      await new fdir3().crawl("node_modules").withPromise();
+      await new fdir3().crawl(DIRECTORY).withPromise();
     }),
     b.add(`fdir (v4.1.0)`, async () => {
-      await new fdir4().crawl("node_modules").withPromise();
+      await new fdir4().crawl(DIRECTORY).withPromise();
     }),
     b.add(`fdir (v5.0.0)`, async () => {
-      await new fdir5().crawl("node_modules").withPromise();
+      await new fdir5().crawl(DIRECTORY).withPromise();
     }),
     b.add("recursive-fs", async () => {
       await new Promise((resolve) => {
-        recursiveFs.readdirr("node_modules", () => {
+        recursiveFs.readdirr(DIRECTORY, () => {
           resolve(undefined);
         });
       });
     }),
     b.add("recur-readdir", async () => {
-      await recurReadDir.crawl("node_modules");
+      await recurReadDir.crawl(DIRECTORY);
     }),
     b.add("recursive-files", async () => {
       let timeout;
       await new Promise((resolve) => {
-        recursiveFiles("node_modules", { hidden: true }, () => {
+        recursiveFiles(DIRECTORY, { hidden: true }, () => {
           clearTimeout(timeout);
           timeout = setTimeout(() => {
             resolve(undefined);
@@ -101,10 +106,13 @@ async function benchmark() {
       });
     }),
     b.add("recursive-readdir", async () => {
-      await recursiveReadDir("node_modules");
+      await recursiveReadDir(DIRECTORY);
     }),
     b.add("getAllFiles", async () => {
-      await getAllFiles("node_modules").toArray();
+      await getAllFiles(DIRECTORY).toArray();
+    }),
+    b.add("node:fs.readdir", async () => {
+      await readdir(DIRECTORY, { withFileTypes: true, recursive: true });
     }),
     b.cycle(),
     b.complete(),
