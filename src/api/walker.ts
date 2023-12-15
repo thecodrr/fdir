@@ -54,7 +54,7 @@ export class Walker<TOutput extends Output> {
      * by the javascript engine so there's no function call overhead (in most cases).
      */
     this.joinPath = joinPath.build(this.root, options);
-    this.pushDirectory = pushDirectory.build(options);
+    this.pushDirectory = pushDirectory.build(this.root, options);
     this.pushFile = pushFile.build(options);
     this.getArray = getArray.build(options);
     this.groupFiles = groupFiles.build(options);
