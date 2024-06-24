@@ -7,6 +7,8 @@ import {
   Options,
   FilterPredicate,
   ExcludePredicate,
+  GlobFunction,
+  GlobParams,
 } from "../types";
 import { APIBuilder } from "./api-builder";
 import type picomatch from "picomatch";
@@ -21,22 +23,27 @@ try {
   // do nothing
 }
 
-export class Builder<TReturnType extends Output = PathsOutput> {
+const defaultGlobParams: [PicomatchOptions] = [{dot: true}];
+
+export class Builder<
+  TReturnType extends Output = PathsOutput,
+  TGlobFunction extends GlobFunction = typeof picomatch
+> {
   private readonly globCache: Record<string, Matcher> = {};
-  private options: Options = {
+  private options: Options<TGlobFunction> = {
     maxDepth: Infinity,
     suppressErrors: true,
     pathSeparator: sep,
     filters: [],
   };
 
-  constructor(options?: Partial<Options>) {
+  constructor(options?: Partial<Options<TGlobFunction>>) {
     this.options = { ...this.options, ...options };
   }
 
-  group(): Builder<GroupOutput> {
+  group(): Builder<GroupOutput, TGlobFunction> {
     this.options.group = true;
-    return this as Builder<GroupOutput>;
+    return this as Builder<GroupOutput, TGlobFunction>;
   }
 
   withPathSeparator(separator: "/" | "\\") {
@@ -112,9 +119,9 @@ export class Builder<TReturnType extends Output = PathsOutput> {
     return this;
   }
 
-  onlyCounts(): Builder<OnlyCountsOutput> {
+  onlyCounts(): Builder<OnlyCountsOutput, TGlobFunction> {
     this.options.onlyCounts = true;
-    return this as Builder<OnlyCountsOutput>;
+    return this as Builder<OnlyCountsOutput, TGlobFunction>;
   }
 
   crawl(root: string) {
@@ -129,18 +136,27 @@ export class Builder<TReturnType extends Output = PathsOutput> {
    * This method will be removed in v7.0
    */
   /* c8 ignore next 4 */
-  crawlWithOptions(root: string, options: Partial<Options>) {
+  crawlWithOptions(root: string, options: Partial<Options<TGlobFunction>>) {
     this.options = { ...this.options, ...options };
     return new APIBuilder<TReturnType>(root || ".", this.options);
   }
 
   glob(...patterns: string[]) {
-    return this.globWithOptions(patterns, { dot: true });
+    if (this.options.globFunction) {
+      return this.globWithOptions(patterns);
+    }
+    return this.globWithOptions(
+      patterns,
+      ...defaultGlobParams as unknown as GlobParams<TGlobFunction>
+    );
   }
 
-  globWithOptions(patterns: string[], options: PicomatchOptions) {
+  globWithOptions(patterns: string[]): Builder<TReturnType, TGlobFunction>;
+  globWithOptions(patterns: string[], ...options: GlobParams<TGlobFunction>): Builder<TReturnType, TGlobFunction>;
+  globWithOptions(patterns: string[], ...options: GlobParams<TGlobFunction>|[]) {
+    const globFn = this.options.globFunction || (pm as TGlobFunction|null);
     /* c8 ignore next 5 */
-    if (!pm) {
+    if (!globFn) {
       throw new Error(
         `Please install picomatch: "npm i picomatch" to use glob matching.`
       );
@@ -148,7 +164,7 @@ export class Builder<TReturnType extends Output = PathsOutput> {
 
     var isMatch = this.globCache[patterns.join("\0")];
     if (!isMatch) {
-      isMatch = pm(patterns, options);
+      isMatch = globFn(patterns, ...options);
       this.globCache[patterns.join("\0")] = isMatch;
     }
     this.options.filters.push((path) => isMatch(path));

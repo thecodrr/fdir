@@ -41,7 +41,7 @@ export type ResultCallback<TOutput extends Output> = (
 export type FilterPredicate = (path: string, isDirectory: boolean) => boolean;
 export type ExcludePredicate = (dirName: string, dirPath: string) => boolean;
 export type PathSeparator = "/" | "\\";
-export type Options = {
+export type Options<TGlobFunction extends GlobFunction = GlobFunction> = {
   includeBasePath?: boolean;
   includeDirs?: boolean;
   normalizePath?: boolean;
@@ -60,4 +60,13 @@ export type Options = {
   relativePaths?: boolean;
   pathSeparator: PathSeparator;
   signal?: AbortSignal;
+  globFunction?: TGlobFunction
 };
+
+export type GlobMatcher = (test: string) => boolean;
+export type GlobFunction =
+  ((glob: string | string[], ...params: never[]) => GlobMatcher);
+export type GlobParams<T extends GlobFunction> =
+  T extends (globs: string|string[], ...params: infer TParams extends unknown[]) => GlobMatcher
+    ? TParams
+    : [];
