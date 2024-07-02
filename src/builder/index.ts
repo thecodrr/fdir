@@ -23,11 +23,9 @@ try {
   // do nothing
 }
 
-const defaultGlobParams: [PicomatchOptions] = [{dot: true}];
-
 export class Builder<
   TReturnType extends Output = PathsOutput,
-  TGlobFunction extends GlobFunction = typeof picomatch
+  TGlobFunction = typeof picomatch
 > {
   private readonly globCache: Record<string, Matcher> = {};
   private options: Options<TGlobFunction> = {
@@ -36,9 +34,11 @@ export class Builder<
     pathSeparator: sep,
     filters: [],
   };
+  private globFunction?: TGlobFunction;
 
   constructor(options?: Partial<Options<TGlobFunction>>) {
     this.options = { ...this.options, ...options };
+    this.globFunction = this.options.globFunction;
   }
 
   group(): Builder<GroupOutput, TGlobFunction> {
@@ -128,6 +128,12 @@ export class Builder<
     return new APIBuilder<TReturnType>(root || ".", this.options);
   }
 
+  withGlobFunction<TFunc>(fn: TFunc) {
+    // cast this since we don't have the new type params yet
+    this.globFunction = fn as unknown as TGlobFunction;
+    return this as unknown as Builder<TReturnType, TFunc>;
+  }
+
   /**
    * @deprecated Pass options using the constructor instead:
    * ```ts
@@ -142,23 +148,23 @@ export class Builder<
   }
 
   glob(...patterns: string[]) {
-    if (this.options.globFunction) {
+    if (this.globFunction) {
       return this.globWithOptions(patterns);
     }
     return this.globWithOptions(
       patterns,
-      ...defaultGlobParams as unknown as GlobParams<TGlobFunction>
+      ...[{dot: true}] as unknown as GlobParams<TGlobFunction>
     );
   }
 
   globWithOptions(patterns: string[]): Builder<TReturnType, TGlobFunction>;
   globWithOptions(patterns: string[], ...options: GlobParams<TGlobFunction>): Builder<TReturnType, TGlobFunction>;
   globWithOptions(patterns: string[], ...options: GlobParams<TGlobFunction>|[]) {
-    const globFn = this.options.globFunction || (pm as TGlobFunction|null);
+    const globFn = (this.globFunction || pm) as GlobFunction | null;
     /* c8 ignore next 5 */
     if (!globFn) {
       throw new Error(
-        `Please install picomatch: "npm i picomatch" to use glob matching.`
+        'Please specify a glob function to use glob matching.'
       );
     }
 
