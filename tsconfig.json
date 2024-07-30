@@ -13,5 +13,5 @@
     "resolveJsonModule": true,
     "allowJs": true
   },
-  "include": ["./src", "./index.ts", "./benchmarks/"]
+  "include": ["./src"]
 }

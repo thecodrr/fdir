@@ -1,4 +1,4 @@
-import { fdir } from "../index";
+import { fdir } from "../src/index";
 import { fdir as fdir5 } from "fdir5";
 import { fdir as fdir4 } from "fdir4";
 import fdir3 from "fdir3";
