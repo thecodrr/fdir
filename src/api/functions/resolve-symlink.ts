@@ -18,6 +18,28 @@ const resolveSymlinksAsync: ResolveSymlinkFunction = function(
   } = state;
   queue.enqueue();
 
+  fs.stat(path, (error, stat) => {
+    if (error) {
+      queue.dequeue(suppressErrors ? null : error, state);
+      return;
+    }
+
+      callback(stat, path);
+      queue.dequeue(null, state);
+  });
+};
+
+const resolveSymlinksWithRealPathsAsync: ResolveSymlinkFunction = function(
+  path,
+  state,
+  callback
+) {
+  const {
+    queue,
+    options: { suppressErrors },
+  } = state;
+  queue.enqueue();
+
   fs.realpath(path, (error, resolvedPath) => {
     if (error) {
       queue.dequeue(suppressErrors ? null : error, state);
@@ -38,6 +60,19 @@ const resolveSymlinksSync: ResolveSymlinkFunction = function(
   callback
 ) {
   try {
+    const stat = fs.statSync(path);
+    callback(stat, path);
+  } catch (e) {
+    if (!state.options.suppressErrors) throw e;
+  }
+};
+
+const resolveSymlinksWithRealPathsSync: ResolveSymlinkFunction = function(
+  path,
+  state,
+  callback
+) {
+  try {
     const resolvedPath = fs.realpathSync(path);
     const stat = fs.lstatSync(resolvedPath);
     callback(stat, resolvedPath);
@@ -52,5 +87,9 @@ export function build(
 ): ResolveSymlinkFunction | null {
   if (!options.resolveSymlinks) return null;
 
-  return isSynchronous ? resolveSymlinksSync : resolveSymlinksAsync;
+  if (isSynchronous) {
+    return options.useRealPaths ? resolveSymlinksWithRealPathsSync :  resolveSymlinksSync
+  }
+
+  return options.useRealPaths ? resolveSymlinksWithRealPathsAsync : resolveSymlinksAsync;
 }

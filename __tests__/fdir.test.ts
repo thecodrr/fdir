@@ -322,6 +322,21 @@ for (const type of apiTypes) {
     mock.restore();
   });
 
+  test(`[${type}] crawl all files and include resolved symlinks without real paths`, async (t) => {
+    mock(mockFsWithSymlinks);
+
+    const api = new fdir().withSymlinks({ resolvePaths: false }).crawl("/some/dir");
+    const files = await api[type]();
+    t.expect(files).toHaveLength(3);
+    t.expect(
+      files.indexOf(resolveSymlinkRoot("/some/dir/dirSymlink/file-1")) > -1
+    ).toBeTruthy();
+    t.expect(
+      files.indexOf(resolveSymlinkRoot("/some/dir/dirSymlink/file-excluded-1")) > -1
+    ).toBeTruthy();
+    mock.restore();
+  });
+
   test("crawl all files and include resolved symlinks with exclusions", async (t) => {
     mock(mockFsWithSymlinks);
     const api = new fdir()
@@ -371,6 +386,27 @@ for (const type of apiTypes) {
 
     try {
       const api = new fdir().withErrors().withSymlinks().crawl("/some/dir");
+
+      await api[type]();
+    } catch (e) {
+      if (e instanceof Error)
+        t.expect(e.message.includes("no such file or directory")).toBeTruthy();
+    }
+    mock.restore();
+  });
+
+  test("crawl all files (including symlinks without real paths) and throw errors", async (t) => {
+    mock({
+      "/other/dir": {},
+      "/some/dir": {
+        fileSymlink: mock.symlink({
+          path: "/other/dir/file-3",
+        }),
+      },
+    });
+
+    try {
+      const api = new fdir().withErrors().withSymlinks({ resolvePaths: false }).crawl("/some/dir");
 
       await api[type]();
     } catch (e) {
