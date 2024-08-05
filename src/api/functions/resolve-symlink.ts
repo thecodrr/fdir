@@ -18,7 +18,7 @@ const resolveSymlinksAsync: ResolveSymlinkFunction = function(
   } = state;
   queue.enqueue();
 
-  fs.lstat(path, (error, stat) => {
+  fs.stat(path, (error, stat) => {
     if (error) {
       queue.dequeue(suppressErrors ? null : error, state);
       return;
@@ -60,7 +60,7 @@ const resolveSymlinksSync: ResolveSymlinkFunction = function(
   callback
 ) {
   try {
-    const stat = fs.lstatSync(path);
+    const stat = fs.statSync(path);
     callback(stat, path);
   } catch (e) {
     if (!state.options.suppressErrors) throw e;
