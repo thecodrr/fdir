@@ -1,9 +1,10 @@
 import { fdir } from "../src/index";
 import fs from "fs";
 import mock from "mock-fs";
-import { test, beforeEach, TestContext } from "vitest";
+import { test, beforeEach, TestContext, vi } from "vitest";
 import path, { sep } from "path";
 import { convertSlashes } from "../src/utils";
+import picomatch from "picomatch";
 
 beforeEach(() => {
   mock.restore();
@@ -378,6 +379,54 @@ for (const type of apiTypes) {
         t.expect(e.message.includes("no such file or directory")).toBeTruthy();
     }
     mock.restore();
+  });
+
+  test(`[${type}] crawl files that match using a custom glob`, async (t) => {
+    const globFunction = vi.fn((glob: string | string[]) => {
+      return (test: string): boolean => test.endsWith(".js");
+    });
+    const api = new fdir({globFunction})
+      .withBasePath()
+      .glob("**/*.js")
+      .crawl("node_modules");
+    const files = await api[type]();
+    t.expect(globFunction).toHaveBeenCalled();
+    t.expect(files.every((file) => file.endsWith(".js"))).toBeTruthy();
+  });
+
+  test(`[${type}] crawl files that match using a custom glob with options`, async (t) => {
+    const globFunction = vi.fn((glob: string | string[], options?: {foo: number}) => {
+      return (test: string): boolean => test.endsWith(".js");
+    });
+    const api = new fdir({globFunction})
+      .withBasePath()
+      .globWithOptions(["**/*.js"], {foo: 5})
+      .crawl("node_modules");
+    const files = await api[type]();
+    t.expect(globFunction).toHaveBeenCalled();
+    t.expect(files.every((file) => file.endsWith(".js"))).toBeTruthy();
+  });
+
+  test(`[${type}] crawl files that match using a picomatch`, async (t) => {
+    const globFunction = picomatch;
+    const api = new fdir({globFunction})
+      .withBasePath()
+      .glob("**/*.js")
+      .crawl("node_modules");
+    const files = await api[type]();
+    t.expect(files.every((file) => file.endsWith(".js"))).toBeTruthy();
+  });
+
+  test(`[${type}] using withGlobFunction to set glob`, async (t) => {
+    const globFunction = vi.fn((glob: string | string[], input: string) => {
+      return (test: string): boolean => test === input;
+    });
+    new fdir()
+      .withBasePath()
+      .withGlobFunction(globFunction)
+      .globWithOptions(["**/*.js"], "bleep")
+      .crawl("node_modules");
+    t.expect(globFunction).toHaveBeenCalledWith(["**/*.js"], "bleep");
   });
 }
 
