@@ -1,4 +1,4 @@
-import { fdir } from "../index";
+import { fdir } from "../src/index";
 import fs from "fs";
 import mock from "mock-fs";
 import { test, beforeEach, TestContext } from "vitest";
