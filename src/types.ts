@@ -53,6 +53,7 @@ export type Options = {
   onlyCounts?: boolean;
   filters: FilterPredicate[];
   resolveSymlinks?: boolean;
+  useRealPaths?: boolean;
   excludeFiles?: boolean;
   exclude?: ExcludePredicate;
   relativePaths?: boolean;

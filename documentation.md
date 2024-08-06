@@ -102,7 +102,7 @@ Use this to also add the directories to the output.
 const crawler = new fdir().withDirs();
 ```
 
-### `withSymlinks(boolean)`
+### `withSymlinks({ resolvePaths: boolean })`
 
 Use this to follow all symlinks recursively.
 
@@ -116,10 +116,10 @@ Use this to follow all symlinks recursively.
 
 ```js
 // to resolve all symlinked paths to their original path
-const crawler = new fdir().withSymlinks(true);
+const crawler = new fdir().withSymlinks({ resolvePaths: true });
 
 // to disable path resolution
-const crawler = new fdir().withSymlinks(false);
+const crawler = new fdir().withSymlinks({ resolvePaths: false });
 ```
 
 ### `withMaxDepth(number)`
@@ -379,6 +379,7 @@ type Options = {
   onlyCounts?: boolean;
   filters?: FilterFn[];
   resolveSymlinks?: boolean;
+  useRealPaths?: boolean;
   excludeFiles?: boolean;
   exclude?: ExcludeFn;
   relativePaths?: boolean;
