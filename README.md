@@ -85,8 +85,7 @@ Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 6. [netlify/build](https://github.com/netlify/build)
 7. [FredKSchott/snowpack](https://github.com/FredKSchott/snowpack)\*
 8. [yassinedoghri/astro-i18next](https://github.com/yassinedoghri/astro-i18next)
-9. [immich-app/CLI](https://github.com/immich-app/CLI)
-10. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
+9. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
 
 - `snowpack` has since been discontinued.
 
