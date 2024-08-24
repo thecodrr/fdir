@@ -1,5 +1,5 @@
 import child_process from "child_process";
-import { Fdir } from "../index";
+import { Fdir } from "../src/index";
 import b from "benny";
 
 type Version = typeof versions[number] | "current";
@@ -32,7 +32,7 @@ function addSuite(instance: Fdir, version: Version) {
 }
 
 async function fillSuites() {
-  const { fdir } = await import("../index");
+  const { fdir } = await import("../src/index");
   addSuite(fdir, "current");
 
   versions.forEach((version) => {
