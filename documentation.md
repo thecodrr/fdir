@@ -286,6 +286,24 @@ const crawler = new fdir().globWithOptions(["**/*.js", "**/*.md"], {
 });
 ```
 
+### `withGlobFunction(Function)`
+
+Uses the specified glob function to match files against the provided glob pattern.
+
+**Usage**
+
+```js
+// using picomatch or a similar library
+import picomatch from 'picomatch';
+const crawler = new fdir().withGlobFunction(picomatch);
+
+// using a custom function
+const customGlob = (patterns: string | string[]) => {
+  return (test: string): boolean => test.endsWith('.js');
+};
+const crawler = new fdir().withGlobFunction(customGlob);
+```
+
 ### `filter(Function)`
 
 Applies a filter to all directories and files and only adds those that satisfy the filter.
@@ -431,5 +449,6 @@ type Options = {
   relativePaths?: boolean;
   pathSeparator: PathSeparator;
   signal?: AbortSignal;
+  globFunction?: Function;
 };
 ```
