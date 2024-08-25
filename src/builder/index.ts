@@ -80,8 +80,9 @@ export class Builder<TReturnType extends Output = PathsOutput> {
     return this;
   }
 
-  withSymlinks() {
+  withSymlinks({ resolvePaths = true } = {}) {
     this.options.resolveSymlinks = true;
+    this.options.useRealPaths = resolvePaths;
     return this.withFullPaths();
   }
 
