@@ -405,7 +405,7 @@ for (const type of apiTypes) {
 
     const files = await api[type]();
     t.expect(
-      files.indexOf(resolveSymlinkRoot("/some/dir/fileSymlink/")) > -1
+      files.indexOf(resolveSymlinkRoot("/some/dir/fileSymlink")) > -1
     ).toBeTruthy();
 
     mock.restore();

@@ -117,11 +117,7 @@ export class Walker<TOutput extends Output> {
         if (exclude && exclude(entry.name, path)) continue;
         this.walkDirectory(this.state, path, depth - 1, this.walk);
       } else if (entry.isSymbolicLink() && resolveSymlinks) {
-        let path = joinPath.joinDirectoryPath(
-          entry.name,
-          directoryPath,
-          this.state.options.pathSeparator
-        );
+        let path = this.joinPath(entry.name, directoryPath);
         this.resolveSymlink!(path, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {
             resolvedPath = this.normalizePath(resolvedPath);

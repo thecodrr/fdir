@@ -7,7 +7,7 @@ export type ResolveSymlinkFunction = (
   callback: (stat: fs.Stats, path: string) => void
 ) => void;
 
-const resolveSymlinksAsync: ResolveSymlinkFunction = function(
+const resolveSymlinksAsync: ResolveSymlinkFunction = function (
   path,
   state,
   callback
@@ -24,12 +24,12 @@ const resolveSymlinksAsync: ResolveSymlinkFunction = function(
       return;
     }
 
-      callback(stat, path);
-      queue.dequeue(null, state);
+    callback(stat, path);
+    queue.dequeue(null, state);
   });
 };
 
-const resolveSymlinksWithRealPathsAsync: ResolveSymlinkFunction = function(
+const resolveSymlinksWithRealPathsAsync: ResolveSymlinkFunction = function (
   path,
   state,
   callback
@@ -54,7 +54,7 @@ const resolveSymlinksWithRealPathsAsync: ResolveSymlinkFunction = function(
   });
 };
 
-const resolveSymlinksSync: ResolveSymlinkFunction = function(
+const resolveSymlinksSync: ResolveSymlinkFunction = function (
   path,
   state,
   callback
@@ -67,7 +67,7 @@ const resolveSymlinksSync: ResolveSymlinkFunction = function(
   }
 };
 
-const resolveSymlinksWithRealPathsSync: ResolveSymlinkFunction = function(
+const resolveSymlinksWithRealPathsSync: ResolveSymlinkFunction = function (
   path,
   state,
   callback
@@ -89,9 +89,7 @@ export function build(
 
   if (options.useRealPaths)
     return isSynchronous
-        ? resolveSymlinksWithRealPathsSync
-        : resolveSymlinksWithRealPathsAsync;
-  return isSynchronous
-    ? resolveSymlinksSync
-    : resolveSymlinksAsync;
+      ? resolveSymlinksWithRealPathsSync
+      : resolveSymlinksWithRealPathsAsync;
+  return isSynchronous ? resolveSymlinksSync : resolveSymlinksAsync;
 }
