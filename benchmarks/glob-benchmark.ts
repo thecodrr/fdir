@@ -1,4 +1,4 @@
-import { fdir } from "../index";
+import { fdir } from "../src/index";
 import { glob, globSync } from "glob";
 import fg from "fast-glob";
 import tg from "tiny-glob";
