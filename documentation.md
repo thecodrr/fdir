@@ -134,6 +134,16 @@ Use this to limit the maximum depth fdir will crawl to before stopping.
 const crawler = new fdir().withMaxDepth(5);
 ```
 
+### `withMaxFiles(number)`
+
+Use this to limit the maximum number of files fdir will crawl to before stopping.
+
+**Usage**
+
+```js
+const crawler = new fdir().withMaxFiles(100);
+```
+
 ### `withFullPaths`
 
 Use this to get full absolute paths in the output.
@@ -154,6 +164,28 @@ Use this to get paths relative to the root directory in the output.
 
 ```js
 const crawler = new fdir().withRelativePaths();
+```
+
+### `withPathSeparator`
+
+Use this to set the path separator in the output.
+
+**Usage**
+
+```js
+const crawler = new fdir().withPathSeparator("/");
+```
+
+### `withAbortSignal(AbortSignal)`
+
+Use this to pass an `AbortSignal` to the crawler.
+
+**Usage**
+
+```js
+const controller = new AbortController();
+
+const crawler = new fdir().withAbortSignal(controller.signal);
 ```
 
 ### `withErrors`
@@ -239,6 +271,19 @@ Applies a `glob` filter to all files and only adds those that satisfy it.
 ```js
 // only get js and md files
 const crawler = new fdir().glob("./**/*.js", "./**/*.md");
+```
+
+### `globWithOptions(string[], Object)`
+
+The same as `glob` but allows you to pass options to the matcher.
+
+**Usage**
+
+```js
+// only get js and md files
+const crawler = new fdir().globWithOptions(["**/*.js", "**/*.md"], {
+  strictSlashes: true
+});
 ```
 
 ### `filter(Function)`
@@ -373,14 +418,17 @@ type Options = {
   includeDirs?: boolean;
   normalizePath?: boolean;
   maxDepth?: number;
+  maxFiles?: number;
   resolvePaths?: boolean;
   suppressErrors?: boolean;
   group?: boolean;
   onlyCounts?: boolean;
-  filters?: FilterFn[];
+  filters: FilterFn[];
   resolveSymlinks?: boolean;
   excludeFiles?: boolean;
   exclude?: ExcludeFn;
   relativePaths?: boolean;
+  pathSeparator: PathSeparator;
+  signal?: AbortSignal;
 };
 ```
