@@ -77,15 +77,18 @@ Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 
 > Note: if you think your project should be here, feel free to open an issue. Notable is anything with a considerable amount of GitHub stars.
 
-1. [mdn/yari](https://github.com/mdn/yari)
-2. [streetwriters/notesnook](https://github.com/streetwriters/notesnook)
-3. [zhangdaren/miniprogram-to-uniapp](https://github.com/zhangdaren/miniprogram-to-uniapp)
-4. [imba/imba](https://github.com/imba/imba)
-5. [moroshko/react-scanner](https://github.com/moroshko/react-scanner)
-6. [netlify/build](https://github.com/netlify/build)
-7. [FredKSchott/snowpack](https://github.com/FredKSchott/snowpack)\*
-8. [yassinedoghri/astro-i18next](https://github.com/yassinedoghri/astro-i18next)
-9. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
+1. [withastro/astro](https://github.com/withastro/astro)
+2. [pulumi/pulumni](https://github.com/pulumi/pulumi)
+3. [dotenvx/dotenvx](https://github.com/dotenvx/dotenvx)
+4. [mdn/yari](https://github.com/mdn/yari)
+5. [SuperchupuDev/tinyglobby](https://github.com/SuperchupuDev/tinyglobby)
+6. [streetwriters/notesnook](https://github.com/streetwriters/notesnook)
+8. [imba/imba](https://github.com/imba/imba)
+9. [moroshko/react-scanner](https://github.com/moroshko/react-scanner)
+10. [netlify/build](https://github.com/netlify/build)
+11. [FredKSchott/snowpack](https://github.com/FredKSchott/snowpack)
+12. [yassinedoghri/astro-i18next](https://github.com/yassinedoghri/astro-i18next)
+13. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
 
 - `snowpack` has since been discontinued.
 
