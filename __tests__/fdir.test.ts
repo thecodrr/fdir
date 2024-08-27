@@ -328,6 +328,25 @@ for (const type of apiTypes) {
     mock.restore();
   });
 
+  test(`[${type}] crawl all files and include resolved symlinks without real paths with relative paths on`, async (t) => {
+    mock(mockFsWithSymlinks);
+
+    const api = new fdir()
+      .withSymlinks({ resolvePaths: false })
+      .withRelativePaths()
+      .withPathSeparator("/")
+      .crawl("/some/dir");
+    const files = await api[type]();
+    t.expect(files).toHaveLength(3);
+    t.expect(
+      files.indexOf("dirSymlink/file-1") > -1
+    ).toBeTruthy();
+    t.expect(
+      files.indexOf("dirSymlink/file-excluded-1") > -1
+    ).toBeTruthy();
+    mock.restore();
+  });
+
   test("crawl all files and include resolved symlinks with exclusions", async (t) => {
     mock(mockFsWithSymlinks);
     const api = new fdir()

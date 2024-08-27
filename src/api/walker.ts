@@ -117,14 +117,20 @@ export class Walker<TOutput extends Output> {
         if (exclude && exclude(entry.name, path)) continue;
         this.walkDirectory(this.state, path, depth - 1, this.walk);
       } else if (entry.isSymbolicLink() && resolveSymlinks && !excludeSymlinks) {
-        let path = this.joinPath(entry.name, directoryPath);
+        let path = directoryPath + entry.name;
         this.resolveSymlink!(path, this.state, (stat, resolvedPath) => {
-          if (stat.isDirectory()) {
-            resolvedPath = this.normalizePath(resolvedPath);
-            if (exclude && exclude(entry.name, resolvedPath)) return;
+          resolvedPath = this.normalizePath(resolvedPath);
 
+          if (stat.isDirectory()) {
+            if (exclude && exclude(entry.name, resolvedPath)) return;
             this.walkDirectory(this.state, resolvedPath, depth - 1, this.walk);
           } else {
+            if (!this.state.options.useRealPaths && this.state.options.relativePaths) {
+              resolvedPath = resolvedPath.substring(this.root.length, resolvedPath.length - 1);
+            } else {
+              // resolvedPath has a trailing slash due to the normalizePath call
+              resolvedPath = resolvedPath.substring(0, resolvedPath.length - 1)
+            }
             this.pushFile(resolvedPath, files, this.state.counts, filters);
           }
         });
