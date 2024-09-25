@@ -93,7 +93,7 @@ export class Walker<TOutput extends Output> {
   private walk = (entries: Dirent[], directoryPath: string, depth: number) => {
     const {
       paths,
-      options: { filters, resolveSymlinks, exclude, maxFiles, signal },
+      options: { filters, resolveSymlinks, excludeSymlinks, exclude, maxFiles, signal },
     } = this.state;
 
     if ((signal && signal.aborted) || (maxFiles && paths.length > maxFiles))
@@ -105,7 +105,7 @@ export class Walker<TOutput extends Output> {
     for (let i = 0; i < entries.length; ++i) {
       const entry = entries[i];
 
-      if (entry.isFile() || (entry.isSymbolicLink() && !resolveSymlinks && !this.state.options.excludeSymlinks)) {
+      if (entry.isFile() || (entry.isSymbolicLink() && !resolveSymlinks && !excludeSymlinks)) {
         const filename = this.joinPath(entry.name, directoryPath);
         this.pushFile(filename, files, this.state.counts, filters);
       } else if (entry.isDirectory()) {
@@ -116,7 +116,7 @@ export class Walker<TOutput extends Output> {
         );
         if (exclude && exclude(entry.name, path)) continue;
         this.walkDirectory(this.state, path, depth - 1, this.walk);
-      } else if (entry.isSymbolicLink() && resolveSymlinks && !this.state.options.excludeSymlinks) {
+      } else if (entry.isSymbolicLink() && resolveSymlinks && !excludeSymlinks) {
         let path = this.joinPath(entry.name, directoryPath);
         this.resolveSymlink!(path, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {

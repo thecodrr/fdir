@@ -85,7 +85,7 @@ export function build(
   options: Options,
   isSynchronous: boolean
 ): ResolveSymlinkFunction | null {
-  if (!options.resolveSymlinks) return null;
+  if (!options.resolveSymlinks || options.excludeSymlinks) return null;
 
   if (options.useRealPaths)
     return isSynchronous
