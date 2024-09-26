@@ -1,4 +1,4 @@
-import { resolve as pathResolve } from "path";
+import { basename, dirname, resolve as pathResolve } from "path";
 import { cleanPath, convertSlashes } from "../utils";
 import { ResultCallback, WalkerState, Options } from "../types";
 import * as joinPath from "./functions/join-path";
@@ -117,7 +117,7 @@ export class Walker<TOutput extends Output> {
         if (exclude && exclude(entry.name, path)) continue;
         this.walkDirectory(this.state, path, depth - 1, this.walk);
       } else if (entry.isSymbolicLink() && resolveSymlinks && !excludeSymlinks) {
-        let path = this.joinPath(entry.name, directoryPath);
+        let path = joinPath.joinPathWithBasePath(entry.name, directoryPath);
         this.resolveSymlink!(path, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {
             resolvedPath = this.normalizePath(resolvedPath);
@@ -125,6 +125,9 @@ export class Walker<TOutput extends Output> {
 
             this.walkDirectory(this.state, resolvedPath, depth - 1, this.walk);
           } else {
+            const filename = basename(resolvedPath);  
+            const directoryPath = this.normalizePath(dirname(resolvedPath));  
+            resolvedPath = this.joinPath(filename, directoryPath);  
             this.pushFile(resolvedPath, files, this.state.counts, filters);
           }
         });
