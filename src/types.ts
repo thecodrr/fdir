@@ -55,6 +55,7 @@ export type Options = {
   resolveSymlinks?: boolean;
   useRealPaths?: boolean;
   excludeFiles?: boolean;
+  excludeSymlinks?: boolean;
   exclude?: ExcludePredicate;
   relativePaths?: boolean;
   pathSeparator: PathSeparator;

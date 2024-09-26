@@ -427,6 +427,7 @@ type Options = {
   resolveSymlinks?: boolean;
   useRealPaths?: boolean;
   excludeFiles?: boolean;
+  excludeSymlinks?: boolean;
   exclude?: ExcludeFn;
   relativePaths?: boolean;
   pathSeparator: PathSeparator;

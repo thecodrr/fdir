@@ -355,6 +355,15 @@ for (const type of apiTypes) {
     mock.restore();
   });
 
+  test(`[${type}] crawl all files and exclude symlinks`, async (t) => {
+    mock(mockFsWithSymlinks);
+
+    const api = new fdir({ excludeSymlinks: true }).crawl("/some/dir");
+    const files = await api[type]();
+    t.expect(files).toHaveLength(0);
+    mock.restore();
+  });
+
   test(`[${type}] crawl all files and invert path separator`, async (t) => {
     const api = new fdir()
       .withPathSeparator(sep === "/" ? "\\" : "/")
