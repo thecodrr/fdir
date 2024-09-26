@@ -1,6 +1,6 @@
 import { Options, PathSeparator } from "../../types";
 
-function joinPathWithBasePath(filename: string, directoryPath: string) {
+export function joinPathWithBasePath(filename: string, directoryPath: string) {
   return directoryPath + filename;
 }
 
