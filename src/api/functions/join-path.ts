@@ -1,12 +1,21 @@
+import { relative } from "path";
 import { Options, PathSeparator } from "../../types";
+import { convertSlashes } from "../../utils";
 
 export function joinPathWithBasePath(filename: string, directoryPath: string) {
   return directoryPath + filename;
 }
 
-function joinPathWithRelativePath(root: string) {
+function joinPathWithRelativePath(root: string, options: Options) {
   return function (filename: string, directoryPath: string) {
-    return directoryPath.substring(root.length) + filename;
+    const sameRoot = directoryPath.startsWith(root);
+    if (sameRoot) return directoryPath.replace(root, "") + filename;
+    else
+      return (
+        convertSlashes(relative(root, directoryPath), options.pathSeparator) +
+        options.pathSeparator +
+        filename
+      );
   };
 }
 
@@ -31,7 +40,7 @@ export function build(root: string, options: Options): JoinPathFunction {
   const { relativePaths, includeBasePath } = options;
 
   return relativePaths && root
-    ? joinPathWithRelativePath(root)
+    ? joinPathWithRelativePath(root, options)
     : includeBasePath
     ? joinPathWithBasePath
     : joinPath;

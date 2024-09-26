@@ -1,4 +1,4 @@
-import { sep, normalize } from "path";
+import { sep, normalize, resolve } from "path";
 import { PathSeparator } from "./types";
 
 export function cleanPath(path: string) {
@@ -15,4 +15,29 @@ export function cleanPath(path: string) {
 const SLASHES_REGEX = /[\\/]/g;
 export function convertSlashes(path: string, separator: PathSeparator) {
   return path.replace(SLASHES_REGEX, separator);
+}
+
+export function normalizePath(
+  path: string,
+  options: {
+    resolvePaths?: boolean;
+    normalizePath?: boolean;
+    pathSeparator: PathSeparator;
+  }
+) {
+  const { resolvePaths, normalizePath, pathSeparator } = options;
+  const pathNeedsCleaning =
+    (process.platform === "win32" && path.includes("/")) ||
+    path.startsWith(".");
+
+  if (resolvePaths) path = resolve(path);
+  if (normalizePath || pathNeedsCleaning) path = cleanPath(path);
+
+  if (path === ".") return "";
+
+  const needsSeperator = path[path.length - 1] !== pathSeparator;
+  return convertSlashes(
+    needsSeperator ? path + pathSeparator : path,
+    pathSeparator
+  );
 }

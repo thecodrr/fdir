@@ -343,31 +343,41 @@ for (const type of apiTypes) {
     t.expect(
       files.indexOf(path.join("dirSymlink", "file-excluded-1")) > -1
     ).toBeTruthy();
-    t.expect(
-      files.indexOf("fileSymlink") > -1
-    ).toBeTruthy();
+    t.expect(files.indexOf("fileSymlink") > -1).toBeTruthy();
     mock.restore();
   });
 
-  // fdir doesn't support this usecase
   test(`[${type}] crawl all files and include resolved symlinks with real paths with relative paths on`, async (t) => {
-    mock(mockFsWithSymlinks);
-
+    mock({
+      "../../sym/linked": {
+        "file-1": "file contents",
+        "file-excluded-1": "file contents",
+      },
+      "../../other/dir": {
+        "file-2": "file contents2",
+      },
+      "some/dir": {
+        fileSymlink: mock.symlink({
+          path: "../../../../other/dir/file-2",
+        }),
+        fileSymlink2: mock.symlink({
+          path: "../../../../other/dir/file-3",
+        }),
+        dirSymlink: mock.symlink({
+          path: "../../../../sym/linked",
+        }),
+      },
+    });
     const api = new fdir()
       .withSymlinks()
       .withRelativePaths()
-      .crawl("/some/dir");
+      .crawl("./some/dir");
     const files = await api[type]();
-    t.expect(files).toHaveLength(3);
-    t.expect(
-      files.indexOf(path.join("d", "file-1")) > -1
-    ).toBeTruthy();
-    t.expect(
-      files.indexOf(path.join("d", "file-excluded-1")) > -1
-    ).toBeTruthy();
-    t.expect(
-      files.indexOf(`${path.sep}file-2`) > -1
-    ).toBeTruthy();
+    t.expect(files).toStrictEqual([
+      path.join("..", "..", "..", "..", "sym", "linked", "file-1"),
+      path.join("..", "..", "..", "..", "sym", "linked", "file-excluded-1"),
+      path.join("..", "..", "..", "..", "other", "dir", "file-2"),
+    ]);
     mock.restore();
   });
 
@@ -468,7 +478,7 @@ for (const type of apiTypes) {
     const globFunction = vi.fn((glob: string | string[]) => {
       return (test: string): boolean => test.endsWith(".js");
     });
-    const api = new fdir({globFunction})
+    const api = new fdir({ globFunction })
       .withBasePath()
       .glob("**/*.js")
       .crawl("node_modules");
@@ -478,12 +488,14 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl files that match using a custom glob with options`, async (t) => {
-    const globFunction = vi.fn((glob: string | string[], options?: {foo: number}) => {
-      return (test: string): boolean => test.endsWith(".js");
-    });
-    const api = new fdir({globFunction})
+    const globFunction = vi.fn(
+      (glob: string | string[], options?: { foo: number }) => {
+        return (test: string): boolean => test.endsWith(".js");
+      }
+    );
+    const api = new fdir({ globFunction })
       .withBasePath()
-      .globWithOptions(["**/*.js"], {foo: 5})
+      .globWithOptions(["**/*.js"], { foo: 5 })
       .crawl("node_modules");
     const files = await api[type]();
     t.expect(globFunction).toHaveBeenCalled();
@@ -492,7 +504,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl files that match using a picomatch`, async (t) => {
     const globFunction = picomatch;
-    const api = new fdir({globFunction})
+    const api = new fdir({ globFunction })
       .withBasePath()
       .glob("**/*.js")
       .crawl("node_modules");
