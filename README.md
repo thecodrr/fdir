@@ -88,6 +88,7 @@ Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 10. [netlify/build](https://github.com/netlify/build)
 11. [yassinedoghri/astro-i18next](https://github.com/yassinedoghri/astro-i18next)
 12. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
+13. [whyboris/Video-Hub-App](https://github.com/whyboris/Video-Hub-App)
 
 ## 🦮 LICENSE
 
