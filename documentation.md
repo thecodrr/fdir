@@ -104,7 +104,7 @@ const crawler = new fdir().withDirs();
 
 ### `withSymlinks({ resolvePaths: boolean })`
 
-Use this to follow all symlinks recursively. Not available with relative paths on unless the parameter is set to `false`.
+Use this to follow all symlinks recursively.
 
 **Parameters:**
 
