@@ -321,6 +321,22 @@ const crawler = new fdir()
   .filter((path, isDirectory) => path.endsWith(".js"));
 ```
 
+### `transform(Function)`
+
+Applies a transformation to the items that satisfy the filter.
+
+> _In case multiple transformers are provided, only the last one is used._
+
+> The function receives two parameters: the first is the path of the item, and the second is a flag that indicates whether the item is a directory or not.
+
+**Usage**
+
+```js
+// add a leading '../' to every item
+const crawler = new fdir()
+  .transform((path) => `../${path}`);
+```
+
 ### `exclude(Function)`
 
 Applies an exclusion filter to all directories and only crawls those that do not satisfy the condition. Useful for speeding up crawling if you know you can ignore some directories.
