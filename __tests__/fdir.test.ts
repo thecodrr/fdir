@@ -523,6 +523,54 @@ for (const type of apiTypes) {
       .crawl("node_modules");
     t.expect(globFunction).toHaveBeenCalledWith(["**/*.js"], "bleep");
   });
+
+  test(`[${type}] using transform to transform the output`, async (t) => {
+    const api = new fdir()
+      .transform((path) => `../${path}`)
+      .crawl("node_modules");
+    const files = await api[type]();
+
+    t.expect(files.every((file) => file.startsWith("../"))).toBe(true);
+  });
+
+  test(`[${type}] using transform to transform the output with the relative paths`, async (t) => {
+    const api = new fdir()
+      .withRelativePaths()
+      .transform((path) => `../${path}`)
+      .crawl("node_modules");
+    const files = await api[type]();
+
+    t.expect(files.every((file) => file.startsWith("../"))).toBe(true);
+  });
+
+  test(`[${type}] transform predicate doesn't get called when only counting`, (t) => {
+    const transformPredicate = vi.fn();
+    new fdir().onlyCounts().transform(transformPredicate).crawl("node_modules");
+
+    t.expect(transformPredicate).not.toHaveBeenCalled();
+  });
+
+  test(`[${type}] transform predicate only gets called for entries that pass`, async (t) => {
+    mock({
+      "/mock": {
+        "file-1": "",
+        "file-2": "",
+        "file-3": "",
+      },
+    });
+    const transformPredicate = vi.fn();
+
+    const api = new fdir()
+      .filter((path) => path.includes("1") || path.includes("3"))
+      .transform(transformPredicate)
+      .crawl("/mock");
+
+    await api[type]();
+
+    t.expect(transformPredicate).toHaveBeenCalledWith("file-1", false);
+    t.expect(transformPredicate).not.toHaveBeenCalledWith("file-2", false);
+    t.expect(transformPredicate).toHaveBeenCalledWith("file-3", false);
+  });
 }
 
 test(`[async] crawl directory & use abort signal to abort`, async (t) => {
