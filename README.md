@@ -83,12 +83,13 @@ Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 4. [dotenvx/dotenvx](https://github.com/dotenvx/dotenvx)
 5. [mdn/yari](https://github.com/mdn/yari)
 6. [streetwriters/notesnook](https://github.com/streetwriters/notesnook)
-8. [imba/imba](https://github.com/imba/imba)
-9. [moroshko/react-scanner](https://github.com/moroshko/react-scanner)
-10. [netlify/build](https://github.com/netlify/build)
-11. [yassinedoghri/astro-i18next](https://github.com/yassinedoghri/astro-i18next)
-12. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
+7. [imba/imba](https://github.com/imba/imba)
+8. [moroshko/react-scanner](https://github.com/moroshko/react-scanner)
+9. [netlify/build](https://github.com/netlify/build)
+10. [yassinedoghri/astro-i18next](https://github.com/yassinedoghri/astro-i18next)
+11. [selfrefactor/rambda](https://github.com/selfrefactor/rambda)
+12. [whyboris/Video-Hub-App](https://github.com/whyboris/Video-Hub-App)
 
 ## 🦮 LICENSE
 
-Copyright &copy; 2023 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
+Copyright &copy; 2024 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
