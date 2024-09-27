@@ -1,39 +1,49 @@
-import { FilterPredicate, Options } from "../../types";
+import { Dirent } from "node:fs";
+import { FilterPredicate, Options, TransformPredicate } from "../../types";
 
 export type PushDirectoryFunction = (
   directoryPath: string,
   paths: string[],
-  filters?: FilterPredicate[]
+  filters?: FilterPredicate[],
+  transformer?: TransformPredicate
 ) => void;
 
 function pushDirectoryWithRelativePath(root: string): PushDirectoryFunction {
-  return function (directoryPath, paths) {
-    paths.push((directoryPath || ".").substring(root.length));
+  return function (directoryPath, paths, _filters, transformer) {
+    const relativePath = (directoryPath || ".").substring(root.length);
+    paths.push(transformer?.(relativePath, true) ?? relativePath);
   };
 }
 
 function pushDirectoryFilterWithRelativePath(
   root: string
 ): PushDirectoryFunction {
-  return function (directoryPath, paths, filters) {
+  return function (directoryPath, paths, filters, transformer) {
     const relativePath = directoryPath.substring(root.length);
     if (filters!.every((filter) => filter(relativePath, true))) {
-      paths.push(relativePath);
+      paths.push(transformer?.(relativePath, true) ?? relativePath);
     }
   };
 }
 
-const pushDirectory: PushDirectoryFunction = (directoryPath, paths) => {
-  paths.push(directoryPath || ".");
+const pushDirectory: PushDirectoryFunction = (
+  directoryPath,
+  paths,
+  _filters,
+  transformer
+) => {
+  const path = directoryPath || ".";
+  paths.push(transformer?.(path, true) ?? path);
 };
 
 const pushDirectoryFilter: PushDirectoryFunction = (
   directoryPath,
   paths,
-  filters
+  filters,
+  transformer
 ) => {
   if (filters!.every((filter) => filter(directoryPath, true))) {
-    paths.push(directoryPath);
+    paths.push(transformer?.(directoryPath, true) ?? directoryPath);
   }
 };
 

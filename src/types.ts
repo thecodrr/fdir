@@ -1,3 +1,4 @@
+import { Dirent } from "node:fs";
 import { Queue } from "./api/queue";
 
 export type Counts = {
@@ -39,6 +40,7 @@ export type ResultCallback<TOutput extends Output> = (
 ) => void;
 
 export type FilterPredicate = (path: string, isDirectory: boolean) => boolean;
+export type TransformPredicate = (path: string, isDirectory: boolean) => string;
 export type ExcludePredicate = (dirName: string, dirPath: string) => boolean;
 export type PathSeparator = "/" | "\\";
 export type Options<TGlobFunction = unknown> = {
@@ -52,6 +54,7 @@ export type Options<TGlobFunction = unknown> = {
   group?: boolean;
   onlyCounts?: boolean;
   filters: FilterPredicate[];
+  transformer?: TransformPredicate;
   resolveSymlinks?: boolean;
   useRealPaths?: boolean;
   excludeFiles?: boolean;
@@ -60,13 +63,17 @@ export type Options<TGlobFunction = unknown> = {
   relativePaths?: boolean;
   pathSeparator: PathSeparator;
   signal?: AbortSignal;
-  globFunction?: TGlobFunction
+  globFunction?: TGlobFunction;
 };
 
 export type GlobMatcher = (test: string) => boolean;
-export type GlobFunction =
-  ((glob: string | string[], ...params: unknown[]) => GlobMatcher);
-export type GlobParams<T> =
-  T extends (globs: string|string[], ...params: infer TParams extends unknown[]) => GlobMatcher
-    ? TParams
-    : [];
+export type GlobFunction = (
+  glob: string | string[],
+  ...params: unknown[]
+) => GlobMatcher;
+export type GlobParams<T> = T extends (
+  globs: string | string[],
+  ...params: infer TParams extends unknown[]
+) => GlobMatcher
+  ? TParams
+  : [];

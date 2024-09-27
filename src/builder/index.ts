@@ -9,6 +9,7 @@ import {
   ExcludePredicate,
   GlobFunction,
   GlobParams,
+  TransformPredicate,
 } from "../types";
 import { APIBuilder } from "./api-builder";
 import type picomatch from "picomatch";
@@ -108,6 +109,11 @@ export class Builder<
     return this;
   }
 
+  transform(predicate: TransformPredicate) {
+    this.options.transformer = predicate;
+    return this;
+  }
+
   onlyDirs() {
     this.options.excludeFiles = true;
     this.options.includeDirs = true;
@@ -153,19 +159,23 @@ export class Builder<
     }
     return this.globWithOptions(
       patterns,
-      ...[{dot: true}] as unknown as GlobParams<TGlobFunction>
+      ...([{ dot: true }] as unknown as GlobParams<TGlobFunction>)
     );
   }
 
   globWithOptions(patterns: string[]): Builder<TReturnType, TGlobFunction>;
-  globWithOptions(patterns: string[], ...options: GlobParams<TGlobFunction>): Builder<TReturnType, TGlobFunction>;
-  globWithOptions(patterns: string[], ...options: GlobParams<TGlobFunction>|[]) {
+  globWithOptions(
+    patterns: string[],
+    ...options: GlobParams<TGlobFunction>
+  ): Builder<TReturnType, TGlobFunction>;
+  globWithOptions(
+    patterns: string[],
+    ...options: GlobParams<TGlobFunction> | []
+  ) {
     const globFn = (this.globFunction || pm) as GlobFunction | null;
     /* c8 ignore next 5 */
     if (!globFn) {
-      throw new Error(
-        'Please specify a glob function to use glob matching.'
-      );
+      throw new Error("Please specify a glob function to use glob matching.");
     }
 
     var isMatch = this.globCache[patterns.join("\0")];

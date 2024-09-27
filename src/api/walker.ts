@@ -77,6 +77,7 @@ export class Walker<TOutput extends Output> {
       paths,
       options: {
         filters,
+        transformer,
         resolveSymlinks,
         excludeSymlinks,
         exclude,
@@ -88,7 +89,7 @@ export class Walker<TOutput extends Output> {
     if ((signal && signal.aborted) || (maxFiles && paths.length > maxFiles))
       return;
 
-    this.pushDirectory(directoryPath, paths, filters);
+    this.pushDirectory(directoryPath, paths, filters, transformer);
 
     const files = this.getArray(this.state.paths);
     for (let i = 0; i < entries.length; ++i) {
@@ -99,7 +100,7 @@ export class Walker<TOutput extends Output> {
         (entry.isSymbolicLink() && !resolveSymlinks && !excludeSymlinks)
       ) {
         const filename = this.joinPath(entry.name, directoryPath);
-        this.pushFile(filename, files, this.state.counts, filters);
+        this.pushFile(filename, files, this.state.counts, filters, transformer);
       } else if (entry.isDirectory()) {
         let path = joinPath.joinDirectoryPath(
           entry.name,
@@ -123,7 +124,13 @@ export class Walker<TOutput extends Output> {
               this.state.options
             );
             resolvedPath = this.joinPath(filename, directoryPath);
-            this.pushFile(resolvedPath, files, this.state.counts, filters);
+            this.pushFile(
+              resolvedPath,
+              files,
+              this.state.counts,
+              filters,
+              transformer
+            );
           }
         });
       }
