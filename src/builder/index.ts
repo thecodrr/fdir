@@ -124,7 +124,7 @@ export class Builder<
     return this as Builder<OnlyCountsOutput, TGlobFunction>;
   }
 
-  crawl(root: string) {
+  crawl(root?: string) {
     return new APIBuilder<TReturnType>(root || ".", this.options);
   }
 

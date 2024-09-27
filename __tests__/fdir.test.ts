@@ -286,6 +286,68 @@ for (const type of apiTypes) {
     t.expect(paths.every((p) => !p.startsWith("node_modules"))).toBeTruthy();
   });
 
+  test(`[${type}] crawl and return relative paths with only dirs`, async (t) => {
+    mock({
+      "/some/dir/dir1": {
+        file: "some file",
+      },
+      "/some/dir/dir2": {
+        file: "some file",
+      },
+      "/some/dir/dir2/dir3": {
+        file: "some file",
+      }
+    });
+
+    const api = new fdir({ excludeFiles: true, excludeSymlinks: true })
+      .withDirs()
+      .withRelativePaths()
+      .crawl("/some");
+    const paths = await api[type]();
+
+    t.expect(paths.length).toBe(5);
+    t.expect(
+      paths.filter((p) => p === ".").length
+    ).toBe(1);
+    t.expect(
+      paths.filter((p) => p === "").length
+    ).toBe(0);
+    mock.restore();
+  });
+
+  test(`[${type}] crawl and return relative paths with filters and only dirs`, async (t) => {
+    mock({
+      "/some/dir/dir1": {
+        file: "some file",
+      },
+      "/some/dir/dir2": {
+        file: "some file",
+      },
+      "/some/dir/dir2/dir3": {
+        file: "some file",
+      }
+    });
+
+    const api = new fdir({ excludeFiles: true, excludeSymlinks: true })
+      .withDirs()
+      .withRelativePaths()
+      .filter((p) => p !== path.join("dir", "dir1/"))
+      .crawl("/some");
+    const paths = await api[type]();
+
+    t.expect(paths.length).toBe(4);
+    t.expect(
+      paths.includes(path.join("dir", "dir1/"))
+    ).toBe(false);
+    t.expect(
+      paths.filter((p) => p === ".").length
+    ).toBe(1);
+    t.expect(
+      paths.filter((p) => p === "").length
+    ).toBe(0);
+    mock.restore();
+  });
+
   test(`[${type}] crawl and return relative paths that end with /`, async (t) => {
     const api = new fdir().withRelativePaths().crawl("./node_modules/");
     const paths = await api[type]();
@@ -559,6 +621,14 @@ test(`paths should never start with ./`, async (t) => {
   }
 });
 
+test(`default to . if root is not provided`, async (t) => {
+  const files = await new fdir().crawl().withPromise();
+
+  const files2 = await new fdir().crawl(".").withPromise().then(f => f.sort());
+
+  t.expect(files.sort().every((r, i) => r === files2[i])).toBe(true);
+});
+
 test(`ignore withRelativePath if root === ./`, async (t) => {
   const relativeFiles = await new fdir()
     .withRelativePaths()
@@ -578,6 +648,11 @@ test(`add path separator if root path does not end with one`, async (t) => {
 
 test(`there should be no empty directory when using withDirs`, async (t) => {
   const files = await new fdir().withDirs().crawl("./").withPromise();
+  t.expect(files.every((r) => r.length > 0)).toBe(true);
+});
+
+test(`there should be no empty directory when using withDirs and filters`, async (t) => {
+  const files = await new fdir().withDirs().filter(p => p !== "node_modules").crawl("./").withPromise();
   t.expect(files.every((r) => r.length > 0)).toBe(true);
 });
 

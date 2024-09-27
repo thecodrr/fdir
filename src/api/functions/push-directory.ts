@@ -8,7 +8,7 @@ export type PushDirectoryFunction = (
 
 function pushDirectoryWithRelativePath(root: string): PushDirectoryFunction {
   return function (directoryPath, paths) {
-    paths.push((directoryPath || ".").substring(root.length));
+    paths.push(directoryPath.substring(root.length) || ".");
   };
 }
 
@@ -16,7 +16,7 @@ function pushDirectoryFilterWithRelativePath(
   root: string
 ): PushDirectoryFunction {
   return function (directoryPath, paths, filters) {
-    const relativePath = directoryPath.substring(root.length);
+    const relativePath = directoryPath.substring(root.length) || ".";
     if (filters!.every((filter) => filter(relativePath, true))) {
       paths.push(relativePath);
     }
@@ -32,8 +32,9 @@ const pushDirectoryFilter: PushDirectoryFunction = (
   paths,
   filters
 ) => {
-  if (filters!.every((filter) => filter(directoryPath, true))) {
-    paths.push(directoryPath);
+  const path = directoryPath || ".";
+  if (filters!.every((filter) => filter(path, true))) {
+    paths.push(path);
   }
 };
 
