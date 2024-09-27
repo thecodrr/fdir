@@ -327,6 +327,8 @@ Applies a transformation to the items that satisfy the filter.
 
 > _In case multiple transformers are provided, only the last one is used._
 
+> _When both transformer and filter(s) are provided, the former is applied first and the resulting path is passed to the latter._
+
 > The function receives two parameters: the first is the path of the item, and the second is a flag that indicates whether the item is a directory or not.
 
 **Usage**

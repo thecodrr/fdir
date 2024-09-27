@@ -29,8 +29,9 @@ const pushFileFilter: PushFileFunction = (
   filters,
   transformer
 ) => {
-  if (filters!.every((filter) => filter(filename, false)))
-    paths.push(transformer?.(filename, false) ?? filename);
+  const transformedFilename = transformer?.(filename, false) ?? filename;
+  if (filters!.every((filter) => filter(transformedFilename, false)))
+    paths.push(transformedFilename);
 };
 
 const pushFileCount: PushFileFunction = (_filename, _paths, counts) => {
@@ -44,7 +45,8 @@ const pushFile: PushFileFunction = (
   _filters,
   transformer
 ) => {
-  paths.push(transformer?.(filename, false) ?? filename);
+  const transformedFilename = transformer?.(filename, false) ?? filename;
+  paths.push(transformedFilename);
 };
 
 const empty: PushFileFunction = () => {};

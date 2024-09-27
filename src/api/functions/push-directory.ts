@@ -19,8 +19,9 @@ function pushDirectoryFilterWithRelativePath(
 ): PushDirectoryFunction {
   return function (directoryPath, paths, filters, transformer) {
     const relativePath = directoryPath.substring(root.length);
-    if (filters!.every((filter) => filter(relativePath, true))) {
-      paths.push(transformer?.(relativePath, true) ?? relativePath);
+    const transformedPath = transformer?.(relativePath, true) ?? relativePath;
+    if (filters!.every((filter) => filter(transformedPath, true))) {
+      paths.push(transformedPath);
     }
   };
 }
@@ -41,8 +42,9 @@ const pushDirectoryFilter: PushDirectoryFunction = (
   filters,
   transformer
 ) => {
-  if (filters!.every((filter) => filter(directoryPath, true))) {
-    paths.push(transformer?.(directoryPath, true) ?? directoryPath);
+  const transformedPath = transformer?.(directoryPath, true) ?? directoryPath;
+  if (filters!.every((filter) => filter(transformedPath, true))) {
+    paths.push(transformedPath);
   }
 };
 
