@@ -1,4 +1,3 @@
-import { Dirent } from "node:fs";
 import { Queue } from "./api/queue";
 
 export type Counts = {
@@ -67,13 +66,9 @@ export type Options<TGlobFunction = unknown> = {
 };
 
 export type GlobMatcher = (test: string) => boolean;
-export type GlobFunction = (
-  glob: string | string[],
-  ...params: unknown[]
-) => GlobMatcher;
-export type GlobParams<T> = T extends (
-  globs: string | string[],
-  ...params: infer TParams extends unknown[]
-) => GlobMatcher
-  ? TParams
-  : [];
+export type GlobFunction =
+  ((glob: string | string[], ...params: unknown[]) => GlobMatcher);
+export type GlobParams<T> =
+  T extends (globs: string|string[], ...params: infer TParams extends unknown[]) => GlobMatcher
+    ? TParams
+    : [];

@@ -1,4 +1,3 @@
-import { Dirent } from "node:fs";
 import { FilterPredicate, Options, TransformPredicate } from "../../types";
 
 export type PushDirectoryFunction = (
