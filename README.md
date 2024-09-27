@@ -92,4 +92,4 @@ Please check the benchmark against the latest version [here](/BENCHMARKS.md).
 
 ## 🦮 LICENSE
 
-Copyright &copy; 2023 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
+Copyright &copy; 2024 Abdullah Atta under MIT. [Read full text here.](https://github.com/thecodrr/fdir/raw/master/LICENSE)
