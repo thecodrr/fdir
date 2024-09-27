@@ -26,10 +26,6 @@
 
 _\* `picomatch` must be installed manually by the user to support globbing._
 
-## Support
-
-> Do you like this project? **[Support me by donating](https://ko-fi.com/thecodrr)**, creating an issue, becoming a stargazer, or opening a pull request. Thanks.
-
 ## 🚄 Quickstart
 
 ### Installation
