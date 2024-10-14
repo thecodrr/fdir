@@ -296,7 +296,7 @@ for (const type of apiTypes) {
       },
       "/some/dir/dir2/dir3": {
         file: "some file",
-      }
+      },
     });
 
     const api = new fdir({ excludeFiles: true, excludeSymlinks: true })
@@ -306,12 +306,8 @@ for (const type of apiTypes) {
     const paths = await api[type]();
 
     t.expect(paths.length).toBe(5);
-    t.expect(
-      paths.filter((p) => p === ".").length
-    ).toBe(1);
-    t.expect(
-      paths.filter((p) => p === "").length
-    ).toBe(0);
+    t.expect(paths.filter((p) => p === ".").length).toBe(1);
+    t.expect(paths.filter((p) => p === "").length).toBe(0);
     mock.restore();
   });
 
@@ -325,7 +321,7 @@ for (const type of apiTypes) {
       },
       "/some/dir/dir2/dir3": {
         file: "some file",
-      }
+      },
     });
 
     const api = new fdir({ excludeFiles: true, excludeSymlinks: true })
@@ -336,15 +332,9 @@ for (const type of apiTypes) {
     const paths = await api[type]();
 
     t.expect(paths.length).toBe(4);
-    t.expect(
-      paths.includes(path.join("dir", "dir1/"))
-    ).toBe(false);
-    t.expect(
-      paths.filter((p) => p === ".").length
-    ).toBe(1);
-    t.expect(
-      paths.filter((p) => p === "").length
-    ).toBe(0);
+    t.expect(paths.includes(path.join("dir", "dir1/"))).toBe(false);
+    t.expect(paths.filter((p) => p === ".").length).toBe(1);
+    t.expect(paths.filter((p) => p === "").length).toBe(0);
     mock.restore();
   });
 
@@ -435,10 +425,10 @@ for (const type of apiTypes) {
       .withRelativePaths()
       .crawl("./some/dir");
     const files = await api[type]();
-    t.expect(files).toStrictEqual([
+    t.expect(files.sort()).toStrictEqual([
+      path.join("..", "..", "..", "..", "other", "dir", "file-2"),
       path.join("..", "..", "..", "..", "sym", "linked", "file-1"),
       path.join("..", "..", "..", "..", "sym", "linked", "file-excluded-1"),
-      path.join("..", "..", "..", "..", "other", "dir", "file-2"),
     ]);
     mock.restore();
   });
@@ -624,7 +614,10 @@ test(`paths should never start with ./`, async (t) => {
 test(`default to . if root is not provided`, async (t) => {
   const files = await new fdir().crawl().withPromise();
 
-  const files2 = await new fdir().crawl(".").withPromise().then(f => f.sort());
+  const files2 = await new fdir()
+    .crawl(".")
+    .withPromise()
+    .then((f) => f.sort());
 
   t.expect(files.sort().every((r, i) => r === files2[i])).toBe(true);
 });
@@ -652,7 +645,11 @@ test(`there should be no empty directory when using withDirs`, async (t) => {
 });
 
 test(`there should be no empty directory when using withDirs and filters`, async (t) => {
-  const files = await new fdir().withDirs().filter(p => p !== "node_modules").crawl("./").withPromise();
+  const files = await new fdir()
+    .withDirs()
+    .filter((p) => p !== "node_modules")
+    .crawl("./")
+    .withPromise();
   t.expect(files.every((r) => r.length > 0)).toBe(true);
 });
 
