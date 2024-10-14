@@ -4,7 +4,7 @@ import mock from "mock-fs";
 import { fdir, Options } from "../src";
 import path from "path";
 
-const mockFsWithSymlinks = {
+const fsWithRelativeSymlinks = {
   "../../sym-relative/linked": {
     "file-1": "file contents",
     "file-excluded-1": "file contents",
@@ -23,6 +23,52 @@ const mockFsWithSymlinks = {
       path: "../../../../sym-relative/linked",
     }),
   },
+};
+
+const fsWithRecursiveSymlinks = {
+  "/double/recursive": {
+    "another-file": "hello",
+    "recursive-4": mock.symlink({
+      path: resolveSymlinkRoot("/recursive"),
+    }),
+  },
+  "/just/some": {
+    "another-file": "hello",
+    "another-file2": "hello",
+    "symlink-to-earth": mock.symlink({
+      path: resolveSymlinkRoot("/random/other"),
+    }),
+  },
+  "/random/other": {
+    "another-file": "hello",
+    "another-file2": "hello",
+  },
+  "/recursive": {
+    "random-file": "somecontent",
+  },
+  "/recursive/dir": {
+    "some-file": "somecontent2",
+    "recursive-1": mock.symlink({
+      path: resolveSymlinkRoot("/recursive/dir"),
+    }),
+    "recursive-2": mock.symlink({
+      path: resolveSymlinkRoot("/recursive/dir/recursive-1"),
+    }),
+    "recursive-3": mock.symlink({
+      path: resolveSymlinkRoot("/recursive"),
+    }),
+    "recursive-5": mock.symlink({
+      path: resolveSymlinkRoot("/double/recursive"),
+    }),
+    "not-recursive": mock.symlink({
+      path: resolveSymlinkRoot("/just/some"),
+    }),
+  },
+};
+
+const mockFs = {
+  ...fsWithRelativeSymlinks,
+  ...fsWithRecursiveSymlinks,
 
   "/sym/linked": {
     "file-1": "file contents",
@@ -47,7 +93,7 @@ const mockFsWithSymlinks = {
 for (const type of apiTypes) {
   describe.concurrent(type, () => {
     beforeAll(() => {
-      mock(mockFsWithSymlinks);
+      mock(mockFs);
     });
 
     afterAll(() => {
@@ -62,6 +108,70 @@ for (const type of apiTypes) {
           "/other/dir/file-2",
           "/sym/linked/file-1",
           "/sym/linked/file-excluded-1",
+        ])
+      );
+    });
+
+    test(`resolve recursive symlinks`, async (t) => {
+      const api = new fdir().withSymlinks().crawl("/recursive");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(
+        normalize([
+          "/double/recursive/another-file",
+          "/just/some/another-file",
+          "/just/some/another-file2",
+          "/random/other/another-file",
+          "/random/other/another-file2",
+          "/recursive/dir/some-file",
+          "/recursive/random-file",
+        ])
+      );
+    });
+
+    test(`resolve recursive symlinks (real paths: false)`, async (t) => {
+      const api = new fdir()
+        .withSymlinks({ resolvePaths: false })
+        .crawl("/recursive");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(
+        normalize([
+          "/recursive/dir/not-recursive/another-file",
+          "/recursive/dir/not-recursive/another-file2",
+          "/recursive/dir/not-recursive/symlink-to-earth/another-file",
+          "/recursive/dir/not-recursive/symlink-to-earth/another-file2",
+
+          "/recursive/dir/recursive-1/not-recursive/another-file",
+          "/recursive/dir/recursive-1/not-recursive/another-file2",
+          "/recursive/dir/recursive-1/not-recursive/symlink-to-earth/another-file",
+          "/recursive/dir/recursive-1/not-recursive/symlink-to-earth/another-file2",
+          "/recursive/dir/recursive-1/recursive-5/another-file",
+          "/recursive/dir/recursive-1/some-file",
+
+          "/recursive/dir/recursive-2/not-recursive/another-file",
+          "/recursive/dir/recursive-2/not-recursive/another-file2",
+          "/recursive/dir/recursive-2/not-recursive/symlink-to-earth/another-file",
+          "/recursive/dir/recursive-2/not-recursive/symlink-to-earth/another-file2",
+          "/recursive/dir/recursive-2/recursive-5/another-file",
+          "/recursive/dir/recursive-2/some-file",
+
+          "/recursive/dir/recursive-3/dir/not-recursive/another-file",
+          "/recursive/dir/recursive-3/dir/not-recursive/another-file2",
+          "/recursive/dir/recursive-3/dir/not-recursive/symlink-to-earth/another-file",
+          "/recursive/dir/recursive-3/dir/not-recursive/symlink-to-earth/another-file2",
+          "/recursive/dir/recursive-3/dir/recursive-5/another-file",
+          "/recursive/dir/recursive-3/dir/some-file",
+          "/recursive/dir/recursive-3/random-file",
+
+          "/recursive/dir/recursive-5/another-file",
+          "/recursive/dir/recursive-5/recursive-4/dir/not-recursive/another-file",
+          "/recursive/dir/recursive-5/recursive-4/dir/not-recursive/another-file2",
+          "/recursive/dir/recursive-5/recursive-4/dir/not-recursive/symlink-to-earth/another-file",
+          "/recursive/dir/recursive-5/recursive-4/dir/not-recursive/symlink-to-earth/another-file2",
+          "/recursive/dir/recursive-5/recursive-4/dir/some-file",
+          "/recursive/dir/recursive-5/recursive-4/random-file",
+
+          "/recursive/dir/some-file",
+          "/recursive/random-file",
         ])
       );
     });
