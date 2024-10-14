@@ -35,7 +35,9 @@ export class Walker<TOutput extends Output> {
     this.isSynchronous = !callback;
     this.callbackInvoker = invokeCallback.build(options, this.isSynchronous);
 
+    this.root = normalizePath(root, options);
     this.state = {
+      root: this.root,
       // Perf: we explicitly tell the compiler to optimize for String arrays
       paths: [""].slice(0, 0),
       groups: [],
@@ -44,9 +46,9 @@ export class Walker<TOutput extends Output> {
       queue: new Queue((error, state) =>
         this.callbackInvoker(state, error, callback)
       ),
+      symlinks: new Map(),
+      visited: [""].slice(0, 0),
     };
-
-    this.root = normalizePath(root, this.state.options);
 
     /*
      * Perf: We conditionally change functions according to options. This gives a slight
