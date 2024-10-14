@@ -26,11 +26,15 @@ export type PathsOutput = string[];
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
 
 export type WalkerState = {
+  root: string;
   paths: string[];
   groups: Group[];
   counts: Counts;
   options: Options;
   queue: Queue;
+
+  symlinks: Map<string, string>;
+  visited: string[];
 };
 
 export type ResultCallback<TOutput extends Output> = (
@@ -60,13 +64,17 @@ export type Options<TGlobFunction = unknown> = {
   relativePaths?: boolean;
   pathSeparator: PathSeparator;
   signal?: AbortSignal;
-  globFunction?: TGlobFunction
+  globFunction?: TGlobFunction;
 };
 
 export type GlobMatcher = (test: string) => boolean;
-export type GlobFunction =
-  ((glob: string | string[], ...params: unknown[]) => GlobMatcher);
-export type GlobParams<T> =
-  T extends (globs: string|string[], ...params: infer TParams extends unknown[]) => GlobMatcher
-    ? TParams
-    : [];
+export type GlobFunction = (
+  glob: string | string[],
+  ...params: unknown[]
+) => GlobMatcher;
+export type GlobParams<T> = T extends (
+  globs: string | string[],
+  ...params: infer TParams extends unknown[]
+) => GlobMatcher
+  ? TParams
+  : [];

@@ -16,26 +16,19 @@ const walkAsync: WalkDirectoryFunction = (
   currentDepth,
   callback
 ) => {
-  state.queue.enqueue();
+  if (currentDepth < 0) return;
 
-  if (currentDepth < 0) {
-    state.queue.dequeue(null, state);
-    return;
-  }
-
+  state.visited.push(directoryPath);
   state.counts.directories++;
+  state.queue.enqueue();
 
   // Perf: Node >= 10 introduced withFileTypes that helps us
   // skip an extra fs.stat call.
-  fs.readdir(
-    directoryPath || ".",
-    readdirOpts,
-    function process(error, entries = []) {
-      callback(entries, directoryPath, currentDepth);
+  fs.readdir(directoryPath || ".", readdirOpts, (error, entries = []) => {
+    callback(entries, directoryPath, currentDepth);
 
-      state.queue.dequeue(state.options.suppressErrors ? null : error, state);
-    }
-  );
+    state.queue.dequeue(state.options.suppressErrors ? null : error, state);
+  });
 };
 
 const walkSync: WalkDirectoryFunction = (
@@ -44,9 +37,8 @@ const walkSync: WalkDirectoryFunction = (
   currentDepth,
   callback
 ) => {
-  if (currentDepth < 0) {
-    return;
-  }
+  if (currentDepth < 0) return;
+  state.visited.push(directoryPath);
   state.counts.directories++;
 
   let entries: fs.Dirent[] = [];
