@@ -5,51 +5,11 @@ import { test, beforeEach, TestContext, vi } from "vitest";
 import path, { sep } from "path";
 import { convertSlashes } from "../src/utils";
 import picomatch from "picomatch";
+import { apiTypes, APITypes, cwd, restricted, root } from "./utils";
 
 beforeEach(() => {
   mock.restore();
 });
-
-const mockFsWithSymlinks = {
-  "/sym/linked": {
-    "file-1": "file contents",
-    "file-excluded-1": "file contents",
-  },
-  "/other/dir": {
-    "file-2": "file contents2",
-  },
-  "/some/dir": {
-    fileSymlink: mock.symlink({
-      path: "/other/dir/file-2",
-    }),
-    fileSymlink2: mock.symlink({
-      path: "/other/dir/file-3",
-    }),
-    dirSymlink: mock.symlink({
-      path: "/sym/linked",
-    }),
-  },
-};
-
-function root() {
-  return process.platform === "win32" ? process.cwd().split(path.sep)[0] : "/";
-}
-
-function cwd() {
-  return `.${path.sep}`;
-}
-
-function restricted() {
-  return process.platform === "win32"
-    ? path.join(root(), "Windows", "System32")
-    : "/etc";
-}
-
-function resolveSymlinkRoot(p: string) {
-  return process.platform === "win32"
-    ? path.join(root(), path.normalize(p))
-    : p;
-}
 
 test(`crawl single depth directory with callback`, (t) => {
   const api = new fdir().crawl("__tests__");
@@ -64,9 +24,6 @@ test(`crawl single depth directory with callback`, (t) => {
     });
   });
 });
-
-type APITypes = "withPromise" | "sync";
-const apiTypes = ["withPromise", "sync"] as const;
 
 async function crawl(type: APITypes, path: string, t: TestContext) {
   const api = new fdir().crawl(path);
@@ -346,130 +303,6 @@ for (const type of apiTypes) {
     ).toBeTruthy();
   });
 
-  test(`[${type}] crawl all files and include resolved symlinks`, async (t) => {
-    mock(mockFsWithSymlinks);
-
-    const api = new fdir().withSymlinks().crawl("/some/dir");
-    const files = await api[type]();
-    t.expect(files).toHaveLength(3);
-    t.expect(
-      files.indexOf(resolveSymlinkRoot("/sym/linked/file-1")) > -1
-    ).toBeTruthy();
-    t.expect(
-      files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1
-    ).toBeTruthy();
-    mock.restore();
-  });
-
-  test(`[${type}] crawl all files and include resolved symlinks without real paths`, async (t) => {
-    mock(mockFsWithSymlinks);
-
-    const api = new fdir()
-      .withSymlinks({ resolvePaths: false })
-      .crawl("/some/dir");
-    const files = await api[type]();
-    t.expect(files).toHaveLength(3);
-    t.expect(
-      files.indexOf(resolveSymlinkRoot("/some/dir/dirSymlink/file-1")) > -1
-    ).toBeTruthy();
-    t.expect(
-      files.indexOf(
-        resolveSymlinkRoot("/some/dir/dirSymlink/file-excluded-1")
-      ) > -1
-    ).toBeTruthy();
-    mock.restore();
-  });
-
-  test(`[${type}] crawl all files and include resolved symlinks without real paths with relative paths on`, async (t) => {
-    mock(mockFsWithSymlinks);
-
-    const api = new fdir()
-      .withSymlinks({ resolvePaths: false })
-      .withRelativePaths()
-      .crawl("/some/dir");
-    const files = await api[type]();
-    t.expect(files).toHaveLength(3);
-    t.expect(
-      files.indexOf(path.join("dirSymlink", "file-1")) > -1
-    ).toBeTruthy();
-    t.expect(
-      files.indexOf(path.join("dirSymlink", "file-excluded-1")) > -1
-    ).toBeTruthy();
-    t.expect(files.indexOf("fileSymlink") > -1).toBeTruthy();
-    mock.restore();
-  });
-
-  test(`[${type}] crawl all files and include resolved symlinks with real paths with relative paths on`, async (t) => {
-    mock({
-      "../../sym/linked": {
-        "file-1": "file contents",
-        "file-excluded-1": "file contents",
-      },
-      "../../other/dir": {
-        "file-2": "file contents2",
-      },
-      "some/dir": {
-        fileSymlink: mock.symlink({
-          path: "../../../../other/dir/file-2",
-        }),
-        fileSymlink2: mock.symlink({
-          path: "../../../../other/dir/file-3",
-        }),
-        dirSymlink: mock.symlink({
-          path: "../../../../sym/linked",
-        }),
-      },
-    });
-    const api = new fdir()
-      .withSymlinks()
-      .withRelativePaths()
-      .crawl("./some/dir");
-    const files = await api[type]();
-    t.expect(files.sort()).toStrictEqual([
-      path.join("..", "..", "..", "..", "other", "dir", "file-2"),
-      path.join("..", "..", "..", "..", "sym", "linked", "file-1"),
-      path.join("..", "..", "..", "..", "sym", "linked", "file-excluded-1"),
-    ]);
-    mock.restore();
-  });
-
-  test("crawl all files and include resolved symlinks with exclusions", async (t) => {
-    mock(mockFsWithSymlinks);
-    const api = new fdir()
-      .withSymlinks()
-      .exclude((_name, path) => path === resolveSymlinkRoot("/sym/linked/"))
-      .crawl("/some/dir");
-    const files = await api[type]();
-    t.expect(files).toHaveLength(1);
-    t.expect(
-      files.indexOf(resolveSymlinkRoot("/other/dir/file-2")) > -1
-    ).toBeTruthy();
-    mock.restore();
-  });
-
-  test(`[${type}] crawl all files and include unresolved symlinks`, async (t) => {
-    mock(mockFsWithSymlinks);
-
-    const api = new fdir().withDirs().crawl("/some/dir");
-    const files = await api[type]();
-    t.expect(files).toHaveLength(4);
-
-    t.expect(files.indexOf(path.normalize("/some/dir/")) > -1).toBeTruthy();
-    t.expect(files.indexOf("fileSymlink") > -1).toBeTruthy();
-    t.expect(files.indexOf("fileSymlink2") > -1).toBeTruthy();
-    t.expect(files.indexOf("dirSymlink") > -1).toBeTruthy();
-    mock.restore();
-  });
-
-  test(`[${type}] crawl all files and exclude symlinks`, async (t) => {
-    mock(mockFsWithSymlinks);
-
-    const api = new fdir({ excludeSymlinks: true }).crawl("/some/dir");
-    const files = await api[type]();
-    t.expect(files).toHaveLength(0);
-    mock.restore();
-  });
-
   test(`[${type}] crawl all files and invert path separator`, async (t) => {
     const api = new fdir()
       .withPathSeparator(sep === "/" ? "\\" : "/")
@@ -477,53 +310,6 @@ for (const type of apiTypes) {
     const files = await api[type]();
 
     t.expect(files.every((f) => !f.includes(sep))).toBeTruthy();
-  });
-
-  test(`[${type}] crawl all files (including symlinks)`, async (t) => {
-    mock({
-      "/other/dir": {
-        "file-3": "somefile",
-      },
-      "/some/dir": {
-        fileSymlink: mock.symlink({
-          path: "/other/dir/file-3",
-        }),
-      },
-    });
-
-    const api = new fdir().withErrors().withSymlinks().crawl("/some/dir");
-    const files = await api[type]();
-    t.expect(
-      files.indexOf(resolveSymlinkRoot("/other/dir/file-3")) > -1
-    ).toBeTruthy();
-    mock.restore();
-  });
-
-  test(`[${type}] crawl all files (including symlinks without real paths)`, async (t) => {
-    mock({
-      "/other/dir": {
-        "file-3": "somefile",
-      },
-      "/some/dir": {
-        fileSymlink: mock.symlink({
-          path: "/other/dir/file-3",
-        }),
-      },
-    });
-
-    const api = new fdir()
-      .withErrors()
-      .withSymlinks({ resolvePaths: false })
-      .crawl("/some/dir");
-
-    await api[type]();
-
-    const files = await api[type]();
-    t.expect(
-      files.indexOf(resolveSymlinkRoot("/some/dir/fileSymlink")) > -1
-    ).toBeTruthy();
-
-    mock.restore();
   });
 
   test(`[${type}] crawl files that match using a custom glob`, async (t) => {
