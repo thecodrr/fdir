@@ -268,6 +268,26 @@ for (const type of apiTypes) {
       );
     });
 
+    test(`resolve recursive symlinks (real paths: true, relative paths: true)`, async (t) => {
+      const api = new fdir()
+        .withSymlinks()
+        .withRelativePaths()
+        .withErrors()
+        .crawl("./recursive");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(
+        normalize([
+          "..//double/recursive/another-file",
+          "../just/some/another-file",
+          "../just/some/another-file2",
+          "../random/other/another-file",
+          "../random/other/another-file2",
+          "dir/some-file",
+          "random-file",
+        ])
+      );
+    });
+
     test(`resolve symlinks (real paths: false)`, async (t) => {
       const api = new fdir()
         .withSymlinks({ resolvePaths: false })
