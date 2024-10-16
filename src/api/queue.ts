@@ -15,6 +15,6 @@ export class Queue {
   }
 
   dequeue(error: Error | null, output: WalkerState) {
-    if (--this.count === 0 || error) this.onQueueEmpty(error, output);
+    if (--this.count <= 0 || error) this.onQueueEmpty(error, output);
   }
 }

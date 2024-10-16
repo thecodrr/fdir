@@ -91,6 +91,15 @@ for (const type of apiTypes) {
     ).toBeTruthy();
   });
 
+  test(`[${type}] crawl and get all files (withMaxDepth = -1)`, async (t) => {
+    const api = new fdir()
+      .withMaxDepth(-1)
+      .withBasePath()
+      .crawl("node_modules");
+    const files = await api[type]();
+    t.expect(files.length).toBe(0);
+  });
+
   test(`[${type}] crawl and get files that match a glob pattern`, async (t) => {
     const api = new fdir()
       .withBasePath()

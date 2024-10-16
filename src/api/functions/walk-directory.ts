@@ -18,7 +18,7 @@ const walkAsync: WalkDirectoryFunction = (
   currentDepth,
   callback
 ) => {
-  if (currentDepth < 0) return;
+  if (currentDepth < 0) return state.queue.dequeue(null, state);
 
   state.visited.push(crawlPath);
   state.counts.directories++;
