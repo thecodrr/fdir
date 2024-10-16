@@ -68,6 +68,7 @@ export class Walker<TOutput extends Output> {
     this.walkDirectory(
       this.state,
       this.root,
+      this.root,
       this.state.options.maxDepth,
       this.walk
     );
@@ -84,6 +85,8 @@ export class Walker<TOutput extends Output> {
         exclude,
         maxFiles,
         signal,
+        useRealPaths,
+        pathSeparator,
       },
     } = this.state;
 
@@ -109,7 +112,7 @@ export class Walker<TOutput extends Output> {
           this.state.options.pathSeparator
         );
         if (exclude && exclude(entry.name, path)) continue;
-        this.walkDirectory(this.state, path, depth - 1, this.walk);
+        this.walkDirectory(this.state, path, path, depth - 1, this.walk);
       } else if (entry.isSymbolicLink() && this.resolveSymlink) {
         let path = joinPath.joinPathWithBasePath(entry.name, directoryPath);
         this.resolveSymlink(path, this.state, (stat, resolvedPath) => {
@@ -117,8 +120,15 @@ export class Walker<TOutput extends Output> {
             resolvedPath = normalizePath(resolvedPath, this.state.options);
             if (exclude && exclude(entry.name, resolvedPath)) return;
 
-            this.walkDirectory(this.state, resolvedPath, depth - 1, this.walk);
+            this.walkDirectory(
+              this.state,
+              resolvedPath,
+              useRealPaths ? resolvedPath : path + pathSeparator,
+              depth - 1,
+              this.walk
+            );
           } else {
+            resolvedPath = useRealPaths ? resolvedPath : path;
             const filename = basename(resolvedPath);
             const directoryPath = normalizePath(
               dirname(resolvedPath),

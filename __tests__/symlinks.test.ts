@@ -66,9 +66,51 @@ const fsWithRecursiveSymlinks = {
   },
 };
 
+const fsWithRecursiveRelativeSymlinks = {
+  "double/recursive": {
+    "another-file": "hello",
+    "recursive-4": mock.symlink({
+      path: "../../recursive",
+    }),
+  },
+  "just/some": {
+    "another-file": "hello",
+    "another-file2": "hello",
+    "symlink-to-earth": mock.symlink({
+      path: "../../random/other",
+    }),
+  },
+  "random/other": {
+    "another-file": "hello",
+    "another-file2": "hello",
+  },
+  recursive: {
+    "random-file": "somecontent",
+  },
+  "recursive/dir": {
+    "some-file": "somecontent2",
+    "recursive-1": mock.symlink({
+      path: "../../recursive/dir",
+    }),
+    "recursive-2": mock.symlink({
+      path: "./recursive-1",
+    }),
+    "recursive-3": mock.symlink({
+      path: "../../recursive",
+    }),
+    "recursive-5": mock.symlink({
+      path: "../../double/recursive",
+    }),
+    "not-recursive": mock.symlink({
+      path: "../../just/some",
+    }),
+  },
+};
+
 const mockFs = {
   ...fsWithRelativeSymlinks,
   ...fsWithRecursiveSymlinks,
+  ...fsWithRecursiveRelativeSymlinks,
 
   "/sym/linked": {
     "file-1": "file contents",
@@ -176,6 +218,56 @@ for (const type of apiTypes) {
       );
     });
 
+    test(`resolve recursive symlinks (real paths: false, relative paths: true)`, async (t) => {
+      const api = new fdir()
+        .withSymlinks({ resolvePaths: false })
+        .withRelativePaths()
+        .withErrors()
+        .crawl("./recursive");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(
+        normalize([
+          "dir/not-recursive/another-file",
+          "dir/not-recursive/another-file2",
+          "dir/not-recursive/symlink-to-earth/another-file",
+          "dir/not-recursive/symlink-to-earth/another-file2",
+
+          "dir/recursive-1/not-recursive/another-file",
+          "dir/recursive-1/not-recursive/another-file2",
+          "dir/recursive-1/not-recursive/symlink-to-earth/another-file",
+          "dir/recursive-1/not-recursive/symlink-to-earth/another-file2",
+          "dir/recursive-1/recursive-5/another-file",
+          "dir/recursive-1/some-file",
+
+          "dir/recursive-2/not-recursive/another-file",
+          "dir/recursive-2/not-recursive/another-file2",
+          "dir/recursive-2/not-recursive/symlink-to-earth/another-file",
+          "dir/recursive-2/not-recursive/symlink-to-earth/another-file2",
+          "dir/recursive-2/recursive-5/another-file",
+          "dir/recursive-2/some-file",
+
+          "dir/recursive-3/dir/not-recursive/another-file",
+          "dir/recursive-3/dir/not-recursive/another-file2",
+          "dir/recursive-3/dir/not-recursive/symlink-to-earth/another-file",
+          "dir/recursive-3/dir/not-recursive/symlink-to-earth/another-file2",
+          "dir/recursive-3/dir/recursive-5/another-file",
+          "dir/recursive-3/dir/some-file",
+          "dir/recursive-3/random-file",
+
+          "dir/recursive-5/another-file",
+          "dir/recursive-5/recursive-4/dir/not-recursive/another-file",
+          "dir/recursive-5/recursive-4/dir/not-recursive/another-file2",
+          "dir/recursive-5/recursive-4/dir/not-recursive/symlink-to-earth/another-file",
+          "dir/recursive-5/recursive-4/dir/not-recursive/symlink-to-earth/another-file2",
+          "dir/recursive-5/recursive-4/dir/some-file",
+          "dir/recursive-5/recursive-4/random-file",
+
+          "dir/some-file",
+          "random-file",
+        ])
+      );
+    });
+
     test(`resolve symlinks (real paths: false)`, async (t) => {
       const api = new fdir()
         .withSymlinks({ resolvePaths: false })
@@ -205,7 +297,7 @@ for (const type of apiTypes) {
       );
     });
 
-    test(`crawl all files and include resolved symlinks with real paths with relative paths on`, async (t) => {
+    test(`resolve symlinks (real paths: true, relative paths: true)`, async (t) => {
       const api = new fdir()
         .withSymlinks()
         .withRelativePaths()

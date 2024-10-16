@@ -15,7 +15,7 @@ const resolveSymlinksAsync: ResolveSymlinkFunction = function (
 ) {
   const {
     queue,
-    options: { suppressErrors, useRealPaths },
+    options: { suppressErrors },
   } = state;
   queue.enqueue();
 
@@ -28,7 +28,7 @@ const resolveSymlinksAsync: ResolveSymlinkFunction = function (
       if (stat.isDirectory() && isRecursive(path, resolvedPath, state))
         return queue.dequeue(null, state);
 
-      callback(stat, useRealPaths ? resolvedPath : path);
+      callback(stat, resolvedPath);
       queue.dequeue(null, state);
     });
   });
@@ -41,7 +41,7 @@ const resolveSymlinks: ResolveSymlinkFunction = function (
 ) {
   const {
     queue,
-    options: { suppressErrors, useRealPaths },
+    options: { suppressErrors },
   } = state;
   queue.enqueue();
 
@@ -51,7 +51,7 @@ const resolveSymlinks: ResolveSymlinkFunction = function (
 
     if (stat.isDirectory() && isRecursive(path, resolvedPath, state)) return;
 
-    callback(stat, useRealPaths ? resolvedPath : path);
+    callback(stat, resolvedPath);
   } catch (e) {
     if (!suppressErrors) throw e;
   }
