@@ -341,7 +341,7 @@ for (const type of apiTypes) {
       t.expect(files.sort()).toStrictEqual(normalize(["/other/dir/file-2"]));
     });
 
-    test("resolve symlinks (exclude /some/dir/, real paths: false)", async (t) => {
+    test("resolve symlinks (exclude /some/dir/dirSymlink/, real paths: false)", async (t) => {
       const api = new fdir()
         .withSymlinks({ resolvePaths: false })
         .exclude((_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/"))
