@@ -391,7 +391,7 @@ new fdir()
   .withBasePath()
   .withDirs()
   .crawl("/path/to/dir")
-  .withCallback((files) => {
+  .withCallback((err, files) => {
     // do something with files here
   });
 ```
