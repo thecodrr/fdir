@@ -1,11 +1,11 @@
-import fs from "fs";
+import type {Stats} from "fs";
 import { WalkerState, Options } from "../../types";
 import { dirname } from "path";
 
 export type ResolveSymlinkFunction = (
   path: string,
   state: WalkerState,
-  callback: (stat: fs.Stats, path: string) => void
+  callback: (stat: Stats, path: string) => void
 ) => void;
 
 const resolveSymlinksAsync: ResolveSymlinkFunction = function (
@@ -15,6 +15,7 @@ const resolveSymlinksAsync: ResolveSymlinkFunction = function (
 ) {
   const {
     queue,
+    fs,
     options: { suppressErrors },
   } = state;
   queue.enqueue();
@@ -41,6 +42,7 @@ const resolveSymlinks: ResolveSymlinkFunction = function (
 ) {
   const {
     queue,
+    fs,
     options: { suppressErrors },
   } = state;
   queue.enqueue();
