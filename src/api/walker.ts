@@ -37,7 +37,7 @@ export class Walker<TOutput extends Output> {
 
     this.root = normalizePath(root, options);
     this.state = {
-      root: this.root.slice(0, -1),
+      root: this.root === "/" ? this.root : this.root.slice(0, -1),
       // Perf: we explicitly tell the compiler to optimize for String arrays
       paths: [""].slice(0, 0),
       groups: [],
