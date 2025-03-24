@@ -354,10 +354,14 @@ for (const type of apiTypes) {
     test("resolve symlinks (exclude /some/dir/dirSymlink/, real paths: false)", async (t) => {
       const api = new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude((_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/"))
-        .crawl("/some/dir")
+        .exclude(
+          (_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/")
+        )
+        .crawl("/some/dir");
       const files = await api[type]();
-      t.expect(files.sort()).toStrictEqual(normalize(["/some/dir/fileSymlink"]));
+      t.expect(files.sort()).toStrictEqual(
+        normalize(["/some/dir/fileSymlink"])
+      );
     });
 
     test(`do not resolve symlinks`, async (t) => {
@@ -374,15 +378,11 @@ for (const type of apiTypes) {
       t.expect(files).toHaveLength(0);
     });
 
-    test("doesn't hang when resolving symlinks in the root directory", async () => {
-        await new fdir()
-          .exclude((_1, _2) => {
-            // Avoid crawling recursively for better test runtime.
-            return true;
-          })
-          .withSymlinks({ resolvePaths: false })
-          .crawl("/")
-          .withPromise();
+    test(
+      "doesn't hang when resolving symlinks in the root directory",
+      async () => {
+        const api = new fdir().withSymlinks({ resolvePaths: false }).crawl("/");
+        await api[type]();
       },
       { timeout: 1000 }
     );
