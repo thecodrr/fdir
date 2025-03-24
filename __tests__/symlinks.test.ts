@@ -354,14 +354,10 @@ for (const type of apiTypes) {
     test("resolve symlinks (exclude /some/dir/dirSymlink/, real paths: false)", async (t) => {
       const api = new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude(
-          (_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/")
-        )
+        .exclude((_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/"))
         .crawl("/some/dir");
       const files = await api[type]();
-      t.expect(files.sort()).toStrictEqual(
-        normalize(["/some/dir/fileSymlink"])
-      );
+      t.expect(files.sort()).toStrictEqual(normalize(["/some/dir/fileSymlink"]));
     });
 
     test(`do not resolve symlinks`, async (t) => {
