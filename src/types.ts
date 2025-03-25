@@ -1,4 +1,5 @@
 import { Queue } from "./api/queue";
+import type * as nativeFs from "fs";
 
 export type Counts = {
   files: number;
@@ -25,6 +26,15 @@ export type PathsOutput = string[];
 
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
 
+export type FSLike = {
+  readdir: typeof nativeFs.readdir,
+  readdirSync: typeof nativeFs.readdirSync,
+  realpath: typeof nativeFs.realpath,
+  realpathSync: typeof nativeFs.realpathSync,
+  stat: typeof nativeFs.stat,
+  statSync: typeof nativeFs.statSync,
+};
+
 export type WalkerState = {
   root: string;
   paths: string[];
@@ -32,6 +42,7 @@ export type WalkerState = {
   counts: Counts;
   options: Options;
   queue: Queue;
+  fs: FSLike;
 
   symlinks: Map<string, string>;
   visited: string[];
@@ -65,6 +76,7 @@ export type Options<TGlobFunction = unknown> = {
   pathSeparator: PathSeparator;
   signal?: AbortSignal;
   globFunction?: TGlobFunction;
+  fs?: FSLike
 };
 
 export type GlobMatcher = (test: string) => boolean;
