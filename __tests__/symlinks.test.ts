@@ -107,10 +107,20 @@ const fsWithRecursiveRelativeSymlinks = {
   },
 };
 
+const fsWithSymlinkInRootDir = {
+  "/usr/lib": {
+    "file-1": "file contents",
+  },
+  "/lib": mock.symlink({
+    path: "/usr/lib",
+  }),
+};
+
 const mockFs = {
   ...fsWithRelativeSymlinks,
   ...fsWithRecursiveSymlinks,
   ...fsWithRecursiveRelativeSymlinks,
+  ...fsWithSymlinkInRootDir,
 
   "/sym/linked": {
     "file-1": "file contents",
@@ -345,7 +355,7 @@ for (const type of apiTypes) {
       const api = new fdir()
         .withSymlinks({ resolvePaths: false })
         .exclude((_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/"))
-        .crawl("/some/dir")
+        .crawl("/some/dir");
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(normalize(["/some/dir/fileSymlink"]));
     });
@@ -363,6 +373,15 @@ for (const type of apiTypes) {
       const files = await api[type]();
       t.expect(files).toHaveLength(0);
     });
+
+    test(
+      "doesn't hang when resolving symlinks in the root directory",
+      async () => {
+        const api = new fdir().withSymlinks({ resolvePaths: false }).crawl("/");
+        await api[type]();
+      },
+      { timeout: 1000 }
+    );
   });
 }
 
