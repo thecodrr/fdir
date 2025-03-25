@@ -118,13 +118,7 @@ export class Walker<TOutput extends Output> {
         this.resolveSymlink(path, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {
             resolvedPath = normalizePath(resolvedPath, this.state.options);
-            if (
-              exclude &&
-              exclude(
-                entry.name,
-                useRealPaths ? resolvedPath : path + pathSeparator
-              )
-            )
+            if (exclude && exclude(entry.name,useRealPaths ? resolvedPath : path + pathSeparator))
               return;
 
             this.walkDirectory(
