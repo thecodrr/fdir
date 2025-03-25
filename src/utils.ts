@@ -17,6 +17,10 @@ export function convertSlashes(path: string, separator: PathSeparator) {
   return path.replace(SLASHES_REGEX, separator);
 }
 
+export function isRootDirectory(path: string) {
+  return path === "/" || /^[a-z]:\\$/i.test(path);
+}
+
 export function normalizePath(
   path: string,
   options: {
