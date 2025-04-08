@@ -1,5 +1,5 @@
 import { basename, dirname } from "path";
-import { normalizePath } from "../utils";
+import { isRootDirectory, normalizePath } from "../utils";
 import { ResultCallback, WalkerState, Options } from "../types";
 import * as joinPath from "./functions/join-path";
 import * as pushDirectory from "./functions/push-directory";
@@ -37,7 +37,7 @@ export class Walker<TOutput extends Output> {
 
     this.root = normalizePath(root, options);
     this.state = {
-      root: this.root === "/" ? this.root : this.root.slice(0, -1),
+      root: isRootDirectory(this.root) ? this.root : this.root.slice(0, -1),
       // Perf: we explicitly tell the compiler to optimize for String arrays
       paths: [""].slice(0, 0),
       groups: [],

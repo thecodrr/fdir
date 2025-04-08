@@ -376,9 +376,13 @@ for (const type of apiTypes) {
 
     test(
       "doesn't hang when resolving symlinks in the root directory",
-      async () => {
+      async (t) => {
         const api = new fdir().withSymlinks({ resolvePaths: false }).crawl("/");
-        await api[type]();
+        const files = await api[type]();
+        const expectedFiles = normalize(["/lib/file-1", "/usr/lib/file-1"])
+        for (const expectedFile of expectedFiles) {
+          t.expect(files).toContain(expectedFile);
+        }
       },
       { timeout: 1000 }
     );
