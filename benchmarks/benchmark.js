@@ -67,7 +67,7 @@ async function benchmark() {
     }),
     b.cycle(),
     b.complete(),
-    b.save({ format: "csv", file: "sync" })
+    b.save({ format: "csv", file: "sync" }),
   );
 
   await b.suite(
@@ -116,7 +116,7 @@ async function benchmark() {
     }),
     b.cycle(),
     b.complete(),
-    b.save({ format: "csv", file: "./async" })
+    b.save({ format: "csv", file: "./async" }),
   );
 
   const asyncCsv = readFileSync("./benchmark/results/async.csv", "utf-8");

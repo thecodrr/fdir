@@ -3,7 +3,7 @@ import { Walker } from "./walker";
 
 export function promise<TOutput extends Output>(
   root: string,
-  options: Options
+  options: Options,
 ) {
   return new Promise<TOutput>((resolve, reject) => {
     callback<TOutput>(root, options, (err, output) => {
@@ -16,7 +16,7 @@ export function promise<TOutput extends Output>(
 export function callback<TOutput extends Output>(
   root: string,
   options: Options,
-  callback: ResultCallback<TOutput>
+  callback: ResultCallback<TOutput>,
 ) {
   let walker = new Walker(root, options, callback);
   walker.start();

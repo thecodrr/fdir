@@ -2,11 +2,11 @@ import child_process from "child_process";
 import { Fdir } from "../src/index";
 import b from "benny";
 
-type Version = typeof versions[number] | "current";
+type Version = (typeof versions)[number] | "current";
 const versions = ["4.0.0", "4.1.0", "5.0.0", "5.2.0"] as const;
 
-const syncSuites: ReturnType<typeof b["add"]>[] = [];
-const asyncSuites: ReturnType<typeof b["add"]>[] = [];
+const syncSuites: ReturnType<(typeof b)["add"]>[] = [];
+const asyncSuites: ReturnType<(typeof b)["add"]>[] = [];
 
 function normalizeVersion(version: Version) {
   return version.replace(/\./g, "");
@@ -27,7 +27,7 @@ function addSuite(instance: Fdir, version: Version) {
     `fdir ${version} async`,
     async function () {
       await new instance().crawl("node_modules").withPromise();
-    }
+    },
   );
 }
 
@@ -49,14 +49,14 @@ async function runBenchmark() {
     `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
     ...asyncSuites,
     b.cycle(),
-    b.complete()
+    b.complete(),
   );
 
   await b.suite(
     `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
     ...syncSuites,
     b.cycle(),
-    b.complete()
+    b.complete(),
   );
 }
 
@@ -118,7 +118,7 @@ function setCPUScaling(isEnabled: boolean) {
       (err) => {
         if (err) return reject(err);
         resolve(undefined);
-      }
+      },
     );
   });
 }

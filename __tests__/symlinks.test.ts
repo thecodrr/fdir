@@ -160,7 +160,7 @@ for (const type of apiTypes) {
           "/other/dir/file-2",
           "/sym/linked/file-1",
           "/sym/linked/file-excluded-1",
-        ])
+        ]),
       );
     });
 
@@ -176,7 +176,7 @@ for (const type of apiTypes) {
           "/random/other/another-file2",
           "/recursive/dir/some-file",
           "/recursive/random-file",
-        ])
+        ]),
       );
     });
 
@@ -224,7 +224,7 @@ for (const type of apiTypes) {
 
           "/recursive/dir/some-file",
           "/recursive/random-file",
-        ])
+        ]),
       );
     });
 
@@ -274,7 +274,7 @@ for (const type of apiTypes) {
 
           "dir/some-file",
           "random-file",
-        ])
+        ]),
       );
     });
 
@@ -294,7 +294,7 @@ for (const type of apiTypes) {
           "../random/other/another-file2",
           "dir/some-file",
           "random-file",
-        ])
+        ]),
       );
     });
 
@@ -308,7 +308,7 @@ for (const type of apiTypes) {
           "/some/dir/dirSymlink/file-1",
           "/some/dir/dirSymlink/file-excluded-1",
           "/some/dir/fileSymlink",
-        ])
+        ]),
       );
     });
 
@@ -323,7 +323,7 @@ for (const type of apiTypes) {
           "dirSymlink/file-1",
           "dirSymlink/file-excluded-1",
           "fileSymlink",
-        ])
+        ]),
       );
     });
 
@@ -338,7 +338,7 @@ for (const type of apiTypes) {
           "../../../../other-relative/dir/file-2",
           "../../../../sym-relative/linked/file-1",
           "../../../../sym-relative/linked/file-excluded-1",
-        ])
+        ]),
       );
     });
 
@@ -354,17 +354,21 @@ for (const type of apiTypes) {
     test("resolve symlinks (exclude /some/dir/dirSymlink/, real paths: false)", async (t) => {
       const api = new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude((_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/"))
+        .exclude(
+          (_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/"),
+        )
         .crawl("/some/dir");
       const files = await api[type]();
-      t.expect(files.sort()).toStrictEqual(normalize(["/some/dir/fileSymlink"]));
+      t.expect(files.sort()).toStrictEqual(
+        normalize(["/some/dir/fileSymlink"]),
+      );
     });
 
     test(`do not resolve symlinks`, async (t) => {
       const api = new fdir().crawl("/some/dir");
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize(["dirSymlink", "fileSymlink", "fileSymlink2"])
+        normalize(["dirSymlink", "fileSymlink", "fileSymlink2"]),
       );
     });
 
@@ -379,12 +383,12 @@ for (const type of apiTypes) {
       async (t) => {
         const api = new fdir().withSymlinks({ resolvePaths: false }).crawl("/");
         const files = await api[type]();
-        const expectedFiles = normalize(["/lib/file-1", "/usr/lib/file-1"])
+        const expectedFiles = normalize(["/lib/file-1", "/usr/lib/file-1"]);
         for (const expectedFile of expectedFiles) {
           t.expect(files).toContain(expectedFile);
         }
       },
-      { timeout: 1000 }
+      { timeout: 1000 },
     );
   });
 }

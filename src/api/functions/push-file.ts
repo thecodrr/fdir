@@ -4,14 +4,14 @@ export type PushFileFunction = (
   directoryPath: string,
   paths: string[],
   counts: Counts,
-  filters?: FilterPredicate[]
+  filters?: FilterPredicate[],
 ) => void;
 
 const pushFileFilterAndCount: PushFileFunction = (
   filename,
   _paths,
   counts,
-  filters
+  filters,
 ) => {
   if (filters!.every((filter) => filter(filename, false))) counts.files++;
 };
@@ -20,7 +20,7 @@ const pushFileFilter: PushFileFunction = (
   filename,
   paths,
   _counts,
-  filters
+  filters,
 ) => {
   if (filters!.every((filter) => filter(filename, false))) paths.push(filename);
 };
@@ -29,7 +29,7 @@ const pushFileCount: PushFileFunction = (
   _filename,
   _paths,
   counts,
-  _filters
+  _filters,
 ) => {
   counts.files++;
 };

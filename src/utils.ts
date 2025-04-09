@@ -27,7 +27,7 @@ export function normalizePath(
     resolvePaths?: boolean;
     normalizePath?: boolean;
     pathSeparator: PathSeparator;
-  }
+  },
 ) {
   const { resolvePaths, normalizePath, pathSeparator } = options;
   const pathNeedsCleaning =
@@ -42,6 +42,6 @@ export function normalizePath(
   const needsSeperator = path[path.length - 1] !== pathSeparator;
   return convertSlashes(
     needsSeperator ? path + pathSeparator : path,
-    pathSeparator
+    pathSeparator,
   );
 }

@@ -30,7 +30,7 @@ export class Walker<TOutput extends Output> {
   constructor(
     root: string,
     options: Options,
-    callback?: ResultCallback<TOutput>
+    callback?: ResultCallback<TOutput>,
   ) {
     this.isSynchronous = !callback;
     this.callbackInvoker = invokeCallback.build(options, this.isSynchronous);
@@ -44,7 +44,7 @@ export class Walker<TOutput extends Output> {
       counts: new Counter(),
       options,
       queue: new Queue((error, state) =>
-        this.callbackInvoker(state, error, callback)
+        this.callbackInvoker(state, error, callback),
       ),
       symlinks: new Map(),
       visited: [""].slice(0, 0),
@@ -70,7 +70,7 @@ export class Walker<TOutput extends Output> {
       this.root,
       this.root,
       this.state.options.maxDepth,
-      this.walk
+      this.walk,
     );
     return this.isSynchronous ? this.callbackInvoker(this.state, null) : null;
   }
@@ -109,7 +109,7 @@ export class Walker<TOutput extends Output> {
         let path = joinPath.joinDirectoryPath(
           entry.name,
           directoryPath,
-          this.state.options.pathSeparator
+          this.state.options.pathSeparator,
         );
         if (exclude && exclude(entry.name, path)) continue;
         this.walkDirectory(this.state, path, path, depth - 1, this.walk);
@@ -118,21 +118,28 @@ export class Walker<TOutput extends Output> {
         this.resolveSymlink(path, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {
             resolvedPath = normalizePath(resolvedPath, this.state.options);
-            if (exclude && exclude(entry.name, useRealPaths ? resolvedPath : path + pathSeparator)) return;
+            if (
+              exclude &&
+              exclude(
+                entry.name,
+                useRealPaths ? resolvedPath : path + pathSeparator,
+              )
+            )
+              return;
 
             this.walkDirectory(
               this.state,
               resolvedPath,
               useRealPaths ? resolvedPath : path + pathSeparator,
               depth - 1,
-              this.walk
+              this.walk,
             );
           } else {
             resolvedPath = useRealPaths ? resolvedPath : path;
             const filename = basename(resolvedPath);
             const directoryPath = normalizePath(
               dirname(resolvedPath),
-              this.state.options
+              this.state.options,
             );
             resolvedPath = this.joinPath(filename, directoryPath);
             this.pushFile(resolvedPath, files, this.state.counts, filters);

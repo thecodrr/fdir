@@ -6,7 +6,11 @@ export type WalkDirectoryFunction = (
   crawlPath: string,
   directoryPath: string,
   depth: number,
-  callback: (entries: fs.Dirent[], directoryPath: string, depth: number) => void
+  callback: (
+    entries: fs.Dirent[],
+    directoryPath: string,
+    depth: number,
+  ) => void,
 ) => void;
 
 const readdirOpts = { withFileTypes: true } as const;
@@ -16,7 +20,7 @@ const walkAsync: WalkDirectoryFunction = (
   crawlPath,
   directoryPath,
   currentDepth,
-  callback
+  callback,
 ) => {
   if (currentDepth < 0) return state.queue.dequeue(null, state);
 
@@ -38,7 +42,7 @@ const walkSync: WalkDirectoryFunction = (
   crawlPath,
   directoryPath,
   currentDepth,
-  callback
+  callback,
 ) => {
   if (currentDepth < 0) return;
   state.visited.push(crawlPath);

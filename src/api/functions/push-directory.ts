@@ -3,7 +3,7 @@ import { FilterPredicate, Options } from "../../types";
 export type PushDirectoryFunction = (
   directoryPath: string,
   paths: string[],
-  filters?: FilterPredicate[]
+  filters?: FilterPredicate[],
 ) => void;
 
 function pushDirectoryWithRelativePath(root: string): PushDirectoryFunction {
@@ -13,7 +13,7 @@ function pushDirectoryWithRelativePath(root: string): PushDirectoryFunction {
 }
 
 function pushDirectoryFilterWithRelativePath(
-  root: string
+  root: string,
 ): PushDirectoryFunction {
   return function (directoryPath, paths, filters) {
     const relativePath = directoryPath.substring(root.length) || ".";
@@ -30,7 +30,7 @@ const pushDirectory: PushDirectoryFunction = (directoryPath, paths) => {
 const pushDirectoryFilter: PushDirectoryFunction = (
   directoryPath,
   paths,
-  filters
+  filters,
 ) => {
   const path = directoryPath || ".";
   if (filters!.every((filter) => filter(path, true))) {

@@ -24,7 +24,7 @@ async function benchmark() {
       await tg("**/*.js", { dot: true, filesOnly: true });
     }),
     b.cycle(),
-    b.complete()
+    b.complete(),
   );
 
   await b.suite(
@@ -42,7 +42,7 @@ async function benchmark() {
       tgSync("**/**.js", { dot: true });
     }),
     b.cycle(),
-    b.complete()
+    b.complete(),
   );
 }
 

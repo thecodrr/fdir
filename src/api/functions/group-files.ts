@@ -3,13 +3,13 @@ import { Group, Options } from "../../types";
 export type GroupFilesFunction = (
   groups: Group[],
   directory: string,
-  files: string[]
+  files: string[],
 ) => void;
 
 const groupFiles: GroupFilesFunction = (
   groups: Group[],
   directory: string,
-  files: string[]
+  files: string[],
 ) => {
   groups.push({ directory, files, dir: directory });
 };
