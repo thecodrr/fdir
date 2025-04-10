@@ -2,11 +2,11 @@ import child_process from "child_process";
 import { Fdir } from "../src/index";
 import b from "benny";
 
-type Version = typeof versions[number] | "current";
+type Version = (typeof versions)[number] | "current";
 const versions = ["4.0.0", "4.1.0", "5.0.0", "5.2.0"] as const;
 
-const syncSuites: ReturnType<typeof b["add"]>[] = [];
-const asyncSuites: ReturnType<typeof b["add"]>[] = [];
+const syncSuites: ReturnType<(typeof b)["add"]>[] = [];
+const asyncSuites: ReturnType<(typeof b)["add"]>[] = [];
 
 function normalizeVersion(version: Version) {
   return version.replace(/\./g, "");
