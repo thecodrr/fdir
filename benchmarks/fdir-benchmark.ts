@@ -27,7 +27,7 @@ function addSuite(instance: Fdir, version: Version) {
     `fdir ${version} async`,
     async function () {
       await new instance().crawl("node_modules").withPromise();
-    },
+    }
   );
 }
 
@@ -49,14 +49,14 @@ async function runBenchmark() {
     `Asynchronous (${counts.files} files, ${counts.dirs} folders)`,
     ...asyncSuites,
     b.cycle(),
-    b.complete(),
+    b.complete()
   );
 
   await b.suite(
     `Synchronous (${counts.files} files, ${counts.dirs} folders)`,
     ...syncSuites,
     b.cycle(),
-    b.complete(),
+    b.complete()
   );
 }
 
@@ -118,7 +118,7 @@ function setCPUScaling(isEnabled: boolean) {
       (err) => {
         if (err) return reject(err);
         resolve(undefined);
-      },
+      }
     );
   });
 }

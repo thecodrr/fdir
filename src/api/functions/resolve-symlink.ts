@@ -5,13 +5,13 @@ import { dirname } from "path";
 export type ResolveSymlinkFunction = (
   path: string,
   state: WalkerState,
-  callback: (stat: fs.Stats, path: string) => void,
+  callback: (stat: fs.Stats, path: string) => void
 ) => void;
 
 const resolveSymlinksAsync: ResolveSymlinkFunction = function (
   path,
   state,
-  callback,
+  callback
 ) {
   const {
     queue,
@@ -37,7 +37,7 @@ const resolveSymlinksAsync: ResolveSymlinkFunction = function (
 const resolveSymlinks: ResolveSymlinkFunction = function (
   path,
   state,
-  callback,
+  callback
 ) {
   const {
     queue,
@@ -59,7 +59,7 @@ const resolveSymlinks: ResolveSymlinkFunction = function (
 
 export function build(
   options: Options,
-  isSynchronous: boolean,
+  isSynchronous: boolean
 ): ResolveSymlinkFunction | null {
   if (!options.resolveSymlinks || options.excludeSymlinks) return null;
 

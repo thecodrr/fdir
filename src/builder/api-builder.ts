@@ -5,7 +5,7 @@ import { Options, Output, ResultCallback } from "../types";
 export class APIBuilder<TReturnType extends Output> {
   constructor(
     private readonly root: string,
-    private readonly options: Options,
+    private readonly options: Options
   ) {}
 
   withPromise(): Promise<TReturnType> {

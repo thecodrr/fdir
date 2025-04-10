@@ -39,7 +39,7 @@ export type WalkerState = {
 
 export type ResultCallback<TOutput extends Output> = (
   error: Error | null,
-  output: TOutput,
+  output: TOutput
 ) => void;
 
 export type FilterPredicate = (path: string, isDirectory: boolean) => boolean;

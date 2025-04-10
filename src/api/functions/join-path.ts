@@ -26,14 +26,14 @@ function joinPath(filename: string) {
 export function joinDirectoryPath(
   filename: string,
   directoryPath: string,
-  separator: PathSeparator,
+  separator: PathSeparator
 ) {
   return directoryPath + filename + separator;
 }
 
 export type JoinPathFunction = (
   filename: string,
-  directoryPath: string,
+  directoryPath: string
 ) => string;
 
 export function build(root: string, options: Options): JoinPathFunction {

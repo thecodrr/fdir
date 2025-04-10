@@ -153,7 +153,7 @@ export class Builder<
     }
     return this.globWithOptions(
       patterns,
-      ...([{ dot: true }] as unknown as GlobParams<TGlobFunction>),
+      ...([{ dot: true }] as unknown as GlobParams<TGlobFunction>)
     );
   }
 

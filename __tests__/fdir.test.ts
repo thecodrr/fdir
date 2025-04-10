@@ -60,7 +60,7 @@ for (const type of apiTypes) {
     }).crawl("node_modules");
     const files = await api[type]();
     t.expect(
-      files.every((file) => file.split(path.sep).length <= 3),
+      files.every((file) => file.split(path.sep).length <= 3)
     ).toBeTruthy();
   });
 
@@ -87,7 +87,7 @@ for (const type of apiTypes) {
     const api = new fdir().withMaxDepth(1).withBasePath().crawl("node_modules");
     const files = await api[type]();
     t.expect(
-      files.every((file) => file.split(path.sep).length <= 3),
+      files.every((file) => file.split(path.sep).length <= 3)
     ).toBeTruthy();
   });
 
@@ -117,7 +117,7 @@ for (const type of apiTypes) {
       .crawl(cwd());
     const files = await api[type]();
     t.expect(
-      files.every((file) => !file.includes("node_modules")),
+      files.every((file) => !file.includes("node_modules"))
     ).toBeTruthy();
   });
 
@@ -138,7 +138,7 @@ for (const type of apiTypes) {
       .crawl(cwd());
     const files = await api[type]();
     t.expect(
-      files.every((file) => file.includes(".git") || file.includes(".js")),
+      files.every((file) => file.includes(".git") || file.includes(".js"))
     ).toBeTruthy();
   });
 
@@ -148,7 +148,7 @@ for (const type of apiTypes) {
       .crawl(path.join(cwd(), "node_modules"));
     const files = await api[type]();
     t.expect(
-      files.every((file) => file.startsWith("node_modules")),
+      files.every((file) => file.startsWith("node_modules"))
     ).toBeTruthy();
   });
 
@@ -194,7 +194,7 @@ for (const type of apiTypes) {
     t.expect(
       result.every((dir) => {
         return fs.statSync(dir).isDirectory;
-      }),
+      })
     ).toBeTruthy();
   });
 
@@ -208,7 +208,7 @@ for (const type of apiTypes) {
     t.expect(
       result.every((dir) => {
         return fs.statSync(dir).isDirectory;
-      }),
+      })
     ).toBeTruthy();
   });
 
@@ -308,7 +308,7 @@ for (const type of apiTypes) {
     const api = new fdir().withRelativePaths().crawl("./node_modules/");
     const paths = await api[type]();
     t.expect(
-      paths.every((p) => !p.startsWith("node_modules") && !p.includes("//")),
+      paths.every((p) => !p.startsWith("node_modules") && !p.includes("//"))
     ).toBeTruthy();
   });
 
@@ -338,7 +338,7 @@ for (const type of apiTypes) {
     const globFunction = vi.fn(
       (glob: string | string[], options?: { foo: number }) => {
         return (test: string): boolean => test.endsWith(".js");
-      },
+      }
     );
     const api = new fdir({ globFunction })
       .withBasePath()
@@ -401,7 +401,7 @@ test(`paths should never start with ./`, async (t) => {
   for (const api of apis) {
     const files = await api.withPromise();
     t.expect(
-      files.every((file) => !file.startsWith("./") && !file.startsWith(".\\")),
+      files.every((file) => !file.startsWith("./") && !file.startsWith(".\\"))
     ).toBe(true);
   }
 });
@@ -450,6 +450,6 @@ test(`there should be no empty directory when using withDirs and filters`, async
 
 test(`do not convert \\\\ to \\`, async (t) => {
   t.expect(convertSlashes("\\\\wsl.localhost\\Ubuntu\\home\\", "\\")).toBe(
-    "\\\\wsl.localhost\\Ubuntu\\home\\",
+    "\\\\wsl.localhost\\Ubuntu\\home\\"
   );
 });

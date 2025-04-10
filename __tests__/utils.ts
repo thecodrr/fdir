@@ -19,6 +19,6 @@ export function restricted() {
 
 export function normalize(paths: string[]) {
   return paths.map((p) =>
-    path.isAbsolute(p) ? path.resolve(p) : path.normalize(p),
+    path.isAbsolute(p) ? path.resolve(p) : path.normalize(p)
   );
 }

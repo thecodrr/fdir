@@ -11,7 +11,7 @@ import {
 export type InvokeCallbackFunction<TOutput extends Output> = (
   state: WalkerState,
   error: Error | null,
-  callback?: ResultCallback<TOutput>,
+  callback?: ResultCallback<TOutput>
 ) => null | TOutput;
 
 const onlyCountsSync: InvokeCallbackFunction<OnlyCountsOutput> = (state) => {
@@ -33,7 +33,7 @@ const limitFilesSync: InvokeCallbackFunction<PathsOutput> = (state) => {
 const onlyCountsAsync: InvokeCallbackFunction<OnlyCountsOutput> = (
   state,
   error,
-  callback,
+  callback
 ) => {
   report(error, callback!, state.counts, state.options.suppressErrors);
   return null;
@@ -42,7 +42,7 @@ const onlyCountsAsync: InvokeCallbackFunction<OnlyCountsOutput> = (
 const defaultAsync: InvokeCallbackFunction<PathsOutput> = (
   state,
   error,
-  callback,
+  callback
 ) => {
   report(error, callback!, state.paths, state.options.suppressErrors);
   return null;
@@ -51,13 +51,13 @@ const defaultAsync: InvokeCallbackFunction<PathsOutput> = (
 const limitFilesAsync: InvokeCallbackFunction<PathsOutput> = (
   state,
   error,
-  callback,
+  callback
 ) => {
   report(
     error,
     callback!,
     state.paths.slice(0, state.options.maxFiles),
-    state.options.suppressErrors,
+    state.options.suppressErrors
   );
   return null;
 };
@@ -65,7 +65,7 @@ const limitFilesAsync: InvokeCallbackFunction<PathsOutput> = (
 const groupsAsync: InvokeCallbackFunction<GroupOutput> = (
   state,
   error,
-  callback,
+  callback
 ) => {
   report(error, callback!, state.groups, state.options.suppressErrors);
   return null;
@@ -75,7 +75,7 @@ function report<TOutput extends Output>(
   error: Error | null,
   callback: ResultCallback<TOutput>,
   output: TOutput,
-  suppressErrors: boolean,
+  suppressErrors: boolean
 ) {
   if (error && !suppressErrors) callback(error, output);
   else callback(null, output);
@@ -83,7 +83,7 @@ function report<TOutput extends Output>(
 
 export function build<TOutput extends Output>(
   options: Options,
-  isSynchronous: boolean,
+  isSynchronous: boolean
 ): InvokeCallbackFunction<TOutput> {
   const { onlyCounts, group, maxFiles } = options;
 
