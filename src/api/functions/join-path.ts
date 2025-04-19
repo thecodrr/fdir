@@ -42,6 +42,6 @@ export function build(root: string, options: Options): JoinPathFunction {
   return relativePaths && root
     ? joinPathWithRelativePath(root, options)
     : includeBasePath
-    ? joinPathWithBasePath
-    : joinPath;
+      ? joinPathWithBasePath
+      : joinPath;
 }
