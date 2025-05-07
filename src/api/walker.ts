@@ -49,7 +49,7 @@ export class Walker<TOutput extends Output> {
       ),
       symlinks: new Map(),
       visited: [""].slice(0, 0),
-      fs: options.fs ?? nativeFs
+      fs: options.fs ?? nativeFs,
     };
 
     /*
