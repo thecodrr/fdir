@@ -1,4 +1,4 @@
-import type {Stats} from "fs";
+import type { Stats } from "fs";
 import { WalkerState, Options } from "../../types";
 import { dirname } from "path";
 

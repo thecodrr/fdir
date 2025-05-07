@@ -28,12 +28,12 @@ export type PathsOutput = string[];
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
 
 export type FSLike = {
-  readdir: typeof nativeFs.readdir,
-  readdirSync: typeof nativeFs.readdirSync,
-  realpath: typeof nativeFs.realpath,
-  realpathSync: typeof nativeFs.realpathSync,
-  stat: typeof nativeFs.stat,
-  statSync: typeof nativeFs.statSync,
+  readdir: typeof nativeFs.readdir;
+  readdirSync: typeof nativeFs.readdirSync;
+  realpath: typeof nativeFs.realpath;
+  realpathSync: typeof nativeFs.realpathSync;
+  stat: typeof nativeFs.stat;
+  statSync: typeof nativeFs.statSync;
 };
 
 export type WalkerState = {
@@ -78,7 +78,7 @@ export type Options<TGlobFunction = unknown> = {
   pathSeparator: PathSeparator;
   signal?: AbortSignal;
   globFunction?: TGlobFunction;
-  fs?: FSLike
+  fs?: FSLike;
 };
 
 export type GlobMatcher = (test: string) => boolean;

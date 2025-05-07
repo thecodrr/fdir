@@ -380,23 +380,24 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] using custom fs implementation`, async (t) => {
-    const readdirStub = vi.fn<Parameters<typeof fs.readdir>>((_path, _opts, cb) => {
-      cb(null, []);
-    });
+    const readdirStub = vi.fn<Parameters<typeof fs.readdir>>(
+      (_path, _opts, cb) => {
+        cb(null, []);
+      }
+    );
     const readdirSyncStub = vi.fn();
     readdirSyncStub.mockReturnValue([]);
     const fakeFs = {
       ...fs,
       readdir: readdirStub,
-      readdirSync: readdirSyncStub
+      readdirSync: readdirSyncStub,
     } as unknown as typeof fs;
 
     const api = new fdir({
-        fs: fakeFs
-      })
-      .crawl("node_modules");
+      fs: fakeFs,
+    }).crawl("node_modules");
     await api[type]();
-    if (type === 'withPromise') {
+    if (type === "withPromise") {
       t.expect(readdirStub).toHaveBeenCalled();
     } else {
       t.expect(readdirSyncStub).toHaveBeenCalled();
