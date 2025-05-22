@@ -5,19 +5,19 @@ on:
   push:
     branches: [master]
 
-jobs:
+jobs:  
   test:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [16.x, 24.x,]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           check-latest: true
@@ -26,7 +26,7 @@ jobs:
         env:
           CI: true
       - name: Send Report to Coveralls
-        uses: coverallsapp/github-action@v1.1.1
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Parallel Finished
-        uses: coverallsapp/github-action@v1.1.1
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
