@@ -48,6 +48,7 @@ export class Walker<TOutput extends Output> {
       ),
       symlinks: new Map(),
       visited: [""].slice(0, 0),
+      controller: new AbortController(),
     };
 
     /*
@@ -65,6 +66,7 @@ export class Walker<TOutput extends Output> {
   }
 
   start(): TOutput | null {
+    this.pushDirectory(this.root, this.state.paths, this.state.options.filters);
     this.walkDirectory(
       this.state,
       this.root,
@@ -88,12 +90,15 @@ export class Walker<TOutput extends Output> {
         useRealPaths,
         pathSeparator,
       },
+      controller,
     } = this.state;
 
-    if ((signal && signal.aborted) || (maxFiles && paths.length > maxFiles))
+    if (
+      controller.signal.aborted ||
+      (signal && signal.aborted) ||
+      (maxFiles && paths.length > maxFiles)
+    )
       return;
-
-    this.pushDirectory(directoryPath, paths, filters);
 
     const files = this.getArray(this.state.paths);
     for (let i = 0; i < entries.length; ++i) {
@@ -112,8 +117,9 @@ export class Walker<TOutput extends Output> {
           this.state.options.pathSeparator
         );
         if (exclude && exclude(entry.name, path)) continue;
+        this.pushDirectory(path, paths, filters);
         this.walkDirectory(this.state, path, path, depth - 1, this.walk);
-      } else if (entry.isSymbolicLink() && this.resolveSymlink) {
+      } else if (this.resolveSymlink && entry.isSymbolicLink()) {
         let path = joinPath.joinPathWithBasePath(entry.name, directoryPath);
         this.resolveSymlink(path, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {
