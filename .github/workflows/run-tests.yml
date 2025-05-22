@@ -5,13 +5,13 @@ on:
   push:
     branches: [master]
 
-jobs:  
+jobs:
   test:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        node-version: [16.x, 24.x,]
+        node-version: [16.x, 24.x]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
