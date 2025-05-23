@@ -10,7 +10,8 @@ import * as resolveSymlink from "./functions/resolve-symlink";
 import * as invokeCallback from "./functions/invoke-callback";
 import * as walkDirectory from "./functions/walk-directory";
 import { Queue } from "./queue";
-import { Dirent } from "fs";
+import type { Dirent } from "fs";
+import * as nativeFs from "fs";
 import { Output } from "../types";
 import { Counter } from "./counter";
 
@@ -48,6 +49,7 @@ export class Walker<TOutput extends Output> {
       ),
       symlinks: new Map(),
       visited: [""].slice(0, 0),
+      fs: options.fs ?? nativeFs,
     };
 
     /*

@@ -1,12 +1,12 @@
 import { WalkerState } from "../../types";
-import fs from "fs";
+import type { Dirent } from "fs";
 
 export type WalkDirectoryFunction = (
   state: WalkerState,
   crawlPath: string,
   directoryPath: string,
   depth: number,
-  callback: (entries: fs.Dirent[], directoryPath: string, depth: number) => void
+  callback: (entries: Dirent[], directoryPath: string, depth: number) => void
 ) => void;
 
 const readdirOpts = { withFileTypes: true } as const;
@@ -18,6 +18,7 @@ const walkAsync: WalkDirectoryFunction = (
   currentDepth,
   callback
 ) => {
+  const { fs } = state;
   if (currentDepth < 0) return state.queue.dequeue(null, state);
 
   state.visited.push(crawlPath);
@@ -40,11 +41,12 @@ const walkSync: WalkDirectoryFunction = (
   currentDepth,
   callback
 ) => {
+  const { fs } = state;
   if (currentDepth < 0) return;
   state.visited.push(crawlPath);
   state.counts.directories++;
 
-  let entries: fs.Dirent[] = [];
+  let entries: Dirent[] = [];
   try {
     entries = fs.readdirSync(crawlPath || ".", readdirOpts);
   } catch (e) {
