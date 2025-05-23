@@ -54,7 +54,8 @@ for (const type of apiTypes) {
     const files = await api[type]();
     t.expect(files.every((file) => file.split("/").length <= 2)).toBe(true);
   });
-  -test(`[${type}] crawl multi depth directory with options`, async (t) => {
+
+  test(`[${type}] crawl multi depth directory with options`, async (t) => {
     const api = new fdir({
       maxDepth: 1,
     }).crawl("node_modules");

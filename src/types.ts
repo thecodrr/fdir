@@ -32,6 +32,7 @@ export type WalkerState = {
   counts: Counts;
   options: Options;
   queue: Queue;
+  controller: AbortController;
 
   symlinks: Map<string, string>;
   visited: string[];
