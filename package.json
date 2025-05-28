@@ -2,11 +2,12 @@
   "name": "fdir",
   "version": "6.4.5",
   "description": "The fastest directory crawler & globbing alternative to glob, fast-glob, & tiny-glob. Crawls 1m files in < 1s",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
+  "type": "module",
   "scripts": {
     "prepublishOnly": "npm run test && npm run build",
-    "build": "tsc",
+    "build": "tsdown",
     "format": "prettier --write src __tests__ benchmarks",
     "test": "vitest run __tests__/",
     "test:coverage": "vitest run --coverage __tests__/",
@@ -67,6 +68,7 @@
     "mock-fs": "^5.2.0",
     "picomatch": "^4.0.2",
     "prettier": "^3.5.3",
+    "publint": "^0.3.12",
     "recur-readdir": "0.0.1",
     "recursive-files": "^1.0.2",
     "recursive-fs": "^2.1.0",
@@ -74,6 +76,7 @@
     "rrdir": "^12.1.0",
     "systeminformation": "^5.21.17",
     "tiny-glob": "^0.2.9",
+    "tsdown": "^0.12.4",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2",
     "vitest": "^0.34.6",
@@ -86,5 +89,13 @@
     "picomatch": {
       "optional": true
     }
+  },
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
   }
 }
