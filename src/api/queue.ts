@@ -7,14 +7,21 @@ type OnQueueEmptyCallback = (error: Error | null, output: WalkerState) => void;
  * as soon as it completes. When the counter hits 0, it calls onQueueEmpty.
  */
 export class Queue {
-  private count: number = 0;
-  constructor(private readonly onQueueEmpty: OnQueueEmptyCallback) {}
+  count: number = 0;
+  constructor(private onQueueEmpty?: OnQueueEmptyCallback) {}
 
   enqueue() {
     this.count++;
+    return this.count;
   }
 
   dequeue(error: Error | null, output: WalkerState) {
-    if (--this.count <= 0 || error) this.onQueueEmpty(error, output);
+    if (this.onQueueEmpty && (--this.count <= 0 || error)) {
+      this.onQueueEmpty(error, output);
+      if (error) {
+        output.controller.abort();
+        this.onQueueEmpty = undefined;
+      }
+    }
   }
 }
