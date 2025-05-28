@@ -17,8 +17,9 @@ export function convertSlashes(path: string, separator: PathSeparator) {
   return path.replace(SLASHES_REGEX, separator);
 }
 
+const WINDOWS_ROOT_DIR_REGEX = /^[a-z]:[\\/]$/i;
 export function isRootDirectory(path: string) {
-  return path === "/" || /^[a-z]:\\$/i.test(path);
+  return path === "/" || WINDOWS_ROOT_DIR_REGEX.test(path);
 }
 
 export function normalizePath(
