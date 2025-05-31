@@ -52,17 +52,24 @@ for (const type of apiTypes) {
       includeBasePath: true,
     }).crawl("node_modules");
     const files = await api[type]();
-    t.expect(files.every((file) => file.split("/").length <= 2)).toBe(true);
+    t.expect(files).not.toHaveLength(0);
+    t.expect(files.every((file) => file.split(path.sep).length === 2)).toBe(
+      true
+    );
   });
 
   test(`[${type}] crawl multi depth directory with options`, async (t) => {
     const api = new fdir({
       maxDepth: 1,
+      includeBasePath: true,
     }).crawl("node_modules");
     const files = await api[type]();
-    t.expect(
-      files.every((file) => file.split(path.sep).length <= 3)
-    ).toBeTruthy();
+    t.expect(files.some((file) => file.split(path.sep).length === 3)).toBe(
+      true
+    );
+    t.expect(files.every((file) => file.split(path.sep).length <= 3)).toBe(
+      true
+    );
   });
 
   test(`[${type}] crawl multi depth directory`, async (t) => {
