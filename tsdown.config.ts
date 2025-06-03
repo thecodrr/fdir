@@ -7,5 +7,6 @@ export default defineConfig({
   removeNodeProtocol: true,
   dts: true,
   exports: true,
-  publint: true
+  publint: true,
+  fixedExtension: true
 })
