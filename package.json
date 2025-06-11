@@ -68,7 +68,6 @@
     "mock-fs": "^5.2.0",
     "picomatch": "^4.0.2",
     "prettier": "^3.5.3",
-    "publint": "^0.3.12",
     "recur-readdir": "0.0.1",
     "recursive-files": "^1.0.2",
     "recursive-fs": "^2.1.0",
