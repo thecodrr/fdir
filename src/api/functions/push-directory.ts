@@ -45,8 +45,8 @@ export function build(root: string, options: Options): PushDirectoryFunction {
   if (!includeDirs) return empty;
 
   if (relativePaths)
-    return filters && filters.length
+    return filters?.length
       ? pushDirectoryFilterWithRelativePath(root)
       : pushDirectoryWithRelativePath(root);
-  return filters && filters.length ? pushDirectoryFilter : pushDirectory;
+  return filters?.length ? pushDirectoryFilter : pushDirectory;
 }

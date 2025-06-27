@@ -381,9 +381,6 @@ for (const type of apiTypes) {
 }
 
 test(`[async] crawl directory & use abort signal to abort`, async (t) => {
-  // AbortController is not present on Node v14
-  if (!("AbortController" in globalThis)) return;
-
   const totalFiles = new fdir().onlyCounts().crawl("node_modules").sync();
   const abortController = new AbortController();
   const api = new fdir()

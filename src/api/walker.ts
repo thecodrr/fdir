@@ -95,7 +95,7 @@ export class Walker<TOutput extends Output> {
 
     if (
       controller.signal.aborted ||
-      (signal && signal.aborted) ||
+      signal?.aborted ||
       (maxFiles && paths.length > maxFiles)
     )
       return;
@@ -116,7 +116,7 @@ export class Walker<TOutput extends Output> {
           directoryPath,
           this.state.options.pathSeparator
         );
-        if (exclude && exclude(entry.name, path)) continue;
+        if (exclude?.(entry.name, path)) continue;
         this.pushDirectory(path, paths, filters);
         this.walkDirectory(this.state, path, path, depth - 1, this.walk);
       } else if (this.resolveSymlink && entry.isSymbolicLink()) {
@@ -125,8 +125,7 @@ export class Walker<TOutput extends Output> {
           if (stat.isDirectory()) {
             resolvedPath = normalizePath(resolvedPath, this.state.options);
             if (
-              exclude &&
-              exclude(
+              exclude?.(
                 entry.name,
                 useRealPaths ? resolvedPath : path + pathSeparator
               )
