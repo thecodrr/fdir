@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "node:fs";
+import { dirname } from "node:path";
 import { WalkerState, Options } from "../../types";
-import { dirname } from "path";
 
 export type ResolveSymlinkFunction = (
   path: string,

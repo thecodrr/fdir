@@ -1,4 +1,4 @@
-import { sep } from "path";
+import { sep } from "node:path";
 import {
   Output,
   OnlyCountsOutput,
@@ -12,7 +12,7 @@ import {
 } from "../types";
 import { APIBuilder } from "./api-builder";
 import type picomatch from "picomatch";
-import type { Matcher, PicomatchOptions } from "picomatch";
+import type { Matcher } from "picomatch";
 
 var pm: typeof picomatch | null = null;
 /* c8 ignore next 6 */

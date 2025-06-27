@@ -1,4 +1,4 @@
-import child_process from "child_process";
+import child_process from "node:child_process";
 import { Fdir } from "../src/index";
 import b from "benny";
 

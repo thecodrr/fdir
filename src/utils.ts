@@ -1,4 +1,4 @@
-import { sep, normalize, resolve } from "path";
+import { sep, normalize, resolve } from "node:path";
 import { PathSeparator } from "./types";
 
 export function cleanPath(path: string) {

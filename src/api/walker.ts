@@ -1,4 +1,5 @@
-import { basename, dirname } from "path";
+import { Dirent } from "node:fs";
+import { basename, dirname } from "node:path";
 import { isRootDirectory, normalizePath } from "../utils";
 import { ResultCallback, WalkerState, Options } from "../types";
 import * as joinPath from "./functions/join-path";
@@ -10,7 +11,6 @@ import * as resolveSymlink from "./functions/resolve-symlink";
 import * as invokeCallback from "./functions/invoke-callback";
 import * as walkDirectory from "./functions/walk-directory";
 import { Queue } from "./queue";
-import { Dirent } from "fs";
 import { Output } from "../types";
 import { Counter } from "./counter";
 

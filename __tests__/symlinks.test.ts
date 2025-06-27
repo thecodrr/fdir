@@ -1,8 +1,8 @@
-import { afterAll, beforeAll, beforeEach, describe, test } from "vitest";
-import { apiTypes, normalize, root } from "./utils";
+import path from "node:path";
 import mock from "mock-fs";
-import { fdir, Options } from "../src";
-import path from "path";
+import { afterAll, beforeAll, describe, test } from "vitest";
+import { apiTypes, normalize, root } from "./utils";
+import { fdir } from "../src";
 
 const fsWithRelativeSymlinks = {
   "../../sym-relative/linked": {
