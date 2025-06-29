@@ -9,7 +9,7 @@ const syncSuites: ReturnType<(typeof b)["add"]>[] = [];
 const asyncSuites: ReturnType<(typeof b)["add"]>[] = [];
 
 function normalizeVersion(version: Version) {
-  return version.replace(/\./g, "");
+  return version.replaceAll(".", "");
 }
 
 function makeSuite(version: Version) {
