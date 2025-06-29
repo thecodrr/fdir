@@ -1,4 +1,4 @@
-import { sep, normalize, resolve } from "path";
+import { sep, normalize, resolve } from "node:path";
 import { PathSeparator } from "./types";
 
 export function cleanPath(path: string) {
@@ -14,7 +14,7 @@ export function cleanPath(path: string) {
 
 const SLASHES_REGEX = /[\\/]/g;
 export function convertSlashes(path: string, separator: PathSeparator) {
-  return path.replace(SLASHES_REGEX, separator);
+  return path.replaceAll(SLASHES_REGEX, separator);
 }
 
 const WINDOWS_ROOT_DIR_REGEX = /^[a-z]:[\\/]$/i;

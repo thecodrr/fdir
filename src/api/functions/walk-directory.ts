@@ -1,5 +1,5 @@
+import fs from "node:fs";
 import { WalkerState } from "../../types";
-import fs from "fs";
 
 export type WalkDirectoryFunction = (
   state: WalkerState,

@@ -1,4 +1,4 @@
-import { sep } from "path";
+import { sep } from "node:path";
 import {
   Output,
   OnlyCountsOutput,
@@ -12,7 +12,7 @@ import {
 } from "../types";
 import { APIBuilder } from "./api-builder";
 import type picomatch from "picomatch";
-import type { Matcher, PicomatchOptions } from "picomatch";
+import type { Matcher } from "picomatch";
 
 var pm: typeof picomatch | null = null;
 /* c8 ignore next 6 */
@@ -125,7 +125,7 @@ export class Builder<
   }
 
   crawl(root?: string) {
-    return new APIBuilder<TReturnType>(root || ".", this.options);
+    return new APIBuilder<TReturnType>(root ?? ".", this.options);
   }
 
   withGlobFunction<TFunc>(fn: TFunc) {
@@ -144,7 +144,7 @@ export class Builder<
   /* c8 ignore next 4 */
   crawlWithOptions(root: string, options: Partial<Options<TGlobFunction>>) {
     this.options = { ...this.options, ...options };
-    return new APIBuilder<TReturnType>(root || ".", this.options);
+    return new APIBuilder<TReturnType>(root ?? ".", this.options);
   }
 
   glob(...patterns: string[]) {
@@ -166,7 +166,7 @@ export class Builder<
     patterns: string[],
     ...options: GlobParams<TGlobFunction> | []
   ) {
-    const globFn = (this.globFunction || pm) as GlobFunction | null;
+    const globFn = (this.globFunction ?? pm) as GlobFunction | null;
     /* c8 ignore next 5 */
     if (!globFn) {
       throw new Error("Please specify a glob function to use glob matching.");

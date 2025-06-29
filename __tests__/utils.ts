@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 
 export type APITypes = (typeof apiTypes)[number];
 export const apiTypes = ["withPromise", "sync"] as const;

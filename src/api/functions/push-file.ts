@@ -44,7 +44,7 @@ export function build(options: Options): PushFileFunction {
   const { excludeFiles, filters, onlyCounts } = options;
   if (excludeFiles) return empty;
 
-  if (filters && filters.length) {
+  if (filters?.length) {
     return onlyCounts ? pushFileFilterAndCount : pushFileFilter;
   } else if (onlyCounts) {
     return pushFileCount;

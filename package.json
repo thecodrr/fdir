@@ -86,5 +86,8 @@
     "picomatch": {
       "optional": true
     }
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }

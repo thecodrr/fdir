@@ -1,4 +1,4 @@
-import child_process from "child_process";
+import child_process from "node:child_process";
 import { Fdir } from "../src/index";
 import b from "benny";
 
@@ -9,7 +9,7 @@ const syncSuites: ReturnType<(typeof b)["add"]>[] = [];
 const asyncSuites: ReturnType<(typeof b)["add"]>[] = [];
 
 function normalizeVersion(version: Version) {
-  return version.replace(/\./g, "");
+  return version.replaceAll(".", "");
 }
 
 function makeSuite(version: Version) {
