@@ -9,7 +9,7 @@ export function joinPathWithBasePath(filename: string, directoryPath: string) {
 function joinPathWithRelativePath(root: string, options: Options) {
   return function (filename: string, directoryPath: string) {
     const sameRoot = directoryPath.startsWith(root);
-    if (sameRoot) return directoryPath.replace(root, "") + filename;
+    if (sameRoot) return directoryPath.slice(root.length) + filename;
     else
       return (
         convertSlashes(relative(root, directoryPath), options.pathSeparator) +
