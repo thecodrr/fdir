@@ -2,7 +2,7 @@ import { Options, IterableOutput } from "../types";
 import { Walker } from "./walker";
 
 class WalkerIterator<TOutput extends IterableOutput> {
-  #next: Promise<TOutput[number] | null>;
+  #next: Promise<TOutput | null>;
   #resolver: (value: TOutput[number] | null) => void;
   #walker: Walker<TOutput>;
   #currentGroup?: string[];
@@ -29,7 +29,7 @@ class WalkerIterator<TOutput extends IterableOutput> {
 
   #pushResult = async (result: TOutput[number]) => {
     this.#resolver(result);
-    this.#next = this.#createNext();
+    this.#next = this.#createNext(this.#next);
   };
 
   #onComplete = () => {
@@ -37,10 +37,21 @@ class WalkerIterator<TOutput extends IterableOutput> {
     this.#resolver(null);
   };
 
-  #createNext(): Promise<TOutput[number] | null> {
-    return new Promise((resolve) => {
+  async #createNext(prev?: Promise<TOutput | null>): Promise<TOutput | null> {
+    const next = new Promise<TOutput[number] | null>((resolve) => {
       this.#resolver = resolve;
     });
+    if (prev) {
+      const prevResult = await prev;
+      const nextResult = await next;
+      if (prevResult === null || nextResult === null) {
+        return null;
+      }
+      return [...prevResult, nextResult] as TOutput | null;
+    } else {
+      const nextResult = await next;
+      return nextResult === null ? nextResult : ([nextResult] as TOutput);
+    }
   }
 
   async *[Symbol.asyncIterator]() {
@@ -55,7 +66,7 @@ class WalkerIterator<TOutput extends IterableOutput> {
       if (result === null) {
         finished = true;
       } else {
-        yield result;
+        yield* result;
       }
     }
   }
