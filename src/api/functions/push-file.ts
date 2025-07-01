@@ -3,6 +3,7 @@ import { FilterPredicate, Options, Counts } from "../../types";
 export type PushFileFunction = (
   directoryPath: string,
   paths: string[],
+  pushPath: (path: string, arr: string[]) => void,
   counts: Counts,
   filters?: FilterPredicate[]
 ) => void;
@@ -10,6 +11,7 @@ export type PushFileFunction = (
 const pushFileFilterAndCount: PushFileFunction = (
   filename,
   _paths,
+  _pushPath,
   counts,
   filters
 ) => {
@@ -19,23 +21,26 @@ const pushFileFilterAndCount: PushFileFunction = (
 const pushFileFilter: PushFileFunction = (
   filename,
   paths,
+  pushPath,
   _counts,
   filters
 ) => {
-  if (filters!.every((filter) => filter(filename, false))) paths.push(filename);
+  if (filters!.every((filter) => filter(filename, false)))
+    pushPath(filename, paths);
 };
 
 const pushFileCount: PushFileFunction = (
   _filename,
   _paths,
+  _pushPath,
   counts,
   _filters
 ) => {
   counts.files++;
 };
 
-const pushFile: PushFileFunction = (filename, paths) => {
-  paths.push(filename);
+const pushFile: PushFileFunction = (filename, paths, pushPath) => {
+  pushPath(filename, paths);
 };
 
 const empty: PushFileFunction = () => {};

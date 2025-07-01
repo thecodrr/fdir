@@ -24,6 +24,7 @@ export type OnlyCountsOutput = Counts;
 export type PathsOutput = string[];
 
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
+export type IterableOutput = PathsOutput | GroupOutput;
 
 export type WalkerState = {
   root: string;
