@@ -1,6 +1,6 @@
 import { basename, dirname } from "path";
 import { isRootDirectory, normalizePath } from "../utils";
-import { ResultCallback, WalkerState, Options } from "../types";
+import { ResultCallback, WalkerState, Options, Group } from "../types";
 import * as joinPath from "./functions/join-path";
 import * as pushDirectory from "./functions/push-directory";
 import * as pushFile from "./functions/push-file";
@@ -28,11 +28,15 @@ export class Walker<TOutput extends Output> {
   private readonly resolveSymlink: resolveSymlink.ResolveSymlinkFunction | null;
   private readonly walkDirectory: walkDirectory.WalkDirectoryFunction;
   private readonly callbackInvoker: invokeCallback.InvokeCallbackFunction<TOutput>;
+  private readonly pushPath: (path: string, arr: string[]) => void;
+  private readonly pushGroup: (group: Group, arr: Group[]) => void;
 
   constructor(
     root: string,
     options: Options,
-    callback?: ResultCallback<TOutput>
+    callback?: ResultCallback<TOutput>,
+    pushPath?: (path: string, arr: string[]) => void,
+    pushGroup?: (group: Group, arr: Group[]) => void
   ) {
     this.isSynchronous = !callback;
     this.callbackInvoker = invokeCallback.build(options, this.isSynchronous);
@@ -66,10 +70,25 @@ export class Walker<TOutput extends Output> {
     this.groupFiles = groupFiles.build(options);
     this.resolveSymlink = resolveSymlink.build(options, this.isSynchronous);
     this.walkDirectory = walkDirectory.build(this.isSynchronous);
+    this.pushPath =
+      pushPath ??
+      ((p, arr) => {
+        arr.push(p);
+      });
+    this.pushGroup =
+      pushGroup ??
+      ((group, arr) => {
+        arr.push(group);
+      });
   }
 
   start(): TOutput | null {
-    this.pushDirectory(this.root, this.state.paths, this.state.options.filters);
+    this.pushDirectory(
+      this.root,
+      this.state.paths,
+      this.pushPath,
+      this.state.options.filters
+    );
     this.walkDirectory(
       this.state,
       this.root,
@@ -112,7 +131,13 @@ export class Walker<TOutput extends Output> {
         (entry.isSymbolicLink() && !resolveSymlinks && !excludeSymlinks)
       ) {
         const filename = this.joinPath(entry.name, directoryPath);
-        this.pushFile(filename, files, this.state.counts, filters);
+        this.pushFile(
+          filename,
+          files,
+          this.pushPath,
+          this.state.counts,
+          filters
+        );
       } else if (entry.isDirectory()) {
         let path = joinPath.joinDirectoryPath(
           entry.name,
@@ -120,7 +145,7 @@ export class Walker<TOutput extends Output> {
           this.state.options.pathSeparator
         );
         if (exclude && exclude(entry.name, path)) continue;
-        this.pushDirectory(path, paths, filters);
+        this.pushDirectory(path, files, this.pushPath, filters);
         this.walkDirectory(this.state, path, path, depth - 1, this.walk);
       } else if (this.resolveSymlink && entry.isSymbolicLink()) {
         let path = joinPath.joinPathWithBasePath(entry.name, directoryPath);
@@ -151,12 +176,18 @@ export class Walker<TOutput extends Output> {
               this.state.options
             );
             resolvedPath = this.joinPath(filename, directoryPath);
-            this.pushFile(resolvedPath, files, this.state.counts, filters);
+            this.pushFile(
+              resolvedPath,
+              files,
+              this.pushPath,
+              this.state.counts,
+              filters
+            );
           }
         });
       }
     }
 
-    this.groupFiles(this.state.groups, directoryPath, files);
+    this.groupFiles(this.state.groups, directoryPath, files, this.pushGroup);
   };
 }

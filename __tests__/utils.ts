@@ -1,7 +1,7 @@
 import path from "path";
 
 export type APITypes = (typeof apiTypes)[number];
-export const apiTypes = ["withPromise", "sync"] as const;
+export const apiTypes = ["withPromise", "sync", "withIterator"] as const;
 
 export function root() {
   return process.platform === "win32" ? process.cwd().split(path.sep)[0] : "/";
