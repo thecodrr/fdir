@@ -1,12 +1,11 @@
-import { fdir, IterableOutput } from "../src/index";
+import { fdir } from "../src/index";
 import fs from "fs";
 import mock from "mock-fs";
-import { test, beforeEach, TestContext, vi } from "vitest";
+import { test, beforeEach, vi } from "vitest";
 import path, { sep } from "path";
 import { convertSlashes } from "../src/utils";
 import picomatch from "picomatch";
-import { apiTypes, APITypes, cwd, restricted, root } from "./utils";
-import { APIBuilder } from "../src/builder/api-builder";
+import { apiTypes, APITypes, cwd, restricted, root, execute } from "./utils";
 
 beforeEach(() => {
   mock.restore();
@@ -25,22 +24,6 @@ test(`crawl single depth directory with callback`, (t) => {
     });
   });
 });
-
-async function execute<T extends IterableOutput>(
-  api: APIBuilder<T>,
-  type: APITypes
-): Promise<T> {
-  let files: T[number][] = [];
-
-  if (type === "withIterator") {
-    for await (const file of api[type]()) {
-      files.push(file);
-    }
-  } else {
-    files = await api[type]();
-  }
-  return files as T;
-}
 
 async function crawl(type: APITypes, path: string) {
   const api = new fdir().crawl(path);
@@ -270,7 +253,7 @@ for (const type of apiTypes) {
       .onlyDirs()
       .filter((path) => path.includes("api"))
       .crawl("./src");
-    const result = await api[type]();
+    const result = await execute(api, type);
     t.expect(result).toHaveLength(2);
   });
 

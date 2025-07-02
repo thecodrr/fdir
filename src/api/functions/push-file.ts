@@ -22,11 +22,13 @@ const pushFileFilter: PushFileFunction = (
   filename,
   paths,
   pushPath,
-  _counts,
+  counts,
   filters
 ) => {
-  if (filters!.every((filter) => filter(filename, false)))
+  if (filters!.every((filter) => filter(filename, false))) {
     pushPath(filename, paths);
+    counts.files++;
+  }
 };
 
 const pushFileCount: PushFileFunction = (
@@ -39,8 +41,9 @@ const pushFileCount: PushFileFunction = (
   counts.files++;
 };
 
-const pushFile: PushFileFunction = (filename, paths, pushPath) => {
+const pushFile: PushFileFunction = (filename, paths, pushPath, counts) => {
   pushPath(filename, paths);
+  counts.files++;
 };
 
 const empty: PushFileFunction = () => {};

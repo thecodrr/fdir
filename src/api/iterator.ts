@@ -6,6 +6,7 @@ class WalkerIterator<TOutput extends IterableOutput> {
   #walker: Walker<TOutput>;
   #currentGroup?: string[];
   #queue: TOutput[number][] = [];
+  #error?: unknown;
 
   public constructor(root: string, options: Options) {
     const pushPath = options.group ? this.#pushPath : this.#pushResult;
@@ -34,9 +35,12 @@ class WalkerIterator<TOutput extends IterableOutput> {
     }
   };
 
-  #onComplete = () => {
+  #onComplete = (err: unknown) => {
     this.#currentGroup = undefined;
     this.#complete = true;
+    if (err) {
+      this.#error = err;
+    }
     if (this.#resolver) {
       const resolver = this.#resolver;
       this.#resolver = undefined;
@@ -50,6 +54,10 @@ class WalkerIterator<TOutput extends IterableOutput> {
     while (true) {
       yield* this.#queue;
       this.#queue = [];
+
+      if (this.#error) {
+        throw this.#error;
+      }
 
       if (this.#complete) {
         return;

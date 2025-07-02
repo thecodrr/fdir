@@ -23,7 +23,6 @@ const walkAsync: WalkDirectoryFunction = (
   if (currentDepth < 0) return state.queue.dequeue(null, state);
 
   state.visited.push(crawlPath);
-  state.counts.directories++;
 
   // Perf: Node >= 10 introduced withFileTypes that helps us
   // skip an extra fs.stat call.
@@ -43,7 +42,6 @@ const walkSync: WalkDirectoryFunction = (
 ) => {
   if (currentDepth < 0) return;
   state.visited.push(crawlPath);
-  state.counts.directories++;
 
   let entries: fs.Dirent[] = [];
   try {
