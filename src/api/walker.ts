@@ -87,6 +87,7 @@ export class Walker<TOutput extends Output> {
       this.root,
       this.state.paths,
       this.pushPath,
+      this.state.counts,
       this.state.options.filters
     );
     this.walkDirectory(
@@ -101,7 +102,7 @@ export class Walker<TOutput extends Output> {
 
   private walk = (entries: Dirent[], directoryPath: string, depth: number) => {
     const {
-      paths,
+      counts,
       options: {
         filters,
         resolveSymlinks,
@@ -118,12 +119,16 @@ export class Walker<TOutput extends Output> {
     if (
       controller.aborted ||
       (signal && signal.aborted) ||
-      (maxFiles && paths.length > maxFiles)
+      (maxFiles && counts.directories + counts.files > maxFiles)
     )
       return;
 
     const files = this.getArray(this.state.paths);
     for (let i = 0; i < entries.length; ++i) {
+      if (maxFiles && counts.directories + counts.files >= maxFiles) {
+        break;
+      }
+
       const entry = entries[i];
 
       if (
@@ -145,7 +150,7 @@ export class Walker<TOutput extends Output> {
           this.state.options.pathSeparator
         );
         if (exclude && exclude(entry.name, path)) continue;
-        this.pushDirectory(path, files, this.pushPath, filters);
+        this.pushDirectory(path, files, this.pushPath, counts, filters);
         this.walkDirectory(this.state, path, path, depth - 1, this.walk);
       } else if (this.resolveSymlink && entry.isSymbolicLink()) {
         let path = joinPath.joinPathWithBasePath(entry.name, directoryPath);
