@@ -1,3 +1,4 @@
+import { Aborter } from "./api/aborter";
 import { Queue } from "./api/queue";
 
 export type Counts = {
@@ -32,7 +33,7 @@ export type WalkerState = {
   counts: Counts;
   options: Options;
   queue: Queue;
-  controller: AbortController;
+  controller: Aborter;
 
   symlinks: Map<string, string>;
   visited: string[];

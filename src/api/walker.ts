@@ -13,6 +13,7 @@ import { Queue } from "./queue";
 import { Dirent } from "fs";
 import { Output } from "../types";
 import { Counter } from "./counter";
+import { Aborter } from "./aborter";
 
 export class Walker<TOutput extends Output> {
   private readonly root: string;
@@ -48,7 +49,7 @@ export class Walker<TOutput extends Output> {
       ),
       symlinks: new Map(),
       visited: [""].slice(0, 0),
-      controller: new AbortController(),
+      controller: new Aborter(),
     };
 
     /*
@@ -94,7 +95,7 @@ export class Walker<TOutput extends Output> {
     } = this.state;
 
     if (
-      controller.signal.aborted ||
+      controller.aborted ||
       (signal && signal.aborted) ||
       (maxFiles && paths.length > maxFiles)
     )
