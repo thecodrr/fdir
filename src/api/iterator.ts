@@ -2,7 +2,7 @@ import { Options, IterableOutput } from "../types";
 import { Walker } from "./walker";
 
 class WalkerIterator<TOutput extends IterableOutput> {
-  #resolver?: (result: TOutput[number]) => void;
+  #resolver?: () => void;
   #walker: Walker<TOutput>;
   #currentGroup?: string[];
   #queue: TOutput[number][] = [];
@@ -30,13 +30,18 @@ class WalkerIterator<TOutput extends IterableOutput> {
     if (this.#resolver) {
       const resolver = this.#resolver;
       this.#resolver = undefined;
-      resolver(result);
+      resolver();
     }
   };
 
   #onComplete = () => {
     this.#currentGroup = undefined;
     this.#complete = true;
+    if (this.#resolver) {
+      const resolver = this.#resolver;
+      this.#resolver = undefined;
+      resolver();
+    }
   };
 
   async *[Symbol.asyncIterator]() {
@@ -50,7 +55,7 @@ class WalkerIterator<TOutput extends IterableOutput> {
         return;
       }
 
-      await new Promise<TOutput[number]>((resolve) => {
+      await new Promise<void>((resolve) => {
         this.#resolver = resolve;
       });
     }
