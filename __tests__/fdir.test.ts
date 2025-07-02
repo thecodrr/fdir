@@ -380,22 +380,22 @@ for (const type of apiTypes) {
   });
 }
 
-test(`[async] crawl directory & use abort signal to abort`, async (t) => {
-  // AbortController is not present on Node v14
-  if (!("AbortController" in globalThis)) return;
-
-  const totalFiles = new fdir().onlyCounts().crawl("node_modules").sync();
-  const abortController = new AbortController();
-  const api = new fdir()
-    .withAbortSignal(abortController.signal)
-    .filter((p) => {
-      if (p.endsWith(".js")) abortController.abort();
-      return true;
-    })
-    .crawl("node_modules");
-  const files = await api.withPromise();
-  t.expect(files.length).toBeLessThan(totalFiles.files);
-});
+// AbortController is not present on Node v14
+if ("AbortController" in globalThis) {
+  test(`[async] crawl directory & use abort signal to abort`, async (t) => {
+    const totalFiles = new fdir().onlyCounts().crawl("node_modules").sync();
+    const abortController = new AbortController();
+    const api = new fdir()
+      .withAbortSignal(abortController.signal)
+      .filter((p) => {
+        if (p.endsWith(".js")) abortController.abort();
+        return true;
+      })
+      .crawl("node_modules");
+    const files = await api.withPromise();
+    t.expect(files.length).toBeLessThan(totalFiles.files);
+  });
+}
 
 test(`paths should never start with ./`, async (t) => {
   const apis = [
