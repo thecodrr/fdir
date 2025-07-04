@@ -3,15 +3,17 @@ import { Group, Options } from "../../types";
 export type GroupFilesFunction = (
   groups: Group[],
   directory: string,
-  files: string[]
+  files: string[],
+  pushGroup: (group: Group, arr: Group[]) => void
 ) => void;
 
 const groupFiles: GroupFilesFunction = (
   groups: Group[],
   directory: string,
-  files: string[]
+  files: string[],
+  pushGroup
 ) => {
-  groups.push({ directory, files, dir: directory });
+  pushGroup({ directory, files, dir: directory }, groups);
 };
 
 const empty: GroupFilesFunction = () => {};
