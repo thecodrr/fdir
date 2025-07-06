@@ -53,14 +53,19 @@ class WalkerIterator<TOutput extends IterableOutput> {
 
     try {
       while (true) {
-        yield* this.#queue;
+        for (const item of this.#queue) {
+          if (this.#walker.aborted || this.#complete) {
+            break;
+          }
+          yield item;
+        }
         this.#queue = [];
 
         if (this.#error) {
           throw this.#error;
         }
 
-        if (this.#complete) {
+        if (this.#complete || this.#walker.aborted) {
           return;
         }
 

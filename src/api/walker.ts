@@ -82,6 +82,14 @@ export class Walker<TOutput extends Output> {
       });
   }
 
+  get aborted(): boolean {
+    const {
+      controller,
+      options: { signal },
+    } = this.state;
+    return controller.aborted || (signal !== undefined && signal.aborted);
+  }
+
   start(): TOutput | null {
     this.pushDirectory(
       this.root,
@@ -113,16 +121,13 @@ export class Walker<TOutput extends Output> {
         excludeSymlinks,
         exclude,
         maxFiles,
-        signal,
         useRealPaths,
         pathSeparator,
       },
-      controller,
     } = this.state;
 
     if (
-      controller.aborted ||
-      (signal && signal.aborted) ||
+      this.aborted ||
       (maxFiles && counts.directories + counts.files > maxFiles)
     )
       return;
@@ -133,7 +138,7 @@ export class Walker<TOutput extends Output> {
         break;
       }
 
-      if (this.state.controller.aborted || (signal && signal.aborted)) {
+      if (this.aborted) {
         break;
       }
 
