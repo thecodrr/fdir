@@ -100,6 +100,10 @@ export class Walker<TOutput extends Output> {
     return this.isSynchronous ? this.callbackInvoker(this.state, null) : null;
   }
 
+  stop(): void {
+    this.state.controller.abort();
+  }
+
   private walk = (entries: Dirent[], directoryPath: string, depth: number) => {
     const {
       counts,

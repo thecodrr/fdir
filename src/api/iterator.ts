@@ -51,21 +51,25 @@ class WalkerIterator<TOutput extends IterableOutput> {
   async *[Symbol.asyncIterator]() {
     this.#walker.start();
 
-    while (true) {
-      yield* this.#queue;
-      this.#queue = [];
+    try {
+      while (true) {
+        yield* this.#queue;
+        this.#queue = [];
 
-      if (this.#error) {
-        throw this.#error;
+        if (this.#error) {
+          throw this.#error;
+        }
+
+        if (this.#complete) {
+          return;
+        }
+
+        await new Promise<void>((resolve) => {
+          this.#resolver = resolve;
+        });
       }
-
-      if (this.#complete) {
-        return;
-      }
-
-      await new Promise<void>((resolve) => {
-        this.#resolver = resolve;
-      });
+    } finally {
+      this.#walker.stop();
     }
   }
 
