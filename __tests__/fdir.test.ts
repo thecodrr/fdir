@@ -401,8 +401,8 @@ for (const type of apiTypes) {
     const api = new fdir({
       fs: fakeFs,
     }).crawl("node_modules");
-    await api[type]();
-    if (type === "withPromise") {
+    await execute(api, type);
+    if (type === "withPromise" || type === "withIterator") {
       t.expect(readdirStub).toHaveBeenCalled();
     } else {
       t.expect(readdirSyncStub).toHaveBeenCalled();
@@ -490,4 +490,28 @@ test(`do not convert \\\\ to \\`, async (t) => {
   t.expect(convertSlashes("\\\\wsl.localhost\\Ubuntu\\home\\", "\\")).toBe(
     "\\\\wsl.localhost\\Ubuntu\\home\\"
   );
+});
+
+test("interrupted iterator should stop yielding results", async (t) => {
+  const api = new fdir().crawl("./src");
+  const iterator = api.withIterator()[Symbol.asyncIterator]();
+  const results: string[] = [];
+  let next = await iterator.next();
+  do {
+    results.push(next.value);
+    iterator.return?.();
+  } while (next.done !== false);
+  t.expect(results.length).toBe(1);
+});
+
+test("aborted iterator should stop yielding results", async (t) => {
+  const aborter = new AbortController();
+  const api = new fdir().withAbortSignal(aborter.signal).crawl("./src");
+  const iterator = api.withIterator();
+  const results: string[] = [];
+  for await (const value of iterator) {
+    results.push(value);
+    aborter.abort();
+  }
+  t.expect(results.length).toBe(1);
 });
