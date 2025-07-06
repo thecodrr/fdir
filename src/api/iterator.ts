@@ -54,7 +54,7 @@ class WalkerIterator<TOutput extends IterableOutput> {
     try {
       while (true) {
         for (const item of this.#queue) {
-          if (this.#walker.aborted || this.#complete) {
+          if (this.#walker.aborted) {
             break;
           }
           yield item;
