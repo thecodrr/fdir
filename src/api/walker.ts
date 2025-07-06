@@ -133,6 +133,10 @@ export class Walker<TOutput extends Output> {
         break;
       }
 
+      if (this.state.controller.aborted || (signal && signal.aborted)) {
+        break;
+      }
+
       const entry = entries[i];
 
       if (
