@@ -1,5 +1,5 @@
-import { Output, Options } from "../types";
-import { Walker } from "./walker";
+import type { Output, Options } from "../types.ts";
+import { Walker } from "./walker.ts";
 
 export function sync<TOutput extends Output>(
   root: string,

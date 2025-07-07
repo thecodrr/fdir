@@ -21,7 +21,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           check-latest: true
-      - run: npm i
+          cache: npm
+      - run: npm ci
       - run: npm run test:coverage
         env:
           CI: true

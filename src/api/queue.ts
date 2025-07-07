@@ -1,4 +1,4 @@
-import { WalkerState } from "../types";
+import type { WalkerState } from "../types.ts";
 
 type OnQueueEmptyCallback = (error: Error | null, output: WalkerState) => void;
 /**
@@ -8,7 +8,11 @@ type OnQueueEmptyCallback = (error: Error | null, output: WalkerState) => void;
  */
 export class Queue {
   count: number = 0;
-  constructor(private onQueueEmpty?: OnQueueEmptyCallback) {}
+  private onQueueEmpty?: OnQueueEmptyCallback;
+
+  constructor(onQueueEmpty?: OnQueueEmptyCallback) {
+    this.onQueueEmpty = onQueueEmpty;
+  }
 
   enqueue() {
     this.count++;

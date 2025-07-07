@@ -1,20 +1,19 @@
 import { basename, dirname } from "path";
-import { isRootDirectory, normalizePath } from "../utils";
-import { ResultCallback, WalkerState, Options } from "../types";
-import * as joinPath from "./functions/join-path";
-import * as pushDirectory from "./functions/push-directory";
-import * as pushFile from "./functions/push-file";
-import * as getArray from "./functions/get-array";
-import * as groupFiles from "./functions/group-files";
-import * as resolveSymlink from "./functions/resolve-symlink";
-import * as invokeCallback from "./functions/invoke-callback";
-import * as walkDirectory from "./functions/walk-directory";
-import { Queue } from "./queue";
-import type { Dirent } from "fs";
-import * as nativeFs from "fs";
-import { Output } from "../types";
-import { Counter } from "./counter";
-import { Aborter } from "./aborter";
+import nativeFs, { type Dirent } from "fs";
+import { isRootDirectory, normalizePath } from "../utils.ts";
+import type { ResultCallback, WalkerState, Options } from "../types.ts";
+import * as joinPath from "./functions/join-path.ts";
+import * as pushDirectory from "./functions/push-directory.ts";
+import * as pushFile from "./functions/push-file.ts";
+import * as getArray from "./functions/get-array.ts";
+import * as groupFiles from "./functions/group-files.ts";
+import * as resolveSymlink from "./functions/resolve-symlink.ts";
+import * as invokeCallback from "./functions/invoke-callback.ts";
+import * as walkDirectory from "./functions/walk-directory.ts";
+import { Queue } from "./queue.ts";
+import type { Output } from "../types.ts";
+import { Counter } from "./counter.ts";
+import { Aborter } from "./aborter.ts";
 
 export class Walker<TOutput extends Output> {
   private readonly root: string;

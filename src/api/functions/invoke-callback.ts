@@ -1,4 +1,4 @@
-import {
+import type {
   Output,
   PathsOutput,
   OnlyCountsOutput,
@@ -6,7 +6,7 @@ import {
   ResultCallback,
   WalkerState,
   Options,
-} from "../../types";
+} from "../../types.ts";
 
 export type InvokeCallbackFunction<TOutput extends Output> = (
   state: WalkerState,

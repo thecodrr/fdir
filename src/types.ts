@@ -1,6 +1,6 @@
-import { Aborter } from "./api/aborter";
-import { Queue } from "./api/queue";
-import type * as nativeFs from "fs";
+import type fs from 'fs';
+import { Aborter } from "./api/aborter.ts";
+import { Queue } from "./api/queue.ts";
 
 export type Counts = {
   files: number;
@@ -28,12 +28,12 @@ export type PathsOutput = string[];
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
 
 export type FSLike = {
-  readdir: typeof nativeFs.readdir;
-  readdirSync: typeof nativeFs.readdirSync;
-  realpath: typeof nativeFs.realpath;
-  realpathSync: typeof nativeFs.realpathSync;
-  stat: typeof nativeFs.stat;
-  statSync: typeof nativeFs.statSync;
+  readdir: typeof fs.readdir;
+  readdirSync: typeof fs.readdirSync;
+  realpath: typeof fs.realpath;
+  realpathSync: typeof fs.realpathSync;
+  stat: typeof fs.stat;
+  statSync: typeof fs.statSync;
 };
 
 export type WalkerState = {
