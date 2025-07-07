@@ -7,6 +7,9 @@ import { convertSlashes } from "../src/utils";
 import picomatch from "picomatch";
 import { apiTypes, APITypes, cwd, restricted, root, execute } from "./utils";
 
+// AbortController is not present on Node v14
+const hasAbortController = "AbortController" in globalThis;
+
 beforeEach(() => {
   mock.restore();
 });
@@ -410,9 +413,9 @@ for (const type of apiTypes) {
   });
 }
 
-// AbortController is not present on Node v14
-if ("AbortController" in globalThis) {
-  test(`[async] crawl directory & use abort signal to abort`, async (t) => {
+test.runIf(hasAbortController)(
+  `[async] crawl directory & use abort signal to abort`,
+  async (t) => {
     const totalFiles = new fdir().onlyCounts().crawl("node_modules").sync();
     const abortController = new AbortController();
     const api = new fdir()
@@ -424,8 +427,8 @@ if ("AbortController" in globalThis) {
       .crawl("node_modules");
     const files = await api.withPromise();
     t.expect(files.length).toBeLessThan(totalFiles.files);
-  });
-}
+  }
+);
 
 test(`paths should never start with ./`, async (t) => {
   const apis = [
@@ -504,14 +507,17 @@ test("interrupted iterator should stop yielding results", async (t) => {
   t.expect(results.length).toBe(1);
 });
 
-test("aborted iterator should stop yielding results", async (t) => {
-  const aborter = new AbortController();
-  const api = new fdir().withAbortSignal(aborter.signal).crawl("./src");
-  const iterator = api.withIterator();
-  const results: string[] = [];
-  for await (const value of iterator) {
-    results.push(value);
-    aborter.abort();
+test.runIf(hasAbortController)(
+  "aborted iterator should stop yielding results",
+  async (t) => {
+    const aborter = new AbortController();
+    const api = new fdir().withAbortSignal(aborter.signal).crawl("./src");
+    const iterator = api.withIterator();
+    const results: string[] = [];
+    for await (const value of iterator) {
+      results.push(value);
+      aborter.abort();
+    }
+    t.expect(results.length).toBe(1);
   }
-  t.expect(results.length).toBe(1);
-});
+);
