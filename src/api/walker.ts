@@ -71,12 +71,12 @@ export class Walker<TOutput extends Output> {
     this.resolveSymlink = resolveSymlink.build(options, this.isSynchronous);
     this.walkDirectory = walkDirectory.build(this.isSynchronous);
     this.pushPath =
-      pushPath ??
+      pushPath ||
       ((p, arr) => {
         arr.push(p);
       });
     this.pushGroup =
-      pushGroup ??
+      pushGroup ||
       ((group, arr) => {
         arr.push(group);
       });
