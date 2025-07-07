@@ -8,18 +8,18 @@ import {
   FilterPredicate,
   ExcludePredicate,
   GlobFunction,
+  GlobMatcher,
   GlobParams,
 } from "../types";
 import { APIBuilder } from "./api-builder";
 import type picomatch from "picomatch";
-import type { Matcher } from "picomatch";
 
-var pm: typeof picomatch | null = null;
+let pm: typeof picomatch | null = null;
 /* c8 ignore next 6 */
 try {
   require.resolve("picomatch");
   pm = require("picomatch");
-} catch (_e) {
+} catch {
   // do nothing
 }
 
@@ -27,7 +27,7 @@ export class Builder<
   TReturnType extends Output = PathsOutput,
   TGlobFunction = typeof picomatch,
 > {
-  private readonly globCache: Record<string, Matcher> = {};
+  private readonly globCache: Record<string, GlobMatcher> = {};
   private options: Options<TGlobFunction> = {
     maxDepth: Infinity,
     suppressErrors: true,
