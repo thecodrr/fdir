@@ -1,5 +1,5 @@
-import { Output, Options, ResultCallback } from "../types";
-import { Walker } from "./walker";
+import type { Output, Options, ResultCallback } from "../types.ts";
+import { Walker } from "./walker.ts";
 
 export function promise<TOutput extends Output>(
   root: string,

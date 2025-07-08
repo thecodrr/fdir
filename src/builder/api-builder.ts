@@ -1,12 +1,15 @@
-import { callback, promise } from "../api/async";
-import { sync } from "../api/sync";
-import { Options, Output, ResultCallback } from "../types";
+import { callback, promise } from "../api/async.ts";
+import { sync } from "../api/sync.ts";
+import type { Options, Output, ResultCallback } from "../types.ts";
 
 export class APIBuilder<TReturnType extends Output> {
-  constructor(
-    private readonly root: string,
-    private readonly options: Options
-  ) {}
+  private readonly root: string;
+  private readonly options: Options;
+
+  constructor(root: string, options: Options) {
+    this.root = root;
+    this.options = options;
+  }
 
   withPromise(): Promise<TReturnType> {
     return promise(this.root, this.options);

@@ -1,5 +1,5 @@
 import { sep, normalize, resolve } from "path";
-import { PathSeparator } from "./types";
+import type { PathSeparator } from "./types.ts";
 
 export function cleanPath(path: string) {
   let normalized = normalize(path);

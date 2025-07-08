@@ -1,5 +1,5 @@
-import { WalkerState } from "../../types";
 import type { Dirent } from "fs";
+import type { WalkerState } from "../../types.ts";
 
 export type WalkDirectoryFunction = (
   state: WalkerState,

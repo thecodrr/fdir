@@ -1,5 +1,5 @@
 import { sep } from "path";
-import {
+import type {
   Output,
   OnlyCountsOutput,
   GroupOutput,
@@ -10,8 +10,8 @@ import {
   GlobFunction,
   GlobMatcher,
   GlobParams,
-} from "../types";
-import { APIBuilder } from "./api-builder";
+} from "../types.ts";
+import { APIBuilder } from "./api-builder.ts";
 import type picomatch from "picomatch";
 
 let pm: typeof picomatch | null = null;
