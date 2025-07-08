@@ -17,6 +17,9 @@
     "bench:fdir": "ts-node benchmarks/fdir-benchmark.ts",
     "release": "./scripts/release.sh"
   },
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thecodrr/fdir.git"
