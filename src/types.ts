@@ -30,7 +30,7 @@ export type IterableOutput = PathsOutput | GroupOutput;
 export type OutputIterator<T extends IterableOutput> = AsyncGenerator<
   T[number],
   void,
-  void
+  undefined
 >;
 
 export type FSLike = {
