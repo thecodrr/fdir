@@ -497,12 +497,12 @@ test(`do not convert \\\\ to \\`, async (t) => {
 
 test("interrupted iterator should stop yielding results", async (t) => {
   const api = new fdir().crawl("./src");
-  const iterator = api.withIterator()[Symbol.asyncIterator]();
-  const results: string[] = [];
+  const iterator = api.withIterator();
+  const results: (string | void)[] = [];
   let next = await iterator.next();
   do {
     results.push(next.value);
-    iterator.return?.();
+    iterator.return();
   } while (next.done !== false);
   t.expect(results.length).toBe(1);
 });

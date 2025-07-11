@@ -1,7 +1,13 @@
 import { callback, promise } from "../api/async";
 import { sync } from "../api/sync";
 import { iterator } from "../api/iterator";
-import { Options, Output, ResultCallback, IterableOutput } from "../types";
+import {
+  Options,
+  Output,
+  ResultCallback,
+  IterableOutput,
+  OutputIterator,
+} from "../types";
 
 export class APIBuilder<TReturnType extends Output> {
   constructor(
@@ -22,7 +28,7 @@ export class APIBuilder<TReturnType extends Output> {
   }
 
   withIterator(): TReturnType extends IterableOutput
-    ? AsyncIterable<TReturnType[number]>
+    ? OutputIterator<TReturnType>
     : never {
     // TODO (43081j): get rid of this awful `never`
     return iterator(this.root, this.options) as never;

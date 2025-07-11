@@ -27,6 +27,11 @@ export type PathsOutput = string[];
 
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
 export type IterableOutput = PathsOutput | GroupOutput;
+export type OutputIterator<T extends IterableOutput> = AsyncGenerator<
+  T[number],
+  void,
+  void
+>;
 
 export type FSLike = {
   readdir: typeof nativeFs.readdir;
