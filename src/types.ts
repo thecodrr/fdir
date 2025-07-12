@@ -26,7 +26,7 @@ export type OnlyCountsOutput = Counts;
 export type PathsOutput = string[];
 
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
-export type IterableOutput = PathsOutput | GroupOutput;
+export type IterableOutput = PathsOutput;
 export type OutputIterator<T extends IterableOutput> = AsyncGenerator<
   T[number],
   void,

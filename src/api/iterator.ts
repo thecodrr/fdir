@@ -1,5 +1,6 @@
 import { Options, IterableOutput, OutputIterator } from "../types";
 import { Walker } from "./walker";
+import { IteratorWalker } from "./iterator-walker";
 
 class WalkerIterator<TOutput extends IterableOutput> {
   #resolver?: () => void;
@@ -85,6 +86,6 @@ export function iterator<TOutput extends IterableOutput>(
   root: string,
   options: Options
 ): AsyncIterable<TOutput[number]> {
-  const walker = new WalkerIterator<TOutput>(root, options);
+  const walker = new IteratorWalker<TOutput>(root, options);
   return walker.start();
 }
