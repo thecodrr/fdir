@@ -2,8 +2,6 @@ import { basename, dirname } from "path";
 import { isRootDirectory, normalizePath } from "../utils";
 import { WalkerState, Options, OutputIterator, IterableOutput } from "../types";
 import * as joinPath from "./functions/join-path";
-import * as pushDirectory from "./functions/push-directory";
-import * as pushFile from "./functions/push-file";
 import * as resolveSymlink from "./functions/resolve-symlink";
 import { Queue } from "./queue";
 import type { Dirent } from "fs";
@@ -16,10 +14,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
   private readonly root: string;
   private readonly state: WalkerState;
   private readonly joinPath: joinPath.JoinPathFunction;
-  private readonly pushDirectory: pushDirectory.PushDirectoryFunction;
-  private readonly pushFile: pushFile.PushFileFunction;
   private readonly resolveSymlink: resolveSymlink.ResolveSymlinkFunction | null;
-  #complete = false;
 
   constructor(root: string, options: Options) {
     this.root = normalizePath(root, options);
@@ -37,8 +32,6 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     };
 
     this.joinPath = joinPath.build(this.root, options);
-    this.pushDirectory = pushDirectory.build(this.root, options);
-    this.pushFile = pushFile.build(options);
     this.resolveSymlink = resolveSymlink.build(options, false);
   }
 
@@ -50,40 +43,44 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     return controller.aborted || (signal !== undefined && signal.aborted);
   }
 
-  #pushDirectory(directoryPath: string): Promise<string | null> {
-    return new Promise<string | null>((resolve) => {
-      let pushed: string | null = null;
-      // this is synchronous. if we ever make pushDirectory async,
-      // rework everything!
-      this.pushDirectory(
-        directoryPath,
-        this.state.paths,
-        (pushedPath) => {
-          pushed = pushedPath;
-        },
-        this.state.counts,
-        this.state.options.filters
-      );
-      resolve(pushed);
-    });
+  #shouldPushDirectory(directoryPath: string): boolean {
+    const { options } = this.state;
+    const { includeDirs, filters } = options;
+
+    if (!includeDirs) {
+      return false;
+    }
+
+    if (filters && filters.length) {
+      return filters.every((filter) => filter(directoryPath, true));
+    }
+
+    return true;
   }
 
-  #pushFile(filePath: string): Promise<string | null> {
-    return new Promise<string | null>((resolve) => {
-      let pushed: string | null = null;
-      // this is synchronous. if we ever make pushFile async,
-      // rework everything!
-      this.pushFile(
-        filePath,
-        this.state.paths,
-        (pushedPath) => {
-          pushed = pushedPath;
-        },
-        this.state.counts,
-        this.state.options.filters
-      );
-      resolve(pushed);
-    });
+  #normalizeDirectoryPath(path: string): string {
+    const { options } = this.state;
+    const { relativePaths } = options;
+
+    if (relativePaths) {
+      return path.substring(this.root.length) || ".";
+    }
+    return path || ".";
+  }
+
+  #shouldPushFile(filePath: string): boolean {
+    const { options } = this.state;
+    const { excludeFiles, filters } = options;
+
+    if (excludeFiles) {
+      return false;
+    }
+
+    if (filters && filters.length) {
+      return filters.every((filter) => filter(filePath, false));
+    }
+
+    return true;
   }
 
   async #resolveSymlink(
@@ -96,6 +93,9 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     }
 
     try {
+      // TODO (43081j): probably just enforce the FSLike interface has a
+      // `promises` property, and use the normal async methods instead of
+      // promisifying
       const resolvedPath = await promisify(fs.realpath)(symlinkPath);
       const stat = await promisify(fs.stat)(resolvedPath);
 
@@ -152,10 +152,12 @@ export class IteratorWalker<TOutput extends IterableOutput> {
         pathSeparator,
       },
     } = this.state;
-    let pushedPath = await this.#pushDirectory(this.root);
 
-    if (pushedPath !== null) {
-      yield pushedPath;
+    const normalizedRoot = this.#normalizeDirectoryPath(this.root);
+
+    if (this.#shouldPushDirectory(normalizedRoot)) {
+      counts.directories++;
+      yield normalizedRoot;
     }
 
     const toWalk: Array<{
@@ -176,7 +178,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     };
 
     while (currentWalk) {
-      if (this.aborted || this.#complete) {
+      if (this.aborted) {
         break;
       }
       if (maxFiles && counts.directories + counts.files > maxFiles) {
@@ -202,9 +204,9 @@ export class IteratorWalker<TOutput extends IterableOutput> {
           (entry.isSymbolicLink() && !resolveSymlinks && !excludeSymlinks)
         ) {
           const filename = this.joinPath(entry.name, currentWalk.directoryPath);
-          pushedPath = await this.#pushFile(filename);
-          if (pushedPath !== null) {
-            yield pushedPath;
+          if (this.#shouldPushFile(filename)) {
+            counts.files++;
+            yield filename;
           }
         } else if (entry.isDirectory()) {
           let path = joinPath.joinDirectoryPath(
@@ -213,9 +215,10 @@ export class IteratorWalker<TOutput extends IterableOutput> {
             this.state.options.pathSeparator
           );
           if (exclude && exclude(entry.name, path)) continue;
-          pushedPath = await this.#pushDirectory(path);
-          if (pushedPath !== null) {
-            yield pushedPath;
+          const normalizedPath = this.#normalizeDirectoryPath(path);
+          if (this.#shouldPushDirectory(normalizedPath)) {
+            counts.directories++;
+            yield normalizedPath;
           }
           toWalk.push({
             directoryPath: path,
@@ -263,11 +266,10 @@ export class IteratorWalker<TOutput extends IterableOutput> {
               dirname(normalized),
               this.state.options
             );
-            pushedPath = await this.#pushFile(
-              this.joinPath(filename, directoryPath)
-            );
-            if (pushedPath !== null) {
-              yield pushedPath;
+            const fullPath = this.joinPath(filename, directoryPath);
+            if (this.#shouldPushFile(fullPath)) {
+              counts.files++;
+              yield fullPath;
             }
           }
         }
