@@ -14,7 +14,6 @@ export class IteratorWalker<TOutput extends IterableOutput> {
   private readonly root: string;
   private readonly state: WalkerState;
   private readonly joinPath: joinPath.JoinPathFunction;
-  private readonly resolveSymlink: resolveSymlink.ResolveSymlinkFunction | null;
 
   constructor(root: string, options: Options) {
     this.root = normalizePath(root, options);
@@ -32,7 +31,6 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     };
 
     this.joinPath = joinPath.build(this.root, options);
-    this.resolveSymlink = resolveSymlink.build(options, false);
   }
 
   get aborted(): boolean {
@@ -43,7 +41,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     return controller.aborted || (signal !== undefined && signal.aborted);
   }
 
-  #shouldPushDirectory(directoryPath: string): boolean {
+  private shouldPushDirectory(directoryPath: string): boolean {
     const { options } = this.state;
     const { includeDirs, filters } = options;
 
@@ -58,7 +56,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     return true;
   }
 
-  #normalizeDirectoryPath(path: string): string {
+  private normalizeDirectoryPath(path: string): string {
     const { options } = this.state;
     const { relativePaths } = options;
 
@@ -68,7 +66,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     return path || ".";
   }
 
-  #shouldPushFile(filePath: string): boolean {
+  private shouldPushFile(filePath: string): boolean {
     const { options } = this.state;
     const { excludeFiles, filters } = options;
 
@@ -83,7 +81,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     return true;
   }
 
-  async #resolveSymlink(
+  private async resolveSymlink(
     symlinkPath: string
   ): Promise<{ stat: nativeFs.Stats; resolvedPath: string } | null> {
     const { fs, options } = this.state;
@@ -114,7 +112,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
     return null;
   }
 
-  async #walkDirectory(crawlPath: string, depth: number): Promise<Dirent[]> {
+  async walkDirectory(crawlPath: string, depth: number): Promise<Dirent[]> {
     const { state } = this;
     const {
       fs,
@@ -153,9 +151,9 @@ export class IteratorWalker<TOutput extends IterableOutput> {
       },
     } = this.state;
 
-    const normalizedRoot = this.#normalizeDirectoryPath(this.root);
+    const normalizedRoot = this.normalizeDirectoryPath(this.root);
 
-    if (this.#shouldPushDirectory(normalizedRoot)) {
+    if (this.shouldPushDirectory(normalizedRoot)) {
       counts.directories++;
       yield normalizedRoot;
     }
@@ -185,7 +183,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
         break;
       }
 
-      const results = await this.#walkDirectory(
+      const results = await this.walkDirectory(
         currentWalk.crawlPath,
         currentWalk.depth
       );
@@ -204,7 +202,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
           (entry.isSymbolicLink() && !resolveSymlinks && !excludeSymlinks)
         ) {
           const filename = this.joinPath(entry.name, currentWalk.directoryPath);
-          if (this.#shouldPushFile(filename)) {
+          if (this.shouldPushFile(filename)) {
             counts.files++;
             yield filename;
           }
@@ -215,8 +213,8 @@ export class IteratorWalker<TOutput extends IterableOutput> {
             this.state.options.pathSeparator
           );
           if (exclude && exclude(entry.name, path)) continue;
-          const normalizedPath = this.#normalizeDirectoryPath(path);
-          if (this.#shouldPushDirectory(normalizedPath)) {
+          const normalizedPath = this.normalizeDirectoryPath(path);
+          if (this.shouldPushDirectory(normalizedPath)) {
             counts.directories++;
             yield normalizedPath;
           }
@@ -225,12 +223,12 @@ export class IteratorWalker<TOutput extends IterableOutput> {
             crawlPath: path,
             depth: currentWalk.depth - 1,
           });
-        } else if (this.resolveSymlink && entry.isSymbolicLink()) {
+        } else if (entry.isSymbolicLink()) {
           let path = joinPath.joinPathWithBasePath(
             entry.name,
             currentWalk.directoryPath
           );
-          const resolvedSymlink = await this.#resolveSymlink(path);
+          const resolvedSymlink = await this.resolveSymlink(path);
 
           if (resolvedSymlink === null) {
             continue;
@@ -267,7 +265,7 @@ export class IteratorWalker<TOutput extends IterableOutput> {
               this.state.options
             );
             const fullPath = this.joinPath(filename, directoryPath);
-            if (this.#shouldPushFile(fullPath)) {
+            if (this.shouldPushFile(fullPath)) {
               counts.files++;
               yield fullPath;
             }
