@@ -1,6 +1,6 @@
 {
   "name": "fdir",
-  "version": "6.4.6",
+  "version": "6.5.0",
   "description": "The fastest directory crawler & globbing alternative to glob, fast-glob, & tiny-glob. Crawls 1m files in < 1s",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.cts",
