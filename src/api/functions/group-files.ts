@@ -1,4 +1,4 @@
-import { Group, Options } from "../../types";
+import type { Group, Options } from "../../types.ts";
 
 export type GroupFilesFunction = (
   groups: Group[],

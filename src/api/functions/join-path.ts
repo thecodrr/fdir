@@ -1,6 +1,6 @@
 import { relative } from "path";
-import { Options, PathSeparator } from "../../types";
-import { convertSlashes } from "../../utils";
+import type { Options, PathSeparator } from "../../types.ts";
+import { convertSlashes } from "../../utils.ts";
 
 export function joinPathWithBasePath(filename: string, directoryPath: string) {
   return directoryPath + filename;

@@ -1,5 +1,5 @@
 import child_process from "child_process";
-import { Fdir } from "../src/index";
+import { Fdir } from "../src/index.ts";
 import b from "benny";
 
 type Version = (typeof versions)[number] | "current";

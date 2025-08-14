@@ -1,4 +1,4 @@
-import { fdir } from "../src/index";
+import { fdir } from "../src/index.ts";
 import { fdir as fdir5 } from "fdir5";
 import { fdir as fdir4 } from "fdir4";
 import fdir3 from "fdir3";
@@ -17,7 +17,7 @@ import { getAllFilesSync, getAllFiles } from "get-all-files";
 import packageJson from "../package.json";
 import { readFileSync, readdirSync, writeFileSync } from "fs";
 import CSV2MD from "csv-to-markdown-table";
-import { getSystemInfo } from "./export";
+import { getSystemInfo } from "./export.ts";
 import { readdir } from "fs/promises";
 
 async function benchmark() {
