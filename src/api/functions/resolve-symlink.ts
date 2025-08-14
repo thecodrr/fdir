@@ -68,7 +68,11 @@ export function build(
   return isSynchronous ? resolveSymlinks : resolveSymlinksAsync;
 }
 
-function isRecursive(path: string, resolved: string, state: WalkerState) {
+export function isRecursive(
+  path: string,
+  resolved: string,
+  state: WalkerState
+) {
   if (state.options.useRealPaths)
     return isRecursiveUsingRealPaths(resolved, state);
 

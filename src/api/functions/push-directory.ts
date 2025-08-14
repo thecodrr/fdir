@@ -1,40 +1,53 @@
-import { FilterPredicate, Options } from "../../types";
+import { FilterPredicate, Options, Counts } from "../../types";
 
 export type PushDirectoryFunction = (
   directoryPath: string,
   paths: string[],
+  pushPath: (path: string, arr: string[]) => void,
+  counts: Counts,
   filters?: FilterPredicate[]
 ) => void;
 
 function pushDirectoryWithRelativePath(root: string): PushDirectoryFunction {
-  return function (directoryPath, paths) {
-    paths.push(directoryPath.substring(root.length) || ".");
+  return function (directoryPath, paths, pushPath, counts) {
+    pushPath(directoryPath.substring(root.length) || ".", paths);
+    counts.directories++;
   };
 }
 
 function pushDirectoryFilterWithRelativePath(
   root: string
 ): PushDirectoryFunction {
-  return function (directoryPath, paths, filters) {
+  return function (directoryPath, paths, pushPath, counts, filters) {
     const relativePath = directoryPath.substring(root.length) || ".";
     if (filters!.every((filter) => filter(relativePath, true))) {
-      paths.push(relativePath);
+      pushPath(relativePath, paths);
+      counts.directories++;
     }
   };
 }
 
-const pushDirectory: PushDirectoryFunction = (directoryPath, paths) => {
-  paths.push(directoryPath || ".");
+const pushDirectory: PushDirectoryFunction = (
+  directoryPath,
+  paths,
+  pushPath,
+  counts
+) => {
+  pushPath(directoryPath || ".", paths);
+  counts.directories++;
 };
 
 const pushDirectoryFilter: PushDirectoryFunction = (
   directoryPath,
   paths,
+  pushPath,
+  counts,
   filters
 ) => {
   const path = directoryPath || ".";
   if (filters!.every((filter) => filter(path, true))) {
-    paths.push(path);
+    pushPath(path, paths);
+    counts.directories++;
   }
 };
 
