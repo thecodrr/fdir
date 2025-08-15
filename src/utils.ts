@@ -40,7 +40,8 @@ export function normalizePath(
 
   if (path === ".") return "";
 
-  const needsSeperator = path[path.length - 1] !== pathSeparator;
+  const needsSeperator =
+    path[path.length - 1] !== "/" && path[path.length - 1] !== "\\";
   return convertSlashes(
     needsSeperator ? path + pathSeparator : path,
     pathSeparator

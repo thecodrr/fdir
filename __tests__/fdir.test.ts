@@ -527,3 +527,9 @@ test(`do not convert \\\\ to \\`, async (t) => {
     "\\\\wsl.localhost\\Ubuntu\\home\\"
   );
 });
+
+test(`do not add a separator if path already ends with one`, async (t) => {
+  t.expect(normalizePath("some-root/", { pathSeparator: "\\" })).toBe(
+    "some-root\\"
+  );
+});
