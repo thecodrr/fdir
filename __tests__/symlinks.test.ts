@@ -153,7 +153,7 @@ for (const type of apiTypes) {
     });
 
     test(`resolve symlinks`, async (t) => {
-      const api = new fdir().withSymlinks().crawl("/some/dir");
+      const api = new fdir().withErrors().withSymlinks().crawl("/some/dir");
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize([
@@ -165,7 +165,7 @@ for (const type of apiTypes) {
     });
 
     test(`resolve recursive symlinks`, async (t) => {
-      const api = new fdir().withSymlinks().crawl("/recursive");
+      const api = new fdir().withErrors().withSymlinks().crawl("/recursive");
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize([
@@ -182,6 +182,7 @@ for (const type of apiTypes) {
 
     test(`resolve recursive symlinks (real paths: false)`, async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks({ resolvePaths: false })
         .crawl("/recursive");
       const files = await api[type]();
@@ -230,6 +231,7 @@ for (const type of apiTypes) {
 
     test(`resolve recursive symlinks (real paths: false, relative paths: true)`, async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks({ resolvePaths: false })
         .withRelativePaths()
         .withErrors()
@@ -280,6 +282,7 @@ for (const type of apiTypes) {
 
     test(`resolve recursive symlinks (real paths: true, relative paths: true)`, async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks()
         .withRelativePaths()
         .withErrors()
@@ -300,6 +303,7 @@ for (const type of apiTypes) {
 
     test(`resolve symlinks (real paths: false)`, async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks({ resolvePaths: false })
         .crawl("/some/dir");
       const files = await api[type]();
@@ -314,6 +318,7 @@ for (const type of apiTypes) {
 
     test(`resolve symlinks (real paths: false, relative paths: true)`, async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks({ resolvePaths: false })
         .withRelativePaths()
         .crawl("/some/dir");
@@ -329,6 +334,7 @@ for (const type of apiTypes) {
 
     test(`resolve symlinks (real paths: true, relative paths: true)`, async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks()
         .withRelativePaths()
         .crawl("./relative/dir");
@@ -344,6 +350,7 @@ for (const type of apiTypes) {
 
     test("resolve symlinks (exclude /sym/linked/)", async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks()
         .exclude((_name, path) => path === resolveSymlinkRoot("/sym/linked/"))
         .crawl("/some/dir");
@@ -353,6 +360,7 @@ for (const type of apiTypes) {
 
     test("resolve symlinks (exclude /some/dir/dirSymlink/, real paths: false)", async (t) => {
       const api = new fdir()
+        .withErrors()
         .withSymlinks({ resolvePaths: false })
         .exclude(
           (_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/")
@@ -365,7 +373,7 @@ for (const type of apiTypes) {
     });
 
     test(`do not resolve symlinks`, async (t) => {
-      const api = new fdir().crawl("/some/dir");
+      const api = new fdir().withErrors().crawl("/some/dir");
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize(["dirSymlink", "fileSymlink", "fileSymlink2"])
@@ -373,7 +381,10 @@ for (const type of apiTypes) {
     });
 
     test(`exclude symlinks`, async (t) => {
-      const api = new fdir({ excludeSymlinks: true }).crawl("/some/dir");
+      const api = new fdir({
+        excludeSymlinks: true,
+        suppressErrors: false,
+      }).crawl("/some/dir");
       const files = await api[type]();
       t.expect(files).toHaveLength(0);
     });
@@ -381,7 +392,10 @@ for (const type of apiTypes) {
     test(
       "doesn't hang when resolving symlinks in the root directory",
       async (t) => {
-        const api = new fdir().withSymlinks({ resolvePaths: false }).crawl("/");
+        const api = new fdir()
+          .withErrors()
+          .withSymlinks({ resolvePaths: false })
+          .crawl("/");
         const files = await api[type]();
         const expectedFiles = normalize(["/lib/file-1", "/usr/lib/file-1"]);
         for (const expectedFile of expectedFiles) {

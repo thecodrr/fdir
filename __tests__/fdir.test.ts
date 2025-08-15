@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 test(`crawl single depth directory with callback`, (t) => {
-  const api = new fdir().crawl("__tests__");
+  const api = new fdir().withErrors().crawl("__tests__");
 
   return new Promise<void>((resolve, reject) => {
     api.withCallback((err, files) => {
@@ -26,7 +26,7 @@ test(`crawl single depth directory with callback`, (t) => {
 });
 
 async function crawl(type: APITypes, path: string, t: TestContext) {
-  const api = new fdir().crawl(path);
+  const api = new fdir().withErrors().crawl(path);
   const files = await api[type]();
   if (!files) throw new Error("files cannot be null.");
   t.expect(files[0]).toBeDefined();
@@ -41,8 +41,10 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl directory with options`, async (t) => {
-    const api = new fdir({ includeBasePath: true }).crawl("__tests__");
-    const files = await api[type]();
+    const api = new fdir({
+      includeBasePath: true,
+      suppressErrors: false,
+    }).crawl("__tests__");
     t.expect(files.every((file) => file.startsWith("__tests__"))).toBeTruthy();
   });
 
@@ -50,6 +52,7 @@ for (const type of apiTypes) {
     const api = new fdir({
       maxDepth: 0,
       includeBasePath: true,
+      suppressErrors: false,
     }).crawl("node_modules");
     const files = await api[type]();
     t.expect(files).not.toHaveLength(0);
@@ -62,6 +65,7 @@ for (const type of apiTypes) {
     const api = new fdir({
       maxDepth: 1,
       includeBasePath: true,
+      suppressErrors: false,
     }).crawl("node_modules");
     const files = await api[type]();
     t.expect(files.some((file) => file.split(path.sep).length === 3)).toBe(
@@ -77,13 +81,13 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl directory & limit files to 10`, async (t) => {
-    const api = new fdir().withMaxFiles(10).crawl("node_modules");
+    const api = new fdir().withErrors().withMaxFiles(10).crawl("node_modules");
     const files = await api[type]();
     t.expect(files).toHaveLength(10);
   });
 
   test(`[${type}] crawl and get both files and directories (withDirs)`, async (t) => {
-    const api = new fdir().withDirs().crawl("node_modules");
+    const api = new fdir().withErrors().withDirs().crawl("node_modules");
     const files = await api[type]();
     t.expect(files[0]).toBeDefined();
     t.expect(files.every((t) => t)).toBeTruthy();
@@ -92,8 +96,11 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl and get all files (withMaxDepth = 1)`, async (t) => {
-    const api = new fdir().withMaxDepth(1).withBasePath().crawl("node_modules");
-    const files = await api[type]();
+    const api = new fdir()
+      .withErrors()
+      .withMaxDepth(1)
+      .withBasePath()
+      .crawl("node_modules");
     t.expect(
       files.every((file) => file.split(path.sep).length <= 3)
     ).toBeTruthy();
@@ -101,6 +108,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl and get all files (withMaxDepth = -1)`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withMaxDepth(-1)
       .withBasePath()
       .crawl("node_modules");
@@ -110,6 +118,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl and get files that match a glob pattern`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withBasePath()
       .glob("**/*.js")
       .glob("**/*.js")
@@ -120,6 +129,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl but exclude node_modules dir`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withBasePath()
       .exclude((dir) => dir.includes("node_modules"))
       .crawl(cwd());
@@ -131,6 +141,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl all files with filter`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withBasePath()
       .filter((file) => file.includes(".git"))
       .crawl(cwd());
@@ -140,6 +151,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl all files with multifilter`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withBasePath()
       .filter((file) => file.includes(".git"))
       .filter((file) => file.includes(".js"))
@@ -152,6 +164,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl all files in a directory (with base path)`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withBasePath()
       .crawl(path.join(cwd(), "node_modules"));
     const files = await api[type]();
@@ -161,13 +174,13 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] get all files in a directory and output full paths (withFullPaths)`, async (t) => {
-    const api = new fdir().withFullPaths().crawl(cwd());
+    const api = new fdir().withErrors().withFullPaths().crawl(cwd());
     const files = await api[type]();
     t.expect(files.every((file) => file.startsWith(root()))).toBeTruthy();
   });
 
   test(`[${type}] getting files from restricted directory should throw`, async (t) => {
-    const api = new fdir().withErrors().crawl(restricted());
+    const api = new fdir().withErrors().withErrors().crawl(restricted());
     t.expect(async () => await api[type]()).rejects.toThrowError();
   });
 
@@ -190,13 +203,13 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl all files with only counts`, async (t) => {
-    const api = new fdir().onlyCounts().crawl("node_modules");
+    const api = new fdir().withErrors().onlyCounts().crawl("node_modules");
     const result = await api[type]();
     t.expect(result.files).toBeGreaterThan(0);
   });
 
   test(`[${type}] crawl and return only directories`, async (t) => {
-    const api = new fdir().onlyDirs().crawl("node_modules");
+    const api = new fdir().withErrors().onlyDirs().crawl("node_modules");
     const result = await api[type]();
     t.expect(result.length).toBeGreaterThan(0);
     t.expect(
@@ -210,6 +223,7 @@ for (const type of apiTypes) {
     const api = new fdir({
       excludeFiles: true,
       includeDirs: true,
+      suppressErrors: false,
     }).crawl("node_modules");
     const result = await api[type]();
     t.expect(result.length).toBeGreaterThan(0);
@@ -222,6 +236,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl and filter all files and get only counts`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withBasePath()
       .filter((file) => file.includes("node_modules"))
       .onlyCounts()
@@ -231,20 +246,24 @@ for (const type of apiTypes) {
   });
 
   test("crawl all files in a directory (path with trailing slash)", async (t) => {
-    const api = new fdir().normalize().crawl("node_modules/");
+    const api = new fdir().withErrors().normalize().crawl("node_modules/");
     const files = await api[type]();
     const res = files.every((file) => !file.includes("/"));
     t.expect(res).toBeDefined();
   });
 
   test(`[${type}] crawl all files and group them by directory`, async (t) => {
-    const api = new fdir().withBasePath().group().crawl("node_modules");
-    const result = await api[type]();
+    const api = new fdir()
+      .withErrors()
+      .withBasePath()
+      .group()
+      .crawl("node_modules");
     t.expect(result.length).toBeGreaterThan(0);
   });
 
   test(`[${type}] crawl and filter only directories`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .onlyDirs()
       .filter((path) => path.includes("api"))
       .crawl("./src");
@@ -254,6 +273,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl and return relative paths`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withRelativePaths()
       .crawl(path.normalize(`node_modules/`));
     const paths = await api[type]();
@@ -313,8 +333,10 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl and return relative paths that end with /`, async (t) => {
-    const api = new fdir().withRelativePaths().crawl("./node_modules/");
-    const paths = await api[type]();
+    const api = new fdir()
+      .withErrors()
+      .withRelativePaths()
+      .crawl("./node_modules/");
     t.expect(
       paths.every((p) => !p.startsWith("node_modules") && !p.includes("//"))
     ).toBeTruthy();
@@ -322,6 +344,7 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl all files and invert path separator`, async (t) => {
     const api = new fdir()
+      .withErrors()
       .withPathSeparator(sep === "/" ? "\\" : "/")
       .crawl("node_modules");
     const files = await api[type]();
@@ -335,6 +358,7 @@ for (const type of apiTypes) {
     });
     const api = new fdir({ globFunction })
       .withBasePath()
+      .withErrors()
       .glob("**/*.js")
       .crawl("node_modules");
     const files = await api[type]();
@@ -350,6 +374,7 @@ for (const type of apiTypes) {
     );
     const api = new fdir({ globFunction })
       .withBasePath()
+      .withErrors()
       .globWithOptions(["**/*.js"], { foo: 5 })
       .crawl("node_modules");
     const files = await api[type]();
@@ -361,6 +386,7 @@ for (const type of apiTypes) {
     const globFunction = picomatch;
     const api = new fdir({ globFunction })
       .withBasePath()
+      .withErrors()
       .glob("**/*.js")
       .crawl("node_modules");
     const files = await api[type]();
@@ -372,6 +398,7 @@ for (const type of apiTypes) {
       return (test: string): boolean => test === input;
     });
     new fdir()
+      .withErrors()
       .withBasePath()
       .withGlobFunction(globFunction)
       .globWithOptions(["**/*.js"], "bleep")
@@ -395,8 +422,9 @@ for (const type of apiTypes) {
 
     const api = new fdir({
       fs: fakeFs,
-    }).crawl("node_modules");
-    await api[type]();
+    })
+      .withErrors()
+      .crawl("node_modules");
     if (type === "withPromise") {
       t.expect(readdirStub).toHaveBeenCalled();
     } else {
@@ -408,9 +436,14 @@ for (const type of apiTypes) {
 // AbortController is not present on Node v14
 if ("AbortController" in globalThis) {
   test(`[async] crawl directory & use abort signal to abort`, async (t) => {
-    const totalFiles = new fdir().onlyCounts().crawl("node_modules").sync();
+    const totalFiles = new fdir()
+      .withErrors()
+      .onlyCounts()
+      .crawl("node_modules")
+      .sync();
     const abortController = new AbortController();
     const api = new fdir()
+      .withErrors()
       .withAbortSignal(abortController.signal)
       .filter((p) => {
         if (p.endsWith(".js")) abortController.abort();
@@ -424,12 +457,12 @@ if ("AbortController" in globalThis) {
 
 test(`paths should never start with ./`, async (t) => {
   const apis = [
-    new fdir().withBasePath().crawl("./node_modules"),
-    new fdir().withBasePath().crawl("./"),
-    new fdir().withRelativePaths().crawl("./"),
-    new fdir().withRelativePaths().crawl("."),
-    new fdir().withDirs().crawl("."),
-    new fdir().onlyDirs().crawl("."),
+    new fdir().withErrors().withBasePath().crawl("./node_modules"),
+    new fdir().withErrors().withBasePath().crawl("./"),
+    new fdir().withErrors().withRelativePaths().crawl("./"),
+    new fdir().withErrors().withRelativePaths().crawl("."),
+    new fdir().withErrors().withDirs().crawl("."),
+    new fdir().withErrors().onlyDirs().crawl("."),
   ];
   for (const api of apis) {
     const files = await api.withPromise();
@@ -440,9 +473,10 @@ test(`paths should never start with ./`, async (t) => {
 });
 
 test(`default to . if root is not provided`, async (t) => {
-  const files = await new fdir().crawl().withPromise();
+  const files = await new fdir().withErrors().crawl().withPromise();
 
   const files2 = await new fdir()
+    .withErrors()
     .crawl(".")
     .withPromise()
     .then((f) => f.sort());
@@ -452,15 +486,17 @@ test(`default to . if root is not provided`, async (t) => {
 
 test(`ignore withRelativePath if root === ./`, async (t) => {
   const relativeFiles = await new fdir()
+    .withErrors()
     .withRelativePaths()
     .crawl("./")
     .withPromise();
-  const files = await new fdir().crawl("./").withPromise();
+  const files = await new fdir().withErrors().crawl("./").withPromise();
   t.expect(relativeFiles.every((r) => files.includes(r))).toBe(true);
 });
 
 test(`add path separator if root path does not end with one`, async (t) => {
   const relativeFiles = await new fdir()
+    .withErrors()
     .withRelativePaths()
     .crawl("node_modules")
     .withPromise();
@@ -468,12 +504,17 @@ test(`add path separator if root path does not end with one`, async (t) => {
 });
 
 test(`there should be no empty directory when using withDirs`, async (t) => {
-  const files = await new fdir().withDirs().crawl("./").withPromise();
+  const files = await new fdir()
+    .withErrors()
+    .withDirs()
+    .crawl("./")
+    .withPromise();
   t.expect(files.every((r) => r.length > 0)).toBe(true);
 });
 
 test(`there should be no empty directory when using withDirs and filters`, async (t) => {
   const files = await new fdir()
+    .withErrors()
     .withDirs()
     .filter((p) => p !== "node_modules")
     .crawl("./")
