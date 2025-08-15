@@ -27,14 +27,33 @@ export type PathsOutput = string[];
 
 export type Output = OnlyCountsOutput | PathsOutput | GroupOutput;
 
-export type FSLike = {
-  readdir: typeof nativeFs.readdir;
-  readdirSync: typeof nativeFs.readdirSync;
-  realpath: typeof nativeFs.realpath;
-  realpathSync: typeof nativeFs.realpathSync;
-  stat: typeof nativeFs.stat;
-  statSync: typeof nativeFs.statSync;
-};
+export interface FSLike {
+  readdir(
+    path: nativeFs.PathLike,
+    options: { withFileTypes: true },
+    callback: (
+      err: NodeJS.ErrnoException | null,
+      files: nativeFs.Dirent[]
+    ) => void
+  ): void;
+  readdirSync(
+    path: nativeFs.PathLike,
+    options: { withFileTypes: true }
+  ): nativeFs.Dirent[];
+  realpath(
+    path: nativeFs.PathLike,
+    callback: (err: NodeJS.ErrnoException | null, resolvedPath: string) => void
+  ): void;
+  realpathSync(
+    path: nativeFs.PathLike,
+    options?: { encoding: BufferEncoding | null } | BufferEncoding | null
+  ): string;
+  stat(
+    path: nativeFs.PathLike,
+    callback: (err: NodeJS.ErrnoException | null, stats: nativeFs.Stats) => void
+  ): void;
+  statSync(path: nativeFs.PathLike): nativeFs.Stats;
+}
 
 export type WalkerState = {
   root: string;

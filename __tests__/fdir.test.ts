@@ -1,4 +1,4 @@
-import { fdir } from "../src/index";
+import { FSLike, fdir } from "../src/index";
 import fs from "fs";
 import mock from "mock-fs";
 import { test, beforeEach, TestContext, vi } from "vitest";
@@ -414,11 +414,11 @@ for (const type of apiTypes) {
     );
     const readdirSyncStub = vi.fn();
     readdirSyncStub.mockReturnValue([]);
-    const fakeFs = {
+    const fakeFs: FSLike = {
       ...fs,
       readdir: readdirStub,
       readdirSync: readdirSyncStub,
-    } as unknown as typeof fs;
+    };
 
     const api = new fdir({
       fs: fakeFs,
