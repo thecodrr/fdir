@@ -1,7 +1,7 @@
 import { FilterPredicate, Options, Counts } from "../../types";
 
 export type PushFileFunction = (
-  directoryPath: string,
+  filename: string,
   paths: string[],
   counts: Counts,
   filters?: FilterPredicate[]
