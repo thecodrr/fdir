@@ -1,15 +1,11 @@
 import { FSLike, fdir } from "../src/index";
 import fs from "fs";
-import mock from "mock-fs";
-import { test, beforeEach, TestContext, vi } from "vitest";
+import { test, TestContext, vi } from "vitest";
 import path, { sep } from "path";
-import { convertSlashes } from "../src/utils";
+import { convertSlashes, normalizePath } from "../src/utils";
 import picomatch from "picomatch";
 import { apiTypes, APITypes, cwd, restricted, root } from "./utils";
-
-beforeEach(() => {
-  mock.restore();
-});
+import { MockFS } from "./mock-fs";
 
 test(`crawl single depth directory with callback`, (t) => {
   const api = new fdir().withErrors().crawl("__tests__");
@@ -45,6 +41,7 @@ for (const type of apiTypes) {
       includeBasePath: true,
       suppressErrors: false,
     }).crawl("__tests__");
+    const files = await api[type]();
     t.expect(files.every((file) => file.startsWith("__tests__"))).toBeTruthy();
   });
 
@@ -130,7 +127,6 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl but exclude node_modules dir`, async (t) => {
     const api = new fdir()
-      .withErrors()
       .withBasePath()
       .exclude((dir) => dir.includes("node_modules"))
       .crawl(cwd());
@@ -142,7 +138,6 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl all files with filter`, async (t) => {
     const api = new fdir()
-      .withErrors()
       .withBasePath()
       .filter((file) => file.includes(".git"))
       .crawl(cwd());
@@ -152,7 +147,6 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl all files with multifilter`, async (t) => {
     const api = new fdir()
-      .withErrors()
       .withBasePath()
       .filter((file) => file.includes(".git"))
       .filter((file) => file.includes(".js"))
@@ -175,7 +169,7 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] get all files in a directory and output full paths (withFullPaths)`, async (t) => {
-    const api = new fdir().withErrors().withFullPaths().crawl(cwd());
+    const api = new fdir().withFullPaths().crawl(cwd());
     const files = await api[type]();
     t.expect(files.every((file) => file.startsWith(root()))).toBeTruthy();
   });
@@ -192,15 +186,9 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] recurse root (files should not contain multiple /)`, async (t) => {
-    mock({
-      "/etc": {
-        hosts: "dooone",
-      },
-    });
-    const api = new fdir().withBasePath().normalize().crawl("/");
+    const api = new fdir().withBasePath().normalize().crawl("/tmp");
     const files = await api[type]();
     t.expect(files.every((file) => !file.includes("//"))).toBeTruthy();
-    mock.restore();
   });
 
   test(`[${type}] crawl all files with only counts`, async (t) => {
@@ -237,7 +225,6 @@ for (const type of apiTypes) {
 
   test(`[${type}] crawl and filter all files and get only counts`, async (t) => {
     const api = new fdir()
-      .withErrors()
       .withBasePath()
       .filter((file) => file.includes("node_modules"))
       .onlyCounts()
@@ -283,7 +270,7 @@ for (const type of apiTypes) {
   });
 
   test(`[${type}] crawl and return relative paths with only dirs`, async (t) => {
-    mock({
+    const mockedFs = new MockFS({
       "/some/dir/dir1": {
         file: "some file",
       },
@@ -294,21 +281,26 @@ for (const type of apiTypes) {
         file: "some file",
       },
     });
+    await mockedFs.init();
+    t.onTestFailed(async () => await mockedFs.cleanup());
 
-    const api = new fdir({ excludeFiles: true, excludeSymlinks: true })
-      .withDirs()
+    const api = new fdir()
+      .onlyDirs()
       .withRelativePaths()
-      .crawl("/some");
+      .crawl(mockedFs.resolve("/some"));
     const paths = await api[type]();
-
-    t.expect(paths.length).toBe(5);
-    t.expect(paths.filter((p) => p === ".").length).toBe(1);
-    t.expect(paths.filter((p) => p === "").length).toBe(0);
-    mock.restore();
+    t.expect(paths.sort()).toStrictEqual([
+      ".",
+      "dir/",
+      "dir/dir1/",
+      "dir/dir2/",
+      "dir/dir2/dir3/",
+    ]);
+    await mockedFs.cleanup();
   });
 
   test(`[${type}] crawl and return relative paths with filters and only dirs`, async (t) => {
-    mock({
+    const mockedFs = new MockFS({
       "/some/dir/dir1": {
         file: "some file",
       },
@@ -319,19 +311,22 @@ for (const type of apiTypes) {
         file: "some file",
       },
     });
+    await mockedFs.init();
+    t.onTestFailed(async () => await mockedFs.cleanup());
 
     const api = new fdir({ excludeFiles: true, excludeSymlinks: true })
       .withDirs()
       .withRelativePaths()
       .filter((p) => p !== path.join("dir", "dir1/"))
-      .crawl("/some");
+      .crawl(mockedFs.resolve("/some"));
     const paths = await api[type]();
 
     t.expect(paths.length).toBe(4);
     t.expect(paths.includes(path.join("dir", "dir1/"))).toBe(false);
     t.expect(paths.filter((p) => p === ".").length).toBe(1);
     t.expect(paths.filter((p) => p === "").length).toBe(0);
-    mock.restore();
+
+    await mockedFs.cleanup();
   });
 
   test(`[${type}] crawl and return relative paths that end with /`, async (t) => {
