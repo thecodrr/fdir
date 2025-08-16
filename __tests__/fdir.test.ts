@@ -101,6 +101,7 @@ for (const type of apiTypes) {
       .withMaxDepth(1)
       .withBasePath()
       .crawl("node_modules");
+    const files = await api[type]();
     t.expect(
       files.every((file) => file.split(path.sep).length <= 3)
     ).toBeTruthy();
@@ -258,6 +259,7 @@ for (const type of apiTypes) {
       .withBasePath()
       .group()
       .crawl("node_modules");
+    const result = await api[type]();
     t.expect(result.length).toBeGreaterThan(0);
   });
 
@@ -337,6 +339,7 @@ for (const type of apiTypes) {
       .withErrors()
       .withRelativePaths()
       .crawl("./node_modules/");
+    const paths = await api[type]();
     t.expect(
       paths.every((p) => !p.startsWith("node_modules") && !p.includes("//"))
     ).toBeTruthy();
@@ -425,6 +428,7 @@ for (const type of apiTypes) {
     })
       .withErrors()
       .crawl("node_modules");
+    await api[type]();
     if (type === "withPromise") {
       t.expect(readdirStub).toHaveBeenCalled();
     } else {
