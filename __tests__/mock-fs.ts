@@ -1,6 +1,7 @@
 import Directory from "mock-fs/lib/directory";
 import FileSystem from "mock-fs/lib/filesystem";
 import SymbolicLink from "mock-fs/lib/symlink";
+import File from "mock-fs/lib/file";
 import { resolve, sep } from "path";
 import { root } from "./utils";
 import { mkdir, mkdtemp, rm, stat, symlink, writeFile } from "fs/promises";
@@ -60,10 +61,7 @@ export class MockFS {
       if (typeof item === "function") {
         const unknownItem = item();
         if (unknownItem instanceof File) {
-          await writeFile(
-            parentPath,
-            new Uint8Array(await unknownItem.arrayBuffer())
-          );
+          await writeFile(parentPath, unknownItem.getContent());
         } else if (unknownItem instanceof SymbolicLink) {
           const targetPath = resolvePath(
             this.root,
