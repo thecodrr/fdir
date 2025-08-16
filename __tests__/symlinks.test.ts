@@ -1,26 +1,28 @@
-import { afterAll, beforeAll, beforeEach, describe, test } from "vitest";
+import { afterAll, beforeAll, describe, test } from "vitest";
 import { apiTypes, normalize, root } from "./utils";
 import mock from "mock-fs";
 import { fdir, Options } from "../src";
 import path from "path";
+import { MockFS } from "./mock-fs";
 
 const fsWithRelativeSymlinks = {
-  "../../sym-relative/linked": {
+  "sym-relative/linked": {
     "file-1": "file contents",
     "file-excluded-1": "file contents",
   },
-  "../../other-relative/dir": {
+  "other-relative/dir": {
     "file-2": "file contents2",
+    "file-3": "file contents3",
   },
   "relative/dir": {
     fileSymlink: mock.symlink({
-      path: "../../../../other-relative/dir/file-2",
+      path: "../../other-relative/dir/file-2",
     }),
     fileSymlink2: mock.symlink({
-      path: "../../../../other-relative/dir/file-3",
+      path: "../../other-relative/dir/file-3",
     }),
     dirSymlink: mock.symlink({
-      path: "../../../../sym-relative/linked",
+      path: "../../sym-relative/linked",
     }),
   },
 };
@@ -67,42 +69,42 @@ const fsWithRecursiveSymlinks = {
 };
 
 const fsWithRecursiveRelativeSymlinks = {
-  "double/recursive": {
+  "ddouble/recursive": {
     "another-file": "hello",
     "recursive-4": mock.symlink({
-      path: "../../recursive",
+      path: "../../drecursive",
     }),
   },
-  "just/some": {
+  "djust/some": {
     "another-file": "hello",
     "another-file2": "hello",
     "symlink-to-earth": mock.symlink({
-      path: "../../random/other",
+      path: "../../drandom/other",
     }),
   },
-  "random/other": {
+  "drandom/other": {
     "another-file": "hello",
     "another-file2": "hello",
   },
-  recursive: {
+  drecursive: {
     "random-file": "somecontent",
   },
-  "recursive/dir": {
+  "drecursive/dir": {
     "some-file": "somecontent2",
     "recursive-1": mock.symlink({
-      path: "../../recursive/dir",
+      path: "../../drecursive/dir",
     }),
     "recursive-2": mock.symlink({
       path: "./recursive-1",
     }),
     "recursive-3": mock.symlink({
-      path: "../../recursive",
+      path: "../../drecursive",
     }),
     "recursive-5": mock.symlink({
-      path: "../../double/recursive",
+      path: "../../ddouble/recursive",
     }),
     "not-recursive": mock.symlink({
-      path: "../../just/some",
+      path: "../../djust/some",
     }),
   },
 };
@@ -128,36 +130,42 @@ const mockFs = {
   },
   "/other/dir": {
     "file-2": "file contents2",
+    "file-3": "file contents3",
   },
   "/some/dir": {
     fileSymlink: mock.symlink({
-      path: "/other/dir/file-2",
+      path: resolveSymlinkRoot("/other/dir/file-2"),
     }),
     fileSymlink2: mock.symlink({
-      path: "/other/dir/file-3",
+      path: resolveSymlinkRoot("/other/dir/file-3"),
     }),
     dirSymlink: mock.symlink({
-      path: "/sym/linked",
+      path: resolveSymlinkRoot("/sym/linked"),
     }),
   },
 };
 
+const mockedFs = new MockFS(mockFs);
 for (const type of apiTypes) {
   describe.concurrent(type, () => {
-    beforeAll(() => {
-      mock(mockFs);
+    beforeAll(async () => {
+      await mockedFs.init();
     });
 
-    afterAll(() => {
-      mock.restore();
+    afterAll(async () => {
+      await mockedFs.cleanup();
     });
 
     test(`resolve symlinks`, async (t) => {
-      const api = new fdir().withErrors().withSymlinks().crawl("/some/dir");
+      const api = new fdir()
+        .withErrors()
+        .withSymlinks()
+        .crawl(mockedFs.resolve("/some/dir"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize([
+        mockedFs.normalize([
           "/other/dir/file-2",
+          "/other/dir/file-3",
           "/sym/linked/file-1",
           "/sym/linked/file-excluded-1",
         ])
@@ -165,10 +173,13 @@ for (const type of apiTypes) {
     });
 
     test(`resolve recursive symlinks`, async (t) => {
-      const api = new fdir().withErrors().withSymlinks().crawl("/recursive");
+      const api = new fdir()
+        .withErrors()
+        .withSymlinks()
+        .crawl(mockedFs.resolve("/recursive"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize([
+        mockedFs.normalize([
           "/double/recursive/another-file",
           "/just/some/another-file",
           "/just/some/another-file2",
@@ -184,10 +195,10 @@ for (const type of apiTypes) {
       const api = new fdir()
         .withErrors()
         .withSymlinks({ resolvePaths: false })
-        .crawl("/recursive");
+        .crawl(mockedFs.resolve("/recursive"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize([
+        mockedFs.normalize([
           "/recursive/dir/not-recursive/another-file",
           "/recursive/dir/not-recursive/another-file2",
           "/recursive/dir/not-recursive/symlink-to-earth/another-file",
@@ -235,7 +246,7 @@ for (const type of apiTypes) {
         .withSymlinks({ resolvePaths: false })
         .withRelativePaths()
         .withErrors()
-        .crawl("./recursive");
+        .crawl(mockedFs.resolve("./recursive"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize([
@@ -286,11 +297,11 @@ for (const type of apiTypes) {
         .withSymlinks()
         .withRelativePaths()
         .withErrors()
-        .crawl("./recursive");
+        .crawl(mockedFs.resolve("./recursive"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize([
-          "..//double/recursive/another-file",
+          "../double/recursive/another-file",
           "../just/some/another-file",
           "../just/some/another-file2",
           "../random/other/another-file",
@@ -305,13 +316,14 @@ for (const type of apiTypes) {
       const api = new fdir()
         .withErrors()
         .withSymlinks({ resolvePaths: false })
-        .crawl("/some/dir");
+        .crawl(mockedFs.resolve("/some/dir"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize([
+        mockedFs.normalize([
           "/some/dir/dirSymlink/file-1",
           "/some/dir/dirSymlink/file-excluded-1",
           "/some/dir/fileSymlink",
+          "/some/dir/fileSymlink2",
         ])
       );
     });
@@ -321,13 +333,14 @@ for (const type of apiTypes) {
         .withErrors()
         .withSymlinks({ resolvePaths: false })
         .withRelativePaths()
-        .crawl("/some/dir");
+        .crawl(mockedFs.resolve("/some/dir"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize([
           "dirSymlink/file-1",
           "dirSymlink/file-excluded-1",
           "fileSymlink",
+          "fileSymlink2",
         ])
       );
     });
@@ -337,13 +350,14 @@ for (const type of apiTypes) {
         .withErrors()
         .withSymlinks()
         .withRelativePaths()
-        .crawl("./relative/dir");
+        .crawl(mockedFs.resolve("./relative/dir"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize([
-          "../../../../other-relative/dir/file-2",
-          "../../../../sym-relative/linked/file-1",
-          "../../../../sym-relative/linked/file-excluded-1",
+          "../../other-relative/dir/file-2",
+          "../../other-relative/dir/file-3",
+          "../../sym-relative/linked/file-1",
+          "../../sym-relative/linked/file-excluded-1",
         ])
       );
     });
@@ -352,28 +366,30 @@ for (const type of apiTypes) {
       const api = new fdir()
         .withErrors()
         .withSymlinks()
-        .exclude((_name, path) => path === resolveSymlinkRoot("/sym/linked/"))
-        .crawl("/some/dir");
+        .exclude((_name, path) => path === mockedFs.resolve("/sym/linked/"))
+        .crawl(mockedFs.resolve("/some/dir"));
       const files = await api[type]();
-      t.expect(files.sort()).toStrictEqual(normalize(["/other/dir/file-2"]));
+      t.expect(files.sort()).toStrictEqual(
+        mockedFs.normalize(["/other/dir/file-2", "/other/dir/file-3"])
+      );
     });
 
     test("resolve symlinks (exclude /some/dir/dirSymlink/, real paths: false)", async (t) => {
       const api = new fdir()
         .withErrors()
         .withSymlinks({ resolvePaths: false })
-        .exclude(
-          (_name, path) => path === resolveSymlinkRoot("/some/dir/dirSymlink/")
-        )
-        .crawl("/some/dir");
+        .exclude((_name, path) => {
+          return path === mockedFs.resolve("/some/dir/dirSymlink/");
+        })
+        .crawl(mockedFs.resolve("/some/dir"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize(["/some/dir/fileSymlink"])
+        mockedFs.normalize(["/some/dir/fileSymlink", "/some/dir/fileSymlink2"])
       );
     });
 
     test(`do not resolve symlinks`, async (t) => {
-      const api = new fdir().withErrors().crawl("/some/dir");
+      const api = new fdir().withErrors().crawl(mockedFs.resolve("/some/dir"));
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize(["dirSymlink", "fileSymlink", "fileSymlink2"])
@@ -384,7 +400,7 @@ for (const type of apiTypes) {
       const api = new fdir({
         excludeSymlinks: true,
         suppressErrors: false,
-      }).crawl("/some/dir");
+      }).crawl(mockedFs.resolve("/some/dir"));
       const files = await api[type]();
       t.expect(files).toHaveLength(0);
     });
@@ -395,9 +411,12 @@ for (const type of apiTypes) {
         const api = new fdir()
           .withErrors()
           .withSymlinks({ resolvePaths: false })
-          .crawl("/");
+          .crawl(mockedFs.resolve("/"));
         const files = await api[type]();
-        const expectedFiles = normalize(["/lib/file-1", "/usr/lib/file-1"]);
+        const expectedFiles = mockedFs.normalize([
+          "/lib/file-1",
+          "/usr/lib/file-1",
+        ]);
         for (const expectedFile of expectedFiles) {
           t.expect(files).toContain(expectedFile);
         }

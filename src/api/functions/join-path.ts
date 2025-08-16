@@ -1,5 +1,5 @@
 import { relative } from "path";
-import { Options, PathSeparator } from "../../types";
+import { Options } from "../../types";
 import { convertSlashes } from "../../utils";
 
 export function joinPathWithBasePath(filename: string, directoryPath: string) {
@@ -21,14 +21,6 @@ function joinPathWithRelativePath(root: string, options: Options) {
 
 function joinPath(filename: string) {
   return filename;
-}
-
-export function joinDirectoryPath(
-  filename: string,
-  directoryPath: string,
-  separator: PathSeparator
-) {
-  return directoryPath + filename + separator;
 }
 
 export type JoinPathFunction = (

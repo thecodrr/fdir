@@ -1,7 +1,8 @@
-import { basename, dirname } from "path";
-import { isRootDirectory, normalizePath } from "../utils";
+import { basename, dirname, sep } from "path";
+import { convertSlashes, isRootDirectory, normalizePath } from "../utils";
 import { ResultCallback, WalkerState, Options } from "../types";
 import * as joinPath from "./functions/join-path";
+import * as joinDirectoryPath from "./functions/join-directory-path";
 import * as pushDirectory from "./functions/push-directory";
 import * as pushFile from "./functions/push-file";
 import * as getArray from "./functions/get-array";
@@ -20,6 +21,7 @@ export class Walker<TOutput extends Output> {
   private readonly root: string;
   private readonly isSynchronous: boolean;
   private readonly state: WalkerState;
+  private readonly joinDirectoryPath: joinDirectoryPath.JoinDirectoryPathFunction;
   private readonly joinPath: joinPath.JoinPathFunction;
   private readonly pushDirectory: pushDirectory.PushDirectoryFunction;
   private readonly pushFile: pushFile.PushFileFunction;
@@ -59,8 +61,9 @@ export class Walker<TOutput extends Output> {
      * performance boost. Since these functions are so small, they are automatically inlined
      * by the javascript engine so there's no function call overhead (in most cases).
      */
+    this.joinDirectoryPath = joinDirectoryPath.build(this.root, options);
     this.joinPath = joinPath.build(this.root, options);
-    this.pushDirectory = pushDirectory.build(this.root, options);
+    this.pushDirectory = pushDirectory.build(options);
     this.pushFile = pushFile.build(options);
     this.getArray = getArray.build(options);
     this.groupFiles = groupFiles.build(options);
@@ -69,18 +72,32 @@ export class Walker<TOutput extends Output> {
   }
 
   start(): TOutput | null {
-    this.pushDirectory(this.root, this.state.paths, this.state.options.filters);
+    const relativePath = this.joinDirectoryPath(
+      "",
+      this.root,
+      this.state.options.pathSeparator
+    );
+    this.pushDirectory(
+      relativePath,
+      this.state.paths,
+      this.state.options.filters
+    );
     this.walkDirectory(
       this.state,
-      this.root,
-      this.root,
+      convertSlashes(this.root, sep),
+      relativePath,
       this.state.options.maxDepth,
       this.walk
     );
     return this.isSynchronous ? this.callbackInvoker(this.state, null) : null;
   }
 
-  private walk = (entries: Dirent[], directoryPath: string, depth: number) => {
+  private walk = (
+    entries: Dirent[],
+    fullPath: string,
+    relativePath: string,
+    depth: number
+  ) => {
     const {
       paths,
       options: {
@@ -111,52 +128,58 @@ export class Walker<TOutput extends Output> {
         entry.isFile() ||
         (entry.isSymbolicLink() && !resolveSymlinks && !excludeSymlinks)
       ) {
-        const filename = this.joinPath(entry.name, directoryPath);
+        const filename = this.joinPath(entry.name, fullPath);
         this.pushFile(filename, files, this.state.counts, filters);
       } else if (entry.isDirectory()) {
-        let path = joinPath.joinDirectoryPath(
+        const relativePath = this.joinDirectoryPath(
           entry.name,
-          directoryPath,
+          fullPath,
           this.state.options.pathSeparator
         );
-        if (exclude && exclude(entry.name, path)) continue;
-        this.pushDirectory(path, paths, filters);
-        this.walkDirectory(this.state, path, path, depth - 1, this.walk);
+        if (exclude && exclude(entry.name, relativePath)) continue;
+        this.pushDirectory(relativePath, paths, filters);
+        this.walkDirectory(
+          this.state,
+          joinDirectoryPath.joinDirectoryPath(entry.name, fullPath, sep),
+          relativePath,
+          depth - 1,
+          this.walk
+        );
       } else if (this.resolveSymlink && entry.isSymbolicLink()) {
-        let path = joinPath.joinPathWithBasePath(entry.name, directoryPath);
-        this.resolveSymlink(path, this.state, (stat, resolvedPath) => {
+        const symlinkPath = joinPath.joinPathWithBasePath(entry.name, fullPath);
+        this.resolveSymlink(symlinkPath, this.state, (stat, resolvedPath) => {
           if (stat.isDirectory()) {
             resolvedPath = normalizePath(resolvedPath, this.state.options);
-            if (
-              exclude &&
-              exclude(
-                entry.name,
-                useRealPaths ? resolvedPath : path + pathSeparator
-              )
-            )
-              return;
+            const directoryPath = useRealPaths
+              ? resolvedPath
+              : symlinkPath + pathSeparator;
+            if (exclude && exclude(entry.name, directoryPath)) return;
 
             this.walkDirectory(
               this.state,
-              resolvedPath,
-              useRealPaths ? resolvedPath : path + pathSeparator,
+              directoryPath,
+              directoryPath,
               depth - 1,
               this.walk
             );
-          } else {
-            resolvedPath = useRealPaths ? resolvedPath : path;
-            const filename = basename(resolvedPath);
+          } else if (useRealPaths) {
             const directoryPath = normalizePath(
               dirname(resolvedPath),
               this.state.options
             );
-            resolvedPath = this.joinPath(filename, directoryPath);
-            this.pushFile(resolvedPath, files, this.state.counts, filters);
+            const filename = this.joinPath(
+              basename(resolvedPath),
+              directoryPath
+            );
+            this.pushFile(filename, files, this.state.counts, filters);
+          } else {
+            const filename = this.joinPath(entry.name, fullPath);
+            this.pushFile(filename, files, this.state.counts, filters);
           }
         });
       }
     }
 
-    this.groupFiles(this.state.groups, directoryPath, files);
+    this.groupFiles(this.state.groups, relativePath, files);
   };
 }

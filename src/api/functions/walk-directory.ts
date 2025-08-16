@@ -3,18 +3,23 @@ import type { Dirent } from "fs";
 
 export type WalkDirectoryFunction = (
   state: WalkerState,
-  crawlPath: string,
-  directoryPath: string,
+  fullPath: string,
+  relativePath: string,
   depth: number,
-  callback: (entries: Dirent[], directoryPath: string, depth: number) => void
+  callback: (
+    entries: Dirent[],
+    fullPath: string,
+    relativePath: string,
+    depth: number
+  ) => void
 ) => void;
 
 const readdirOpts = { withFileTypes: true } as const;
 
 const walkAsync: WalkDirectoryFunction = (
   state,
-  crawlPath,
-  directoryPath,
+  fullPath,
+  relativePath,
   currentDepth,
   callback
 ) => {
@@ -24,13 +29,13 @@ const walkAsync: WalkDirectoryFunction = (
 
   const { fs } = state;
 
-  state.visited.push(crawlPath);
+  state.visited.push(fullPath);
   state.counts.directories++;
 
   // Perf: Node >= 10 introduced withFileTypes that helps us
   // skip an extra fs.stat call.
-  fs.readdir(crawlPath || ".", readdirOpts, (error, entries = []) => {
-    callback(entries, directoryPath, currentDepth);
+  fs.readdir(fullPath || ".", readdirOpts, (error, entries = []) => {
+    callback(entries, fullPath, relativePath, currentDepth);
 
     state.queue.dequeue(state.options.suppressErrors ? null : error, state);
   });
@@ -38,23 +43,23 @@ const walkAsync: WalkDirectoryFunction = (
 
 const walkSync: WalkDirectoryFunction = (
   state,
-  crawlPath,
-  directoryPath,
+  fullPath,
+  relativePath,
   currentDepth,
   callback
 ) => {
   const { fs } = state;
   if (currentDepth < 0) return;
-  state.visited.push(crawlPath);
+  state.visited.push(fullPath);
   state.counts.directories++;
 
   let entries: Dirent[] = [];
   try {
-    entries = fs.readdirSync(crawlPath || ".", readdirOpts);
+    entries = fs.readdirSync(fullPath || ".", readdirOpts);
   } catch (e) {
     if (!state.options.suppressErrors) throw e;
   }
-  callback(entries, directoryPath, currentDepth);
+  callback(entries, fullPath, relativePath, currentDepth);
 };
 
 export function build(isSynchronous: boolean): WalkDirectoryFunction {
