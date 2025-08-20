@@ -98,6 +98,10 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
+    "./builder": {
+      "import": "./dist/builder.mjs",
+      "require": "./dist/builder.cjs"
+    },
     "./package.json": "./package.json"
   }
 }

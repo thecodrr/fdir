@@ -14,15 +14,6 @@ import {
 import { APIBuilder } from "./api-builder";
 import type picomatch from "picomatch";
 
-let pm: typeof picomatch | null = null;
-/* c8 ignore next 6 */
-try {
-  require.resolve("picomatch");
-  pm = require("picomatch");
-} catch {
-  // do nothing
-}
-
 export class Builder<
   TReturnType extends Output = PathsOutput,
   TGlobFunction = typeof picomatch,
@@ -166,7 +157,8 @@ export class Builder<
     patterns: string[],
     ...options: GlobParams<TGlobFunction> | []
   ) {
-    const globFn = (this.globFunction || pm) as GlobFunction | null;
+    const globFn = (this.globFunction ||
+      Builder.defaultGlobFunction) as GlobFunction | null;
     /* c8 ignore next 5 */
     if (!globFn) {
       throw new Error("Please specify a glob function to use glob matching.");
@@ -180,4 +172,6 @@ export class Builder<
     this.options.filters.push((path) => isMatch(path));
     return this;
   }
+
+  static defaultGlobFunction: typeof picomatch | null = null;
 }
