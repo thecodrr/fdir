@@ -157,7 +157,8 @@ export class Builder<
     patterns: string[],
     ...options: GlobParams<TGlobFunction> | []
   ) {
-    const globFn = (this.globFunction) as GlobFunction | null;
+    const globFn = (this.globFunction ||
+      Builder.defaultGlobFunction) as GlobFunction | null;
     /* c8 ignore next 5 */
     if (!globFn) {
       throw new Error("Please specify a glob function to use glob matching.");
@@ -171,4 +172,6 @@ export class Builder<
     this.options.filters.push((path) => isMatch(path));
     return this;
   }
+
+  static defaultGlobFunction: typeof picomatch | null = null;
 }
