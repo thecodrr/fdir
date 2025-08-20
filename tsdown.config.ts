@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsdown/config';
+import { defineConfig } from 'tsdown/config'
 
 export default defineConfig({
   entry: ["src/index.ts", "src/builder.ts"],
@@ -7,5 +7,5 @@ export default defineConfig({
   removeNodeProtocol: true,
   dts: true,
   exports: true,
-  fixedExtension: true,
+  fixedExtension: true
 })
