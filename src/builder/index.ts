@@ -1,4 +1,4 @@
-import { sep } from "path";
+import { sep } from "node:path";
 import {
   Output,
   OnlyCountsOutput,

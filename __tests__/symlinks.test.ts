@@ -2,7 +2,7 @@ import { afterAll, beforeAll, beforeEach, describe, test } from "vitest";
 import { apiTypes, normalize, root } from "./utils";
 import mock from "mock-fs";
 import { fdir, Options } from "../src";
-import path from "path";
+import path from "node:path";
 
 const fsWithRelativeSymlinks = {
   "../../sym-relative/linked": {

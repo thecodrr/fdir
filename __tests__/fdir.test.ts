@@ -1,8 +1,8 @@
 import { FSLike, fdir } from "../src/index";
-import fs from "fs";
+import fs from "node:fs";
 import mock from "mock-fs";
 import { test, beforeEach, TestContext, vi } from "vitest";
-import path, { sep } from "path";
+import path, { sep } from "node:path";
 import { convertSlashes } from "../src/utils";
 import picomatch from "picomatch";
 import { apiTypes, APITypes, cwd, restricted, root } from "./utils";
