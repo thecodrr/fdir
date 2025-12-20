@@ -15,10 +15,10 @@ import recursiveFs from "recursive-fs";
 import b from "benny";
 import { getAllFilesSync, getAllFiles } from "get-all-files";
 import packageJson from "../package.json";
-import { readFileSync, readdirSync, writeFileSync } from "fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import CSV2MD from "csv-to-markdown-table";
 import { getSystemInfo } from "./export";
-import { readdir } from "fs/promises";
+import { readdir } from "node:fs/promises";
 
 async function benchmark() {
   const DIRECTORY = "node_modules";

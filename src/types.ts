@@ -1,6 +1,6 @@
 import { Aborter } from "./api/aborter";
 import { Queue } from "./api/queue";
-import type * as nativeFs from "fs";
+import type * as nativeFs from "node:fs";
 
 export type Counts = {
   files: number;
