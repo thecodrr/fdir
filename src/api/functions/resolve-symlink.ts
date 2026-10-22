@@ -1,6 +1,6 @@
 import type { Stats } from "fs";
 import { WalkerState, Options } from "../../types";
-import { dirname } from "path";
+import { dirname, normalize, sep } from "path";
 
 export type ResolveSymlinkFunction = (
   path: string,
@@ -72,20 +72,28 @@ function isRecursive(path: string, resolved: string, state: WalkerState) {
   if (state.options.useRealPaths)
     return isRecursiveUsingRealPaths(resolved, state);
 
+  // A custom fs can return `/` on Windows, and isInside compares with the native separator
+  resolved = normalize(resolved);
   let parent = dirname(path);
   let depth = 1;
   while (parent !== state.root && depth < 2) {
     const resolvedPath = state.symlinks.get(parent);
     const isSameRoot =
       !!resolvedPath &&
-      (resolvedPath === resolved ||
-        resolvedPath.startsWith(resolved) ||
-        resolved.startsWith(resolvedPath));
+      (isInside(resolvedPath, resolved) || isInside(resolved, resolvedPath));
     if (isSameRoot) depth++;
     else parent = dirname(parent);
   }
   state.symlinks.set(path, resolved);
   return depth > 1;
+}
+
+// Compares whole path segments, so `/a/b-c` isn't inside `/a/b`
+function isInside(path: string, directory: string) {
+  return (
+    path === directory ||
+    path.startsWith(directory.endsWith(sep) ? directory : directory + sep)
+  );
 }
 
 function isRecursiveUsingRealPaths(resolved: string, state: WalkerState) {

@@ -116,11 +116,28 @@ const fsWithSymlinkInRootDir = {
   }),
 };
 
+const fsWithSymlinksToPrefixedSiblings = {
+  "/prefixed/root": {
+    src: mock.symlink({
+      path: resolveSymlinkRoot("/prefixed/shared"),
+    }),
+  },
+  "/prefixed/shared": {
+    alias: mock.symlink({
+      path: resolveSymlinkRoot("/prefixed/shared-other"),
+    }),
+  },
+  "/prefixed/shared-other": {
+    "file-1": "file contents",
+  },
+};
+
 const mockFs = {
   ...fsWithRelativeSymlinks,
   ...fsWithRecursiveSymlinks,
   ...fsWithRecursiveRelativeSymlinks,
   ...fsWithSymlinkInRootDir,
+  ...fsWithSymlinksToPrefixedSiblings,
 
   "/sym/linked": {
     "file-1": "file contents",
@@ -369,6 +386,17 @@ for (const type of apiTypes) {
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
         normalize(["/some/dir/fileSymlink"])
+      );
+    });
+
+    test(`resolve a symlink to a sibling whose name starts the same (real paths: false)`, async (t) => {
+      const api = new fdir()
+        .withErrors()
+        .withSymlinks({ resolvePaths: false })
+        .crawl("/prefixed/root");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(
+        normalize(["/prefixed/root/src/alias/file-1"])
       );
     });
 
