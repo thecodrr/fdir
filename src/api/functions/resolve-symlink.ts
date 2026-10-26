@@ -1,6 +1,6 @@
 import type { Stats } from "fs";
 import { WalkerState, Options } from "../../types";
-import { dirname } from "path";
+import { dirname, sep } from "path";
 
 export type ResolveSymlinkFunction = (
   path: string,
@@ -89,5 +89,5 @@ function isRecursive(path: string, resolved: string, state: WalkerState) {
 }
 
 function isRecursiveUsingRealPaths(resolved: string, state: WalkerState) {
-  return state.visited.includes(resolved + state.options.pathSeparator);
+  return state.visited.includes(resolved + sep);
 }

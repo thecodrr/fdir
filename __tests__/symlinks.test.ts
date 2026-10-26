@@ -1,7 +1,8 @@
 import { afterAll, beforeAll, beforeEach, describe, test } from "vitest";
 import { apiTypes, normalize, root } from "./utils";
 import mock from "mock-fs";
-import { fdir, Options } from "../src";
+import { fdir, Options, PathSeparator } from "../src";
+import { convertSlashes } from "../src/utils";
 import path from "path";
 
 const fsWithRelativeSymlinks = {
@@ -15,9 +16,6 @@ const fsWithRelativeSymlinks = {
   "relative/dir": {
     fileSymlink: mock.symlink({
       path: "../../../../other-relative/dir/file-2",
-    }),
-    fileSymlink2: mock.symlink({
-      path: "../../../../other-relative/dir/file-3",
     }),
     dirSymlink: mock.symlink({
       path: "../../../../sym-relative/linked",
@@ -132,9 +130,6 @@ const mockFs = {
   "/some/dir": {
     fileSymlink: mock.symlink({
       path: "/other/dir/file-2",
-    }),
-    fileSymlink2: mock.symlink({
-      path: "/other/dir/file-3",
     }),
     dirSymlink: mock.symlink({
       path: "/sym/linked",
@@ -376,7 +371,7 @@ for (const type of apiTypes) {
       const api = new fdir().withErrors().crawl("/some/dir");
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize(["dirSymlink", "fileSymlink", "fileSymlink2"])
+        normalize(["dirSymlink", "fileSymlink"])
       );
     });
 
@@ -404,7 +399,193 @@ for (const type of apiTypes) {
       },
       { timeout: 1000 }
     );
+
+    // Each crawl gives the files of its native-separator crawl, in the other separator
+    const separator = path.sep === "/" ? "\\" : "/";
+    const crawls: Record<
+      string,
+      (api: fdir, separator: PathSeparator) => ReturnType<fdir["crawl"]>
+    > = {
+      "resolve symlinks": (api) => api.withSymlinks().crawl("/some/dir"),
+      "resolve symlinks (real paths: false)": (api) =>
+        api.withSymlinks({ resolvePaths: false }).crawl("/some/dir"),
+      "resolve symlinks (real paths: false, relative paths: true)": (api) =>
+        api
+          .withSymlinks({ resolvePaths: false })
+          .withRelativePaths()
+          .crawl("/some/dir"),
+      "resolve symlinks (real paths: true, relative paths: true)": (api) =>
+        api.withSymlinks().withRelativePaths().crawl("./relative/dir"),
+      "resolve symlinks (exclude /sym/linked/)": (api, separator) =>
+        api
+          .withSymlinks()
+          .exclude(
+            (_name, path) =>
+              path ===
+              convertSlashes(resolveSymlinkRoot("/sym/linked/"), separator)
+          )
+          .crawl("/some/dir"),
+      "resolve symlinks (exclude /some/dir/dirSymlink/, real paths: false)": (
+        api,
+        separator
+      ) =>
+        api
+          .withSymlinks({ resolvePaths: false })
+          .exclude(
+            (_name, path) =>
+              path ===
+              convertSlashes(
+                resolveSymlinkRoot("/some/dir/dirSymlink/"),
+                separator
+              )
+          )
+          .crawl("/some/dir"),
+      "resolve recursive symlinks": (api) =>
+        api.withSymlinks().crawl("/recursive"),
+      "resolve recursive symlinks (real paths: false)": (api) =>
+        api.withSymlinks({ resolvePaths: false }).crawl("/recursive"),
+      "resolve recursive symlinks (real paths: true, relative paths: true)": (
+        api
+      ) => api.withSymlinks().withRelativePaths().crawl("./recursive"),
+      "resolve recursive symlinks (real paths: false, relative paths: true)": (
+        api
+      ) =>
+        api
+          .withSymlinks({ resolvePaths: false })
+          .withRelativePaths()
+          .crawl("./recursive"),
+    };
+
+    for (const [name, crawl] of Object.entries(crawls)) {
+      test(`${name} with the "${separator}" separator`, async (t) => {
+        const nativeFiles = await crawl(new fdir().withErrors(), path.sep)[
+          type
+        ]();
+        const files = await crawl(
+          new fdir().withErrors().withPathSeparator(separator),
+          separator
+        )[type]();
+        t.expect(files).not.toHaveLength(0);
+        t.expect(files.sort()).toStrictEqual(
+          nativeFiles.map((file) => convertSlashes(file, separator)).sort()
+        );
+      });
+    }
   });
+
+  describe(`${type}: a symlink whose target is missing`, () => {
+    beforeAll(() => {
+      mock({
+        "/elsewhere": {
+          file: "file contents",
+        },
+        "/dangling": {
+          kept: mock.symlink({
+            path: "/elsewhere/file",
+          }),
+          broken: mock.symlink({
+            path: "/elsewhere/missing",
+          }),
+        },
+      });
+    });
+
+    afterAll(() => {
+      mock.restore();
+    });
+
+    test(`is listed by its name when symlinks are not resolved`, async (t) => {
+      const api = new fdir().withErrors().crawl("/dangling");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(normalize(["broken", "kept"]));
+    });
+
+    test(`is skipped when symlinks are resolved`, async (t) => {
+      const api = new fdir().withSymlinks().crawl("/dangling");
+      const files = await api[type]();
+      t.expect(files).toStrictEqual(normalize(["/elsewhere/file"]));
+    });
+
+    test(`is reported when symlinks are resolved with errors`, async (t) => {
+      const api = new fdir().withErrors().withSymlinks().crawl("/dangling");
+      await t
+        .expect(Promise.resolve().then(() => api[type]()))
+        .rejects.toThrow(/ENOENT/);
+    });
+  });
+
+  describe.skipIf(path.sep === "\\")(
+    `${type}: symlinks to a directory whose name contains "\\"`,
+    () => {
+      beforeAll(() => {
+        mock({
+          "/backslash": {
+            "dir\\name": { wanted: "" },
+            dir: { name: { decoy: "" } },
+            root: {
+              link: mock.symlink({ path: "/backslash/dir\\name" }),
+              "file-link": mock.symlink({
+                path: "/backslash/dir\\name/wanted",
+              }),
+            },
+          },
+        });
+      });
+
+      afterAll(() => {
+        mock.restore();
+      });
+
+      for (const separator of ["/", "\\"] as const) {
+        // Only the separators change: the backslash in the name stays
+        const inSeparator = (paths: string[]) =>
+          paths.map((p) => p.split("/").join(separator)).sort();
+
+        test(`resolve them with the "${separator}" separator`, async (t) => {
+          const api = new fdir()
+            .withErrors()
+            .withPathSeparator(separator)
+            .withSymlinks()
+            .crawl("/backslash/root");
+          const files = await api[type]();
+          t.expect(files.sort()).toStrictEqual(
+            inSeparator([
+              "/backslash/dir\\name/wanted",
+              "/backslash/dir\\name/wanted",
+            ])
+          );
+        });
+
+        test(`resolve them (real paths: false) with the "${separator}" separator`, async (t) => {
+          const api = new fdir()
+            .withErrors()
+            .withPathSeparator(separator)
+            .withSymlinks({ resolvePaths: false })
+            .crawl("/backslash/root");
+          const files = await api[type]();
+          t.expect(files.sort()).toStrictEqual(
+            inSeparator([
+              "/backslash/root/file-link",
+              "/backslash/root/link/wanted",
+            ])
+          );
+        });
+
+        test(`resolve them (relative paths: true) with the "${separator}" separator`, async (t) => {
+          const api = new fdir()
+            .withErrors()
+            .withPathSeparator(separator)
+            .withSymlinks()
+            .withRelativePaths()
+            .crawl("/backslash/root");
+          const files = await api[type]();
+          t.expect(files.sort()).toStrictEqual(
+            inSeparator(["../dir\\name/wanted", "../dir\\name/wanted"])
+          );
+        });
+      }
+    }
+  );
 }
 
 function resolveSymlinkRoot(p: string) {

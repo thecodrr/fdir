@@ -1,18 +1,24 @@
 import { relative } from "path";
 import { Options, PathSeparator } from "../../types";
-import { convertSlashes } from "../../utils";
+import { toOutputPath } from "../../utils";
 
 export function joinPathWithBasePath(filename: string, directoryPath: string) {
   return directoryPath + filename;
 }
 
 function joinPathWithRelativePath(root: string, options: Options) {
-  return function (filename: string, directoryPath: string) {
+  return function (
+    filename: string,
+    outputPath: string,
+    directoryPath: string
+  ) {
     const sameRoot = directoryPath.startsWith(root);
-    if (sameRoot) return directoryPath.slice(root.length) + filename;
+    // The output path is the native path with other separators, so the root
+    // ends at the same index in both
+    if (sameRoot) return outputPath.slice(root.length) + filename;
     else
       return (
-        convertSlashes(relative(root, directoryPath), options.pathSeparator) +
+        toOutputPath(relative(root, directoryPath), options.pathSeparator) +
         options.pathSeparator +
         filename
       );
@@ -31,8 +37,11 @@ export function joinDirectoryPath(
   return directoryPath + filename + separator;
 }
 
+// Joins a name to its directory's output path. The native path serves
+// `relative()`, when a resolved symlink leads outside the root.
 export type JoinPathFunction = (
   filename: string,
+  outputPath: string,
   directoryPath: string
 ) => string;
 

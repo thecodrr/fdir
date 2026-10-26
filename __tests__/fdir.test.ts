@@ -1,9 +1,9 @@
 import { FSLike, fdir } from "../src/index";
 import fs from "fs";
 import mock from "mock-fs";
-import { test, beforeEach, TestContext, vi } from "vitest";
+import { test, describe, beforeEach, afterEach, TestContext, vi } from "vitest";
 import path, { sep } from "path";
-import { convertSlashes } from "../src/utils";
+import { convertSlashes, normalizePath } from "../src/utils";
 import picomatch from "picomatch";
 import { apiTypes, APITypes, cwd, restricted, root } from "./utils";
 
@@ -45,6 +45,7 @@ for (const type of apiTypes) {
       includeBasePath: true,
       suppressErrors: false,
     }).crawl("__tests__");
+    const files = await api[type]();
     t.expect(files.every((file) => file.startsWith("__tests__"))).toBeTruthy();
   });
 
@@ -348,12 +349,151 @@ for (const type of apiTypes) {
   test(`[${type}] crawl all files and invert path separator`, async (t) => {
     const api = new fdir()
       .withErrors()
+      .withBasePath()
       .withPathSeparator(sep === "/" ? "\\" : "/")
       .crawl("node_modules");
     const files = await api[type]();
 
+    t.expect(files).not.toHaveLength(0);
     t.expect(files.every((f) => !f.includes(sep))).toBeTruthy();
   });
+
+  for (const separator of ["/", "\\"] as const) {
+    describe(`[${type}] output paths with the "${separator}" separator`, () => {
+      const inSeparator = (paths: string[]) =>
+        paths.map((p) => convertSlashes(p, separator)).sort();
+
+      beforeEach(() => {
+        mock({ "/separators/a/b": { file: "" }, "/separators/c": "" });
+      });
+
+      afterEach(() => {
+        mock.restore();
+      });
+
+      test(`with base paths`, async (t) => {
+        const api = new fdir()
+          .withErrors()
+          .withBasePath()
+          .withPathSeparator(separator)
+          .crawl("/separators");
+        const files = await api[type]();
+        t.expect(files.sort()).toStrictEqual(
+          inSeparator(["/separators/a/b/file", "/separators/c"])
+        );
+      });
+
+      test(`with relative paths`, async (t) => {
+        const api = new fdir()
+          .withErrors()
+          .withRelativePaths()
+          .withPathSeparator(separator)
+          .crawl("/separators");
+        const files = await api[type]();
+        t.expect(files.sort()).toStrictEqual(inSeparator(["a/b/file", "c"]));
+      });
+
+      test(`with directories`, async (t) => {
+        const api = new fdir()
+          .withErrors()
+          .withDirs()
+          .withPathSeparator(separator)
+          .crawl("/separators");
+        const files = await api[type]();
+        t.expect(files.sort()).toStrictEqual(
+          inSeparator([
+            "/separators/",
+            "/separators/a/",
+            "/separators/a/b/",
+            "c",
+            "file",
+          ])
+        );
+      });
+
+      test(`with directories and relative paths`, async (t) => {
+        const api = new fdir()
+          .withErrors()
+          .withDirs()
+          .withRelativePaths()
+          .withPathSeparator(separator)
+          .crawl("/separators");
+        const files = await api[type]();
+        t.expect(files.sort()).toStrictEqual(
+          inSeparator([".", "a/", "a/b/", "a/b/file", "c"])
+        );
+      });
+
+      test(`in groups`, async (t) => {
+        const api = new fdir()
+          .withErrors()
+          .withBasePath()
+          .withPathSeparator(separator)
+          .group()
+          .crawl("/separators");
+        const groups = await api[type]();
+        t.expect(groups.map((group) => group.directory).sort()).toStrictEqual(
+          inSeparator(["/separators/", "/separators/a/", "/separators/a/b/"])
+        );
+        t.expect(groups.flatMap((group) => group.files).sort()).toStrictEqual(
+          inSeparator(["/separators/a/b/file", "/separators/c"])
+        );
+      });
+
+      test(`given to exclude`, async (t) => {
+        const excluded: string[] = [];
+        const api = new fdir()
+          .withErrors()
+          .withPathSeparator(separator)
+          .exclude((_name, path) => {
+            excluded.push(path);
+            return false;
+          })
+          .crawl("/separators");
+        await api[type]();
+        t.expect(excluded.sort()).toStrictEqual(
+          inSeparator(["/separators/a/", "/separators/a/b/"])
+        );
+      });
+    });
+  }
+
+  test.skipIf(sep === "\\")(
+    `[${type}] crawl names that contain "\\" with the "\\" separator`,
+    async (t) => {
+      mock({ "/separators": { "a\\b": "", "c\\d": { file: "" } } });
+      const api = new fdir()
+        .withErrors()
+        .withBasePath()
+        .withPathSeparator("\\")
+        .crawl("/separators");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual([
+        "\\separators\\a\\b",
+        "\\separators\\c\\d\\file",
+      ]);
+      mock.restore();
+    }
+  );
+
+  for (const separator of ["/", "\\"] as const) {
+    test.skipIf(sep === "\\")(
+      `[${type}] crawl a root whose name ends with "\\" with the "${separator}" separator`,
+      async (t) => {
+        mock({
+          "literal\\": { "wanted.txt": "" },
+          literal: { "decoy.txt": "" },
+        });
+        const api = new fdir()
+          .withErrors()
+          .withPathSeparator(separator)
+          .crawl("literal\\");
+        const files = await api[type]();
+        t.expect(files).toStrictEqual(["wanted.txt"]);
+        mock.restore();
+      }
+    );
+  }
 
   test(`[${type}] crawl files that match using a custom glob`, async (t) => {
     const globFunction = vi.fn((glob: string | string[]) => {
@@ -533,7 +673,5 @@ test(`do not convert \\\\ to \\`, async (t) => {
 });
 
 test(`do not add a separator if path already ends with one`, async (t) => {
-  t.expect(normalizePath("some-root/", { pathSeparator: "\\" })).toBe(
-    "some-root\\"
-  );
+  t.expect(normalizePath("some-root/", {})).toBe(`some-root${sep}`);
 });

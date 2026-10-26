@@ -17,20 +17,23 @@ export function convertSlashes(path: string, separator: PathSeparator) {
   return path.replace(SLASHES_REGEX, separator);
 }
 
+// A native path in the output's separator, which leaves it as is when native
+export function toOutputPath(path: string, separator: PathSeparator) {
+  return separator === sep ? path : convertSlashes(path, separator);
+}
+
 const WINDOWS_ROOT_DIR_REGEX = /^[a-z]:[\\/]$/i;
 export function isRootDirectory(path: string) {
   return path === "/" || WINDOWS_ROOT_DIR_REGEX.test(path);
 }
 
+// Normalizes a path for the file system in the platform's own syntax, where a
+// POSIX name can contain a backslash, and ends it with the native separator
 export function normalizePath(
   path: string,
-  options: {
-    resolvePaths?: boolean;
-    normalizePath?: boolean;
-    pathSeparator: PathSeparator;
-  }
+  options: { resolvePaths?: boolean; normalizePath?: boolean }
 ) {
-  const { resolvePaths, normalizePath, pathSeparator } = options;
+  const { resolvePaths, normalizePath } = options;
   const pathNeedsCleaning =
     (process.platform === "win32" && path.includes("/")) ||
     path.startsWith(".");
@@ -40,10 +43,6 @@ export function normalizePath(
 
   if (path === ".") return "";
 
-  const needsSeperator =
-    path[path.length - 1] !== "/" && path[path.length - 1] !== "\\";
-  return convertSlashes(
-    needsSeperator ? path + pathSeparator : path,
-    pathSeparator
-  );
+  // On Windows a "/" gets the path cleaned above, so only `sep` can end it
+  return path[path.length - 1] === sep ? path : path + sep;
 }
