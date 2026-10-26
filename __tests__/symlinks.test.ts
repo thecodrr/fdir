@@ -16,9 +16,6 @@ const fsWithRelativeSymlinks = {
     fileSymlink: mock.symlink({
       path: "../../../../other-relative/dir/file-2",
     }),
-    fileSymlink2: mock.symlink({
-      path: "../../../../other-relative/dir/file-3",
-    }),
     dirSymlink: mock.symlink({
       path: "../../../../sym-relative/linked",
     }),
@@ -132,9 +129,6 @@ const mockFs = {
   "/some/dir": {
     fileSymlink: mock.symlink({
       path: "/other/dir/file-2",
-    }),
-    fileSymlink2: mock.symlink({
-      path: "/other/dir/file-3",
     }),
     dirSymlink: mock.symlink({
       path: "/sym/linked",
@@ -376,7 +370,7 @@ for (const type of apiTypes) {
       const api = new fdir().withErrors().crawl("/some/dir");
       const files = await api[type]();
       t.expect(files.sort()).toStrictEqual(
-        normalize(["dirSymlink", "fileSymlink", "fileSymlink2"])
+        normalize(["dirSymlink", "fileSymlink"])
       );
     });
 
@@ -404,6 +398,47 @@ for (const type of apiTypes) {
       },
       { timeout: 1000 }
     );
+  });
+
+  describe(`${type}: a symlink whose target is missing`, () => {
+    beforeAll(() => {
+      mock({
+        "/elsewhere": {
+          file: "file contents",
+        },
+        "/dangling": {
+          kept: mock.symlink({
+            path: "/elsewhere/file",
+          }),
+          broken: mock.symlink({
+            path: "/elsewhere/missing",
+          }),
+        },
+      });
+    });
+
+    afterAll(() => {
+      mock.restore();
+    });
+
+    test(`is listed by its name when symlinks are not resolved`, async (t) => {
+      const api = new fdir().withErrors().crawl("/dangling");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(normalize(["broken", "kept"]));
+    });
+
+    test(`is skipped when symlinks are resolved`, async (t) => {
+      const api = new fdir().withSymlinks().crawl("/dangling");
+      const files = await api[type]();
+      t.expect(files).toStrictEqual(normalize(["/elsewhere/file"]));
+    });
+
+    test(`is reported when symlinks are resolved with errors`, async (t) => {
+      const api = new fdir().withErrors().withSymlinks().crawl("/dangling");
+      await t
+        .expect(Promise.resolve().then(() => api[type]()))
+        .rejects.toThrow(/ENOENT/);
+    });
   });
 }
 
