@@ -116,11 +116,25 @@ const fsWithSymlinkInRootDir = {
   }),
 };
 
+const fsWithManySymlinksToSameDir = {
+  "/shared/target": {
+    "file-1": "file contents",
+    nested: { "file-2": "file contents" },
+  },
+  "/many/links": Object.fromEntries(
+    Array.from({ length: 50 }, (_, i) => [
+      `link-${i}`,
+      mock.symlink({ path: resolveSymlinkRoot("/shared/target") }),
+    ])
+  ),
+};
+
 const mockFs = {
   ...fsWithRelativeSymlinks,
   ...fsWithRecursiveSymlinks,
   ...fsWithRecursiveRelativeSymlinks,
   ...fsWithSymlinkInRootDir,
+  ...fsWithManySymlinksToSameDir,
 
   "/sym/linked": {
     "file-1": "file contents",
@@ -299,6 +313,24 @@ for (const type of apiTypes) {
           "random-file",
         ])
       );
+    });
+
+    test(`crawl a directory reached via many symlinks only once (real paths: true)`, async (t) => {
+      const api = new fdir().withErrors().withSymlinks().crawl("/many/links");
+      const files = await api[type]();
+      t.expect(files.sort()).toStrictEqual(
+        normalize(["/shared/target/file-1", "/shared/target/nested/file-2"])
+      );
+    });
+
+    test(`count a directory reached via many symlinks only once (real paths: true)`, async (t) => {
+      const api = new fdir()
+        .withErrors()
+        .withSymlinks()
+        .onlyCounts()
+        .crawl("/many/links");
+      const counts = await api[type]();
+      t.expect(counts.files).toBe(2);
     });
 
     test(`resolve symlinks (real paths: false)`, async (t) => {
