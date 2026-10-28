@@ -49,7 +49,9 @@ export class Walker<TOutput extends Output> {
         this.callbackInvoker(state, error, callback)
       ),
       symlinks: new Map(),
-      visited: [""].slice(0, 0),
+      // Perf: only needed for recursion detection when resolving symlinks to
+      // real paths. A Set keeps that check O(1) instead of O(directories).
+      visited: options.useRealPaths ? new Set<string>() : undefined,
       controller: new Aborter(),
       fs: options.fs || nativeFs,
     };

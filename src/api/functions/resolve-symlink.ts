@@ -89,5 +89,6 @@ function isRecursive(path: string, resolved: string, state: WalkerState) {
 }
 
 function isRecursiveUsingRealPaths(resolved: string, state: WalkerState) {
-  return state.visited.includes(resolved + state.options.pathSeparator);
+  const { visited } = state;
+  return !!visited && visited.has(resolved + state.options.pathSeparator);
 }

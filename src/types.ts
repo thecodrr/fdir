@@ -66,7 +66,7 @@ export type WalkerState = {
   fs: FSLike;
 
   symlinks: Map<string, string>;
-  visited: string[];
+  visited?: Set<string>;
 };
 
 export type ResultCallback<TOutput extends Output> = (
