@@ -10,11 +10,11 @@ import {
   GlobFunction,
   GlobMatcher,
   GlobParams,
+  PicomatchLikeFunction,
 } from "../types";
 import { APIBuilder } from "./api-builder";
-import type picomatch from "picomatch";
 
-let pm: typeof picomatch | null = null;
+let pm: PicomatchLikeFunction | null = null;
 /* c8 ignore next 6 */
 try {
   require.resolve("picomatch");
@@ -25,7 +25,7 @@ try {
 
 export class Builder<
   TReturnType extends Output = PathsOutput,
-  TGlobFunction = typeof picomatch,
+  TGlobFunction = PicomatchLikeFunction,
 > {
   private readonly globCache: Record<string, GlobMatcher> = {};
   private options: Options<TGlobFunction> = {
