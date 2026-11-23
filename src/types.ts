@@ -105,6 +105,24 @@ export type GlobFunction = (
   glob: string | string[],
   ...params: unknown[]
 ) => GlobMatcher;
+export type PicomatchLikeOptions = {
+  dot?: boolean;
+  ignore?: string | string[];
+  nocase?: boolean;
+  basename?: boolean;
+  matchBase?: boolean;
+  contains?: boolean;
+  noglobstar?: boolean;
+  noextglob?: boolean;
+  nobrace?: boolean;
+  windows?: boolean;
+  posixSlashes?: boolean;
+  [key: string]: unknown;
+};
+export type PicomatchLikeFunction = (
+  glob: string | string[],
+  options?: PicomatchLikeOptions
+) => GlobMatcher;
 export type GlobParams<T> = T extends (
   globs: string | string[],
   ...params: infer TParams extends unknown[]
