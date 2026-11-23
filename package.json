@@ -5,6 +5,7 @@
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.cts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "prepublishOnly": "npm run test && npm run build",
     "build": "tsdown",
